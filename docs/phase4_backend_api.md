@@ -4,7 +4,7 @@ FastAPI app in `backend/app/`. It loads the four saved `CardioModel`s once at st
 them over HTTP. Interactive docs are at `/docs`.
 
 ```powershell
-uvicorn app.main:app --app-dir backend --port 8000     # from the repo root, venv active
+python -m uvicorn app.main:app --app-dir backend --port 8000   # repo root; venv active or use .venv\Scripts\python
 cd backend; python -m pytest -q; cd ..                 # 31 tests
 ```
 

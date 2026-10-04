@@ -37,9 +37,9 @@ cd ml; python -m pytest -q; cd ..     # config, data and leakage tests
 jupyter lab notebooks/01_exploration.ipynb
 ```
 
-Backend API (venv active, from the repo root):
+Backend API (from the repo root; with the venv active, or replace `python` with `.venv\Scripts\python`):
 ```powershell
-uvicorn app.main:app --app-dir backend --port 8000   # docs at http://localhost:8000/docs
+python -m uvicorn app.main:app --app-dir backend --port 8000   # docs at http://localhost:8000/docs
 cd backend; python -m pytest -q; cd ..               # API tests
 ```
 
