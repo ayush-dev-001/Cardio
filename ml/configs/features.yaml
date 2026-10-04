@@ -1,0 +1,577 @@
+# CardioScope feature dictionary — the single source of truth for model inputs.
+#
+# Every input feature of the Z-Alizadeh Sani extension dataset is listed here.
+# The ML pipeline, the backend (/schema) and the frontend form are all driven by
+# this file: adding a feature = adding an entry here.
+#
+# Field reference
+#   id            snake_case name used everywhere after cleaning (API, processed data, UI)
+#   column        exact column name in the raw Excel file (spelling verified in Phase 1)
+#   label         human-readable name for the UI
+#   group         display group (see `groups` below)
+#   type          numeric | binary | ordinal | categorical
+#   unit          measurement unit (null if unitless)
+#   description   plain-language medical meaning
+#   encoding      raw value -> cleaned value (binary / ordinal only)
+#   categories    allowed cleaned values (categorical only)
+#   normal_range  [low, high] typical adult reference range; null bound = open-ended;
+#                 omitted when a "normal" value is not meaningful
+#   valid_range   [min, max] hard plausibility bounds used for input validation
+#   use_in_model  false = kept in the data but never given to a model (reason in `note`)
+#   note          caveats found during Phase 1 exploration
+#
+# Reference ranges are typical adult values from standard clinical references and are
+# for display context only; laboratories differ, and several values depend on sex/age.
+
+groups:
+  - {id: demographic, label: "Demographics & body measures"}
+  - {id: history,     label: "Risk factors & medical history"}
+  - {id: exam,        label: "Symptoms & clinical examination"}
+  - {id: ecg,         label: "ECG findings"}
+  - {id: lab,         label: "Laboratory tests"}
+  - {id: echo,        label: "Echocardiography"}
+
+yes_no: &yes_no {"Y": 1, "N": 0}
+one_zero: &one_zero {1: 1, 0: 0}
+
+features:
+  # ---------------------------------------------------------------- demographic
+  - id: age
+    column: Age
+    label: Age
+    group: demographic
+    type: numeric
+    unit: years
+    description: Patient age. Risk of coronary artery disease rises with age.
+    valid_range: [18, 110]
+
+  - id: sex
+    column: Sex
+    label: Sex (male)
+    group: demographic
+    type: binary
+    unit: null
+    description: Biological sex. Men develop CAD earlier on average.
+    encoding: {"Male": 1, "Fmale": 0}
+    note: Raw file spells female as "Fmale". Cleaned value 1 = male, 0 = female.
+
+  - id: weight
+    column: Weight
+    label: Weight
+    group: demographic
+    type: numeric
+    unit: kg
+    description: Body weight.
+    valid_range: [30, 250]
+
+  - id: height
+    column: Length
+    label: Height
+    group: demographic
+    type: numeric
+    unit: cm
+    description: Body height (column is called "Length" in the raw file).
+    valid_range: [120, 220]
+
+  - id: bmi
+    column: BMI
+    label: Body mass index
+    group: demographic
+    type: numeric
+    unit: kg/m²
+    description: Weight divided by height squared; a measure of body fat.
+    normal_range: [18.5, 24.9]
+    valid_range: [12, 70]
+    note: Exactly equal to Weight / (Length/100)^2 in every row, so it is fully redundant with weight + height.
+
+  # -------------------------------------------------------------------- history
+  - id: dm
+    column: DM
+    label: Diabetes mellitus
+    group: history
+    type: binary
+    unit: null
+    description: History of diabetes; a major CAD risk factor.
+    encoding: *one_zero
+
+  - id: htn
+    column: HTN
+    label: Hypertension
+    group: history
+    type: binary
+    unit: null
+    description: History of high blood pressure; a major CAD risk factor.
+    encoding: *one_zero
+
+  - id: current_smoker
+    column: Current Smoker
+    label: Current smoker
+    group: history
+    type: binary
+    unit: null
+    description: Currently smokes tobacco.
+    encoding: *one_zero
+
+  - id: ex_smoker
+    column: EX-Smoker
+    label: Ex-smoker
+    group: history
+    type: binary
+    unit: null
+    description: Former smoker.
+    encoding: *one_zero
+    note: Only 10 positives; never overlaps with current_smoker.
+
+  - id: fh
+    column: FH
+    label: Family history of CAD
+    group: history
+    type: binary
+    unit: null
+    description: Premature coronary disease in a close relative.
+    encoding: *one_zero
+
+  - id: obesity
+    column: Obesity
+    label: Obesity / overweight
+    group: history
+    type: binary
+    unit: null
+    description: Flag for excess body weight.
+    encoding: *yes_no
+    note: Despite the name, this equals BMI >= 25 (overweight threshold) in every row — a derived, redundant feature.
+
+  - id: crf
+    column: CRF
+    label: Chronic renal failure
+    group: history
+    type: binary
+    unit: null
+    description: Chronic kidney failure; accelerates atherosclerosis.
+    encoding: *yes_no
+    note: Rare (6 positives).
+
+  - id: cva
+    column: CVA
+    label: Prior stroke (CVA)
+    group: history
+    type: binary
+    unit: null
+    description: History of cerebrovascular accident (stroke).
+    encoding: *yes_no
+    note: Rare (5 positives).
+
+  - id: airway_disease
+    column: Airway disease
+    label: Airway disease
+    group: history
+    type: binary
+    unit: null
+    description: Chronic airway disease such as asthma or COPD.
+    encoding: *yes_no
+    note: Rare (11 positives).
+
+  - id: thyroid_disease
+    column: Thyroid Disease
+    label: Thyroid disease
+    group: history
+    type: binary
+    unit: null
+    description: History of thyroid disorder.
+    encoding: *yes_no
+    note: Rare (7 positives).
+
+  - id: chf
+    column: CHF
+    label: Congestive heart failure
+    group: history
+    type: binary
+    unit: null
+    description: History of heart failure.
+    encoding: *yes_no
+    note: Only 1 positive in 303 patients — carries almost no information.
+
+  - id: dlp
+    column: DLP
+    label: Dyslipidemia
+    group: history
+    type: binary
+    unit: null
+    description: Abnormal blood lipids (cholesterol / triglycerides).
+    encoding: *yes_no
+
+  # ----------------------------------------------------------------------- exam
+  - id: bp
+    column: BP
+    label: Blood pressure (systolic)
+    group: exam
+    type: numeric
+    unit: mmHg
+    description: Systolic blood pressure measured at examination.
+    normal_range: [90, 120]
+    valid_range: [60, 260]
+    note: Single value in the raw data; assumed to be systolic (range 90–190).
+
+  - id: pr
+    column: PR
+    label: Pulse rate
+    group: exam
+    type: numeric
+    unit: beats/min
+    description: Heart rate at rest.
+    normal_range: [60, 100]
+    valid_range: [30, 200]
+
+  - id: edema
+    column: Edema
+    label: Edema
+    group: exam
+    type: binary
+    unit: null
+    description: Swelling from fluid retention, e.g. in the legs.
+    encoding: *one_zero
+
+  - id: weak_peripheral_pulse
+    column: Weak Peripheral Pulse
+    label: Weak peripheral pulse
+    group: exam
+    type: binary
+    unit: null
+    description: Weak pulses in limbs, suggesting peripheral artery disease.
+    encoding: *yes_no
+    note: Rare (5 positives).
+
+  - id: lung_rales
+    column: Lung rales
+    label: Lung rales
+    group: exam
+    type: binary
+    unit: null
+    description: Crackling lung sounds, can indicate fluid from heart failure.
+    encoding: *yes_no
+
+  - id: systolic_murmur
+    column: Systolic Murmur
+    label: Systolic murmur
+    group: exam
+    type: binary
+    unit: null
+    description: Heart murmur heard during contraction (valve or flow abnormality).
+    encoding: *yes_no
+
+  - id: diastolic_murmur
+    column: Diastolic Murmur
+    label: Diastolic murmur
+    group: exam
+    type: binary
+    unit: null
+    description: Heart murmur heard during relaxation (usually valve disease).
+    encoding: *yes_no
+
+  - id: typical_chest_pain
+    column: Typical Chest Pain
+    label: Typical chest pain (angina)
+    group: exam
+    type: binary
+    unit: null
+    description: Classic angina — pressure-like chest pain on exertion, relieved by rest.
+    encoding: *one_zero
+    note: Chest-pain type is mutually exclusive across typical / atypical / nonanginal; 30 patients have none.
+
+  - id: atypical
+    column: Atypical
+    label: Atypical chest pain
+    group: exam
+    type: binary
+    unit: null
+    description: Chest pain with only some features of classic angina.
+    encoding: *yes_no
+
+  - id: nonanginal
+    column: Nonanginal
+    label: Non-anginal chest pain
+    group: exam
+    type: binary
+    unit: null
+    description: Chest pain unlikely to be of cardiac origin.
+    encoding: *yes_no
+
+  - id: exertional_cp
+    column: Exertional CP
+    label: Exertional chest pain
+    group: exam
+    type: binary
+    unit: null
+    description: Chest pain triggered by physical effort.
+    encoding: *yes_no
+    use_in_model: false
+    note: Constant ("N" for all 303 patients) — no information, excluded from models.
+
+  - id: lowth_ang
+    column: LowTH Ang
+    label: Low-threshold angina
+    group: exam
+    type: binary
+    unit: null
+    description: Angina triggered by very little exertion.
+    encoding: *yes_no
+    note: Only 2 positives.
+
+  - id: dyspnea
+    column: Dyspnea
+    label: Dyspnea
+    group: exam
+    type: binary
+    unit: null
+    description: Shortness of breath.
+    encoding: *yes_no
+
+  - id: function_class
+    column: Function Class
+    label: Functional class
+    group: exam
+    type: ordinal
+    unit: null
+    description: Severity of symptom-related activity limitation (0 = none, higher = worse; NYHA/CCS-style scale).
+    encoding: {0: 0, 1: 1, 2: 2, 3: 3}
+    valid_range: [0, 4]
+    note: Value 1 occurs only once; values seen are 0, 1, 2, 3.
+
+  # ------------------------------------------------------------------------ ECG
+  - id: q_wave
+    column: Q Wave
+    label: Pathological Q wave
+    group: ecg
+    type: binary
+    unit: null
+    description: ECG sign of a previous heart attack (scarred muscle).
+    encoding: *one_zero
+
+  - id: st_elevation
+    column: St Elevation
+    label: ST elevation
+    group: ecg
+    type: binary
+    unit: null
+    description: ECG sign of acute or prior myocardial injury.
+    encoding: *one_zero
+
+  - id: st_depression
+    column: St Depression
+    label: ST depression
+    group: ecg
+    type: binary
+    unit: null
+    description: ECG sign of reduced blood supply (ischemia).
+    encoding: *one_zero
+
+  - id: t_inversion
+    column: Tinversion
+    label: T-wave inversion
+    group: ecg
+    type: binary
+    unit: null
+    description: ECG sign that can indicate ischemia.
+    encoding: *one_zero
+
+  - id: lvh
+    column: LVH
+    label: Left ventricular hypertrophy
+    group: ecg
+    type: binary
+    unit: null
+    description: Thickened left ventricle on ECG, often from long-standing hypertension.
+    encoding: *yes_no
+
+  - id: poor_r_progression
+    column: Poor R Progression
+    label: Poor R-wave progression
+    group: ecg
+    type: binary
+    unit: null
+    description: ECG pattern that can indicate a previous anterior heart attack.
+    encoding: *yes_no
+
+  - id: bbb
+    column: BBB
+    label: Bundle branch block
+    group: ecg
+    type: categorical
+    unit: null
+    description: Conduction block in the left (LBBB) or right (RBBB) bundle branch.
+    categories: ["N", "LBBB", "RBBB"]
+    note: Three levels; one-hot encoded inside CV folds in Phase 2.
+
+  # ------------------------------------------------------------------------ lab
+  - id: fbs
+    column: FBS
+    label: Fasting blood sugar
+    group: lab
+    type: numeric
+    unit: mg/dL
+    description: Blood glucose after fasting; high values indicate diabetes.
+    normal_range: [70, 99]
+    valid_range: [30, 700]
+
+  - id: cr
+    column: CR
+    label: Creatinine
+    group: lab
+    type: numeric
+    unit: mg/dL
+    description: Kidney function marker; higher = worse kidney function.
+    normal_range: [0.6, 1.2]
+    valid_range: [0.2, 15]
+
+  - id: tg
+    column: TG
+    label: Triglycerides
+    group: lab
+    type: numeric
+    unit: mg/dL
+    description: Blood fat level.
+    normal_range: [null, 150]
+    valid_range: [10, 3000]
+
+  - id: ldl
+    column: LDL
+    label: LDL cholesterol
+    group: lab
+    type: numeric
+    unit: mg/dL
+    description: "\"Bad\" cholesterol that builds plaque in arteries."
+    normal_range: [null, 100]
+    valid_range: [10, 400]
+
+  - id: hdl
+    column: HDL
+    label: HDL cholesterol
+    group: lab
+    type: numeric
+    unit: mg/dL
+    description: "\"Good\" cholesterol that removes cholesterol from arteries."
+    normal_range: [40, null]
+    valid_range: [5, 150]
+
+  - id: bun
+    column: BUN
+    label: Blood urea nitrogen
+    group: lab
+    type: numeric
+    unit: mg/dL
+    description: Kidney function marker.
+    normal_range: [7, 20]
+    valid_range: [2, 150]
+
+  - id: esr
+    column: ESR
+    label: Erythrocyte sedimentation rate
+    group: lab
+    type: numeric
+    unit: mm/h
+    description: Non-specific marker of inflammation.
+    normal_range: [0, 20]
+    valid_range: [0, 150]
+
+  - id: hb
+    column: HB
+    label: Hemoglobin
+    group: lab
+    type: numeric
+    unit: g/dL
+    description: Oxygen-carrying protein in red blood cells; low = anemia.
+    normal_range: [12, 17.5]
+    valid_range: [4, 22]
+
+  - id: k
+    column: K
+    label: Potassium
+    group: lab
+    type: numeric
+    unit: mEq/L
+    description: Blood potassium; affects heart rhythm.
+    normal_range: [3.5, 5.0]
+    valid_range: [2, 8]
+
+  - id: na
+    column: Na
+    label: Sodium
+    group: lab
+    type: numeric
+    unit: mEq/L
+    description: Blood sodium.
+    normal_range: [135, 145]
+    valid_range: [110, 170]
+
+  - id: wbc
+    column: WBC
+    label: White blood cell count
+    group: lab
+    type: numeric
+    unit: cells/µL
+    description: Immune cells; raised in infection or inflammation.
+    normal_range: [4000, 11000]
+    valid_range: [1000, 50000]
+
+  - id: lymph
+    column: Lymph
+    label: Lymphocytes
+    group: lab
+    type: numeric
+    unit: "%"
+    description: Share of white cells that are lymphocytes.
+    normal_range: [20, 40]
+    valid_range: [0, 100]
+
+  - id: neut
+    column: Neut
+    label: Neutrophils
+    group: lab
+    type: numeric
+    unit: "%"
+    description: Share of white cells that are neutrophils.
+    normal_range: [40, 70]
+    valid_range: [0, 100]
+
+  - id: plt
+    column: PLT
+    label: Platelet count
+    group: lab
+    type: numeric
+    unit: 10³/µL
+    description: Blood-clotting cells.
+    normal_range: [150, 450]
+    valid_range: [10, 1500]
+
+  # ----------------------------------------------------------------------- echo
+  - id: ef_tte
+    column: EF-TTE
+    label: Ejection fraction (TTE)
+    group: echo
+    type: numeric
+    unit: "%"
+    description: Share of blood pumped out of the left ventricle per beat, measured by transthoracic echo; low = weak pumping.
+    normal_range: [55, 70]
+    valid_range: [5, 85]
+    note: Recorded in steps of 5 (15–60).
+
+  - id: region_rwma
+    column: Region RWMA
+    label: Regions with wall-motion abnormality
+    group: echo
+    type: ordinal
+    unit: null
+    description: Echo finding of heart-wall regions that move abnormally (0 = none, up to 4). A clinical feature, NOT an anatomical lesion location.
+    encoding: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    valid_range: [0, 4]
+    note: The source does not document what each code 1–4 denotes; treat it as an ordinal severity/extent code only.
+
+  - id: vhd
+    column: VHD
+    label: Valvular heart disease
+    group: echo
+    type: ordinal
+    unit: null
+    description: Severity of heart-valve disease seen on echo.
+    encoding: {"N": 0, "mild": 1, "Moderate": 2, "Severe": 3}
+    valid_range: [0, 3]

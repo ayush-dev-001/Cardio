@@ -1,0 +1,23 @@
+{
+  "_comment": "Single source of truth for vessel IDs. Backend outputs and 3D meshes are keyed by `id`. Model targets reference these via vessel_id in ml/configs/targets.yaml.",
+  "vessels": [
+    {
+      "id": "LAD",
+      "name": "Left Anterior Descending artery",
+      "target_id": "lad",
+      "supplies": "Front (anterior) wall of the left ventricle and most of the septum between the ventricles."
+    },
+    {
+      "id": "LCX",
+      "name": "Left Circumflex artery",
+      "target_id": "lcx",
+      "supplies": "Side (lateral) and back (posterior) walls of the left ventricle."
+    },
+    {
+      "id": "RCA",
+      "name": "Right Coronary Artery",
+      "target_id": "rca",
+      "supplies": "Right ventricle and the bottom (inferior) wall of the heart; usually the heart's natural pacemaker nodes."
+    }
+  ]
+}
