@@ -17,6 +17,13 @@ catboost==1.2.10
 # dependency is blocked by Windows Smart App Control on the dev machine.
 joblib==1.6.0
 
+# backend API
+fastapi==0.142.2
+pydantic==2.13.5
+starlette==1.7.0
+uvicorn==0.54.0
+httpx2==2.13.1        # FastAPI TestClient (tests only)
+
 # plots
 matplotlib==3.11.2
 seaborn==0.13.2

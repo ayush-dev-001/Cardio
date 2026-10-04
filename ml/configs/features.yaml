@@ -18,6 +18,9 @@
 #                 omitted when a "normal" value is not meaningful
 #   valid_range   [min, max] hard plausibility bounds used for input validation
 #   use_in_model  false = kept in the data but never given to a model (reason in `note`)
+#   derived       name of a derivation in cardioscope_ml/derived.py; the API computes the value
+#                 from other inputs instead of accepting it (keeps inputs consistent)
+#   option_labels display label per cleaned value (binary/ordinal/categorical); default No/Yes
 #   note          caveats found during Phase 1 exploration
 #
 # Reference ranges are typical adult values from standard clinical references and are
@@ -47,12 +50,13 @@ features:
 
   - id: sex
     column: Sex
-    label: Sex (male)
+    label: Sex
     group: demographic
     type: binary
     unit: null
     description: Biological sex. Men develop CAD earlier on average.
     encoding: {"Male": 1, "Fmale": 0}
+    option_labels: {0: Female, 1: Male}
     note: Raw file spells female as "Fmale". Cleaned value 1 = male, 0 = female.
 
   - id: weight
@@ -82,6 +86,7 @@ features:
     description: Weight divided by height squared; a measure of body fat.
     normal_range: [18.5, 24.9]
     valid_range: [12, 70]
+    derived: bmi
     note: Exactly equal to Weight / (Length/100)^2 in every row, so it is fully redundant with weight + height.
 
   # -------------------------------------------------------------------- history
@@ -139,6 +144,7 @@ features:
     unit: null
     description: Flag for excess body weight.
     encoding: *yes_no
+    derived: overweight_flag
     note: Despite the name, this equals BMI >= 25 (overweight threshold) in every row — a derived, redundant feature.
 
   - id: crf
@@ -334,7 +340,8 @@ features:
     unit: null
     description: Severity of symptom-related activity limitation (0 = none, higher = worse; NYHA/CCS-style scale).
     encoding: {0: 0, 1: 1, 2: 2, 3: 3}
-    valid_range: [0, 4]
+    option_labels: {0: "0 – none", 1: "1", 2: "2", 3: "3"}
+    valid_range: [0, 3]
     note: Value 1 occurs only once; values seen are 0, 1, 2, 3.
 
   # ------------------------------------------------------------------------ ECG
@@ -400,6 +407,7 @@ features:
     unit: null
     description: Conduction block in the left (LBBB) or right (RBBB) bundle branch.
     categories: ["N", "LBBB", "RBBB"]
+    option_labels: {"N": "None", "LBBB": "Left (LBBB)", "RBBB": "Right (RBBB)"}
     note: Three levels; one-hot encoded inside CV folds in Phase 2.
 
   # ------------------------------------------------------------------------ lab
@@ -563,6 +571,7 @@ features:
     unit: null
     description: Echo finding of heart-wall regions that move abnormally (0 = none, up to 4). A clinical feature, NOT an anatomical lesion location.
     encoding: {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    option_labels: {0: "0 – none", 1: "1", 2: "2", 3: "3", 4: "4"}
     valid_range: [0, 4]
     note: The source does not document what each code 1–4 denotes; treat it as an ordinal severity/extent code only.
 
@@ -574,4 +583,5 @@ features:
     unit: null
     description: Severity of heart-valve disease seen on echo.
     encoding: {"N": 0, "mild": 1, "Moderate": 2, "Severe": 3}
+    option_labels: {0: None, 1: Mild, 2: Moderate, 3: Severe}
     valid_range: [0, 3]

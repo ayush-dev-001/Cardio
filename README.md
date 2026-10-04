@@ -10,8 +10,9 @@ interactive 3D heart, and explains each prediction with SHAP.
 > are not a substitute for formal diagnostic imaging (e.g. coronary angiography).
 
 ## Status
-Phases 1–3 complete: data findings in `docs/phase1_data_findings.md`, model results in
-`docs/phase2_model_results.md`, 3D viewer in `docs/phase3_3d_anatomy.md`.
+Phases 1–4 complete: data findings in `docs/phase1_data_findings.md`, model results in
+`docs/phase2_model_results.md`, 3D viewer in `docs/phase3_3d_anatomy.md`, API in
+`docs/phase4_backend_api.md`.
 
 ## Setup (Windows, PowerShell)
 Requires Python 3.10+ (developed on 3.14).
@@ -34,6 +35,12 @@ python -m cardioscope_ml.train        # nested CV + final models -> models/, rep
 python -m cardioscope_ml.train --fast # quick smoke test (~1 min) -> models/_fast/
 cd ml; python -m pytest -q; cd ..     # config, data and leakage tests
 jupyter lab notebooks/01_exploration.ipynb
+```
+
+Backend API (venv active, from the repo root):
+```powershell
+uvicorn app.main:app --app-dir backend --port 8000   # docs at http://localhost:8000/docs
+cd backend; python -m pytest -q; cd ..               # API tests
 ```
 
 Frontend (Node 20+; developed on Node 24):

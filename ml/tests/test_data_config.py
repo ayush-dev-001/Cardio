@@ -66,3 +66,13 @@ def test_vessel_targets_match_shared_vessel_config():
     vessels = {v["id"]: v["target_id"] for v in config.load_vessels()["vessels"]}
     vessel_targets = {t["vessel_id"]: t["id"] for t in config.target_specs() if t["kind"] == "vessel"}
     assert vessels == vessel_targets
+
+
+def test_derived_features_reproduce_dataset(clean_df):
+    from cardioscope_ml.derived import apply_derivations, derived_features
+
+    assert set(derived_features()) == {"bmi", "obesity"}
+    for rec in clean_df.to_dict("records"):
+        d = apply_derivations({**rec, "bmi": None, "obesity": None})
+        assert abs(d["bmi"] - rec["bmi"]) < 1e-6
+        assert d["obesity"] == rec["obesity"]
