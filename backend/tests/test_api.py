@@ -69,6 +69,16 @@ def test_schema_marks_derived_features(schema):
     assert [o["value"] for o in by_id["bbb"]["options"]] == ["N", "LBBB", "RBBB"]
 
 
+def test_schema_what_if_features_have_observed_ranges(schema):
+    what_if = [f for f in schema["features"] if f["what_if"]]
+    assert {"bp", "ldl", "current_smoker"} <= {f["id"] for f in what_if}
+    for f in what_if:
+        assert f["input"], f["id"]  # sliders only for directly editable inputs
+        if f["type"] == "numeric":
+            lo, hi = f["observed_range"]
+            assert f["valid_range"][0] <= lo < hi <= f["valid_range"][1]
+
+
 def test_schema_defaults_are_valid_inputs(client, patient):
     assert client.post("/predict", json={"patient": patient}).status_code == 200
 
@@ -195,3 +205,17 @@ def test_samples_filter_by_kind(client):
 def test_cors_allows_local_frontend(client):
     r = client.options("/predict", headers={"Origin": "http://localhost:5173", "Access-Control-Request-Method": "POST"})
     assert r.headers.get("access-control-allow-origin") == "http://localhost:5173"
+
+
+def test_cors_origin_regex_from_env(monkeypatch):
+    import re
+
+    from app.settings import Settings
+
+    pattern = r"https://cardioscope(-[a-z0-9-]+)?\.vercel\.app"
+    monkeypatch.setenv("CARDIOSCOPE_CORS_ORIGIN_REGEX", pattern)
+    s = Settings()
+    assert s.cors_origin_regex == pattern
+    assert re.fullmatch(s.cors_origin_regex, "https://cardioscope.vercel.app")
+    assert re.fullmatch(s.cors_origin_regex, "https://cardioscope-git-main-ayush.vercel.app")
+    assert not re.fullmatch(s.cors_origin_regex, "https://evil-cardioscope.vercel.app.attacker.com")

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { API_URL, api } from "./api/client";
-import type { ExplainResponse, Patient, PredictResponse, SamplePatient, Schema } from "./api/types";
+import type { PredictResponse, SamplePatient, Schema } from "./api/types";
 import { Disclaimer } from "./components/Disclaimer";
 import { PatientForm } from "./components/PatientForm";
 import { PhysiologyPanel } from "./components/PhysiologyPanel";
@@ -9,25 +9,41 @@ import { RiskLegend } from "./components/RiskLegend";
 import { ShapWaterfall } from "./components/ShapWaterfall";
 import { Panel, Tabs } from "./components/ui";
 import { VesselInfo } from "./components/VesselInfo";
+import { WhatIfPanel } from "./components/WhatIfPanel";
 import { MOCK_PRESETS, MockPanel } from "./dev/MockPanel";
 import { toFormValues, validate, type FormValues } from "./lib/form";
+import { usePrediction } from "./lib/usePrediction";
 import { HeartViewer } from "./scene/HeartViewer";
 
-type Tab = "explanation" | "physiology";
+type Tab = "explanation" | "physiology" | "whatif";
+type Connection = "connecting" | "waking" | "online" | "offline";
 const headerBtn = "rounded-md border border-slate-700 px-2.5 py-1 hover:border-slate-500";
+// Free hosting may put the API to sleep; keep retrying for about a minute before giving up.
+const WAKE_ATTEMPTS = 12;
+const WAKE_DELAY_MS = 5000;
+
+const hasWebGL = (() => {
+  try {
+    const c = document.createElement("canvas");
+    return Boolean(c.getContext("webgl2") || c.getContext("webgl"));
+  } catch {
+    return false;
+  }
+})();
 
 export default function App() {
   const [schema, setSchema] = useState<Schema | null>(null);
   const [samples, setSamples] = useState<SamplePatient[]>([]);
   const [values, setValues] = useState<FormValues>({});
   const [activeSample, setActiveSample] = useState<SamplePatient | null>(null);
-  const [prediction, setPrediction] = useState<PredictResponse | null>(null);
-  const [explanation, setExplanation] = useState<ExplainResponse | null>(null);
-  const [submitted, setSubmitted] = useState<string | null>(null); // JSON of the last predicted patient
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [offline, setOffline] = useState(false);
+  const [connection, setConnection] = useState<Connection>("connecting");
+  const [attempt, setAttempt] = useState(0);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [mockValues, setMockValues] = useState(MOCK_PRESETS.single.values);
+  const [live, setLive] = useState(true);
+
+  const [baselineValues, setBaselineValues] = useState<FormValues | null>(null);
+  const [baselinePrediction, setBaselinePrediction] = useState<PredictResponse | null>(null);
 
   const [selectedVessel, setSelectedVessel] = useState<string | null>(null);
   const [target, setTarget] = useState<string>("cad");
@@ -39,46 +55,54 @@ export default function App() {
     () => (schema ? validate(schema, values) : { patient: null, errors: {} }),
     [schema, values],
   );
-  const dirty = patient !== null && JSON.stringify(patient) !== submitted;
+  const pred = usePrediction(patient, live);
+  const { prediction, explanation } = pred;
 
-  const runPrediction = useCallback(async (p: Patient) => {
-    setBusy(true);
-    setError(null);
-    try {
-      const [pred, expl] = await Promise.all([api.predict(p), api.explain(p)]);
-      setPrediction(pred);
-      setExplanation(expl);
-      setSubmitted(JSON.stringify(p));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setBusy(false);
-    }
-  }, []);
-
+  // ------------------------------------------------------------------ loading / waking the API
   const loadSchema = useCallback(async () => {
-    setError(null);
-    try {
-      const [s, smp] = await Promise.all([api.schema(), api.samples()]);
-      setSchema(s);
-      setSamples(smp);
-      setOffline(false);
-      const initial = smp.find((x) => x.kind === "single_vessel") ?? null;
-      const v = toFormValues(s, initial?.patient);
-      setValues(v);
-      setActiveSample(initial);
-      const { patient: p } = validate(s, v);
-      if (p) await runPrediction(p);
-    } catch (e) {
-      setOffline(true);
-      setError(e instanceof Error ? e.message : String(e));
+    setLoadError(null);
+    for (let i = 1; i <= WAKE_ATTEMPTS; i++) {
+      setAttempt(i);
+      setConnection(i === 1 ? "connecting" : "waking");
+      try {
+        const [s, smp] = await Promise.all([api.schema(), api.samples()]);
+        setSchema(s);
+        setSamples(smp);
+        const initial = smp.find((x) => x.kind === "single_vessel") ?? null;
+        const v = toFormValues(s, initial?.patient);
+        setValues(v);
+        setBaselineValues(v);
+        setActiveSample(initial);
+        setConnection("online");
+        return;
+      } catch (e) {
+        setLoadError(e instanceof Error ? e.message : String(e));
+        if (i < WAKE_ATTEMPTS) await new Promise((r) => setTimeout(r, WAKE_DELAY_MS));
+      }
     }
-  }, [runPrediction]);
+    setConnection("offline");
+  }, []);
 
   useEffect(() => {
     loadSchema();
   }, [loadSchema]);
 
+  // the baseline's prediction is captured once results for the baseline inputs arrive
+  const baselineKey = useMemo(() => {
+    if (!schema || !baselineValues) return null;
+    const p = validate(schema, baselineValues).patient;
+    return p ? JSON.stringify(p) : null;
+  }, [schema, baselineValues]);
+  useEffect(() => {
+    if (baselineKey && pred.submittedKey === baselineKey && prediction) setBaselinePrediction(prediction);
+  }, [baselineKey, pred.submittedKey, prediction]);
+
+  const setBaseline = (v: FormValues) => {
+    setBaselineValues(v);
+    setBaselinePrediction(null);
+  };
+
+  // ------------------------------------------------------------------ view interactions
   const resetView = useCallback(() => {
     setSelectedVessel(null);
     setResetToken((t) => t + 1);
@@ -98,6 +122,12 @@ export default function App() {
     if (t) setTarget(t);
   };
 
+  const editValue = (id: string, raw: string) => {
+    setValues((v) => ({ ...v, [id]: raw }));
+    setActiveSample(null);
+  };
+
+  const offline = connection === "offline";
   const probabilities: Record<string, number> = prediction
     ? Object.fromEntries(prediction.vessels.map((v) => [v.vessel_id, v.probability]))
     : offline
@@ -105,6 +135,8 @@ export default function App() {
       : {};
   const currentExplanation = explanation?.explanations.find((e) => e.target_id === target) ?? null;
   const vesselInfo = schema?.vessels.find((v) => v.id === selectedVessel) ?? null;
+  const showBaseline = baselinePrediction && pred.submittedKey !== baselineKey ? baselinePrediction : null;
+  const error = pred.error ?? (offline ? loadError : null);
 
   return (
     <div className="flex h-full flex-col bg-slate-950 text-slate-200">
@@ -115,10 +147,18 @@ export default function App() {
         </div>
         <div className="flex items-center gap-2 text-xs">
           <span className="hidden items-center gap-1.5 text-slate-400 sm:flex" title={API_URL}>
-            <span className={`h-2 w-2 rounded-full ${offline ? "bg-red-500" : schema ? "bg-emerald-500" : "bg-slate-500"}`} />
-            {offline ? "API offline" : schema ? "API connected" : "Connecting…"}
+            <span
+              className={`h-2 w-2 rounded-full ${
+                connection === "online" ? "bg-emerald-500" : connection === "offline" ? "bg-red-500" : "animate-pulse bg-amber-400"
+              }`}
+            />
+            {connection === "online" ? "API connected" : connection === "offline" ? "API offline" : "Connecting…"}
           </span>
-          <button onClick={() => setShowLabels((s) => !s)} className={headerBtn}>
+          <label className="flex cursor-pointer items-center gap-1.5 rounded-md border border-slate-700 px-2.5 py-1 hover:border-slate-500">
+            <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} className="accent-sky-400" />
+            Live updates
+          </label>
+          <button onClick={() => setShowLabels((s) => !s)} className={`${headerBtn} hidden sm:block`}>
             {showLabels ? "Hide" : "Show"} labels
           </button>
           <button onClick={resetView} className={headerBtn}>
@@ -128,11 +168,16 @@ export default function App() {
       </header>
       <Disclaimer />
 
+      {connection === "waking" && (
+        <div role="status" className="border-b border-amber-500/30 bg-amber-500/10 px-4 py-2 text-xs text-amber-100">
+          Waking up the model server (free hosting sleeps when idle; this can take up to a minute)… attempt {attempt} of {WAKE_ATTEMPTS}
+        </div>
+      )}
       {error && (
         <div role="alert" className="flex items-center justify-between gap-3 border-b border-red-500/40 bg-red-500/10 px-4 py-2 text-xs text-red-200">
           <span>
             {error}
-            {offline && " Showing the 3D view with demo values; start the backend and retry."}
+            {offline && " Showing the 3D view with demo values."}
           </span>
           {offline && (
             <button onClick={loadSchema} className="rounded border border-red-400/50 px-2 py-0.5 hover:bg-red-500/20">
@@ -144,15 +189,21 @@ export default function App() {
 
       {/* phone: one column (3D, results, form) · lg: form | 3D over results · xl: form | 3D | results */}
       <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden lg:grid lg:grid-cols-[340px_1fr] lg:content-start xl:grid-cols-[minmax(320px,360px)_1fr_minmax(360px,420px)] xl:overflow-hidden">
-        {/* 3D view: first on small screens, centre column on large ones */}
         <main className="relative h-[58vh] min-h-[380px] lg:col-start-2 lg:row-start-1 xl:h-auto">
-          <HeartViewer
-            probabilities={probabilities}
-            selectedId={selectedVessel}
-            onSelect={selectVessel}
-            showLabels={showLabels}
-            resetToken={resetToken}
-          />
+          {hasWebGL ? (
+            <HeartViewer
+              probabilities={probabilities}
+              selectedId={selectedVessel}
+              onSelect={selectVessel}
+              showLabels={showLabels}
+              resetToken={resetToken}
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center p-6 text-center text-sm text-slate-400">
+              3D view unavailable: this browser has WebGL turned off or unsupported. All predictions and explanations are still
+              shown in the panels.
+            </div>
+          )}
           <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-3">
             <div className="flex items-start justify-between gap-3">
               <div className="pointer-events-auto">{offline && <MockPanel values={mockValues} onChange={setMockValues} />}</div>
@@ -178,57 +229,68 @@ export default function App() {
               </p>
             </div>
           </div>
-          {busy && <div className="absolute right-3 top-3 rounded bg-slate-900/80 px-2 py-1 text-xs text-slate-300">Updating…</div>}
+          {pred.busy && <div className="absolute right-3 top-3 rounded bg-slate-900/80 px-2 py-1 text-xs text-slate-300">Updating…</div>}
         </main>
 
-        {/* results */}
         <aside className="space-y-3 p-3 lg:col-start-2 lg:row-start-2 xl:col-start-3 xl:row-start-1 xl:overflow-y-auto xl:border-l xl:border-slate-800">
           {schema && prediction ? (
             <>
-              <CadStatusCard cad={prediction.cad} schema={schema} />
-              <VesselBars prediction={prediction} schema={schema} selectedId={selectedVessel} onSelect={selectVessel} />
-              <Panel
-                title={
-                  <Tabs<Tab>
-                    value={tab}
-                    onChange={setTab}
-                    items={[
-                      { id: "explanation", label: "Why? (SHAP)" },
-                      { id: "physiology", label: "Physiology" },
-                    ]}
+              <CadStatusCard cad={prediction.cad} schema={schema} baseline={showBaseline?.cad.probability} />
+              <VesselBars
+                prediction={prediction}
+                schema={schema}
+                selectedId={selectedVessel}
+                onSelect={selectVessel}
+                baseline={showBaseline}
+              />
+              {tab === "whatif" ? (
+                <div className="space-y-2">
+                  <Tabs<Tab> value={tab} onChange={setTab} items={TAB_ITEMS} />
+                  <WhatIfPanel
+                    schema={schema}
+                    values={values}
+                    baseline={baselineValues}
+                    onChange={editValue}
+                    onResetToBaseline={() => baselineValues && setValues(baselineValues)}
+                    onSetBaseline={() => setBaseline(values)}
                   />
-                }
-                right={
-                  <select
-                    value={target}
-                    onChange={(e) => setTarget(e.target.value)}
-                    aria-label="Target to explain"
-                    className="rounded-md border border-slate-700 bg-slate-950 px-2 py-1 text-xs text-slate-200"
-                  >
-                    {schema.targets.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.vessel_id ?? "Overall CAD"}
-                      </option>
+                </div>
+              ) : (
+                <Panel
+                  title={<Tabs<Tab> value={tab} onChange={setTab} items={TAB_ITEMS} />}
+                  right={
+                    <select
+                      value={target}
+                      onChange={(e) => setTarget(e.target.value)}
+                      aria-label="Target to explain"
+                      className="rounded-md border border-slate-700 bg-slate-950 px-2 py-1 text-xs text-slate-200"
+                    >
+                      {schema.targets.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.vessel_id ?? "Overall CAD"}
+                        </option>
+                      ))}
+                    </select>
+                  }
+                >
+                  {currentExplanation &&
+                    (tab === "explanation" ? (
+                      <ShapWaterfall explanation={currentExplanation} />
+                    ) : (
+                      <PhysiologyPanel schema={schema} explanation={currentExplanation} />
                     ))}
-                  </select>
-                }
-              >
-                {currentExplanation &&
-                  (tab === "explanation" ? (
-                    <ShapWaterfall explanation={currentExplanation} />
-                  ) : (
-                    <PhysiologyPanel schema={schema} explanation={currentExplanation} />
-                  ))}
-              </Panel>
+                </Panel>
+              )}
             </>
           ) : (
             <Panel>
-              <p className="text-sm text-slate-400">{offline ? "Results appear once the API is reachable." : "Loading model results…"}</p>
+              <p className="text-sm text-slate-400">
+                {offline ? "Results appear once the API is reachable." : connection === "waking" ? "Waiting for the model server…" : "Loading model results…"}
+              </p>
             </Panel>
           )}
         </aside>
 
-        {/* patient form */}
         <aside className="border-t border-slate-800 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:border-r lg:border-t-0 xl:row-span-1 xl:overflow-y-auto">
           {schema ? (
             <PatientForm
@@ -238,24 +300,24 @@ export default function App() {
               derived={prediction?.derived_inputs ?? null}
               samples={samples}
               activeSample={activeSample}
-              busy={busy}
-              dirty={dirty}
-              onChange={(id, raw) => {
-                setValues((v) => ({ ...v, [id]: raw }));
-                setActiveSample(null);
-              }}
+              busy={pred.busy}
+              dirty={pred.dirty}
+              live={live}
+              latencyMs={pred.latencyMs}
+              onChange={editValue}
               onLoadSample={(s) => {
                 const v = toFormValues(schema, s.patient);
                 setValues(v);
+                setBaseline(v);
                 setActiveSample(s);
-                const { patient: p } = validate(schema, v);
-                if (p) runPrediction(p);
               }}
               onReset={() => {
-                setValues(toFormValues(schema));
+                const v = toFormValues(schema);
+                setValues(v);
+                setBaseline(v);
                 setActiveSample(null);
               }}
-              onSubmit={() => patient && runPrediction(patient)}
+              onSubmit={() => patient && pred.run(patient)}
             />
           ) : (
             <p className="p-4 text-sm text-slate-500">{offline ? "Patient form unavailable while the API is offline." : "Loading form…"}</p>
@@ -265,3 +327,9 @@ export default function App() {
     </div>
   );
 }
+
+const TAB_ITEMS: { id: Tab; label: string }[] = [
+  { id: "explanation", label: "Why? (SHAP)" },
+  { id: "physiology", label: "Physiology" },
+  { id: "whatif", label: "What-if" },
+];

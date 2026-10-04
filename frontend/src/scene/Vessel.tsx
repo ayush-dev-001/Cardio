@@ -1,6 +1,6 @@
-import type { ThreeEvent } from "@react-three/fiber";
-import { useMemo } from "react";
-import { BackSide, CatmullRomCurve3, TubeGeometry, Vector3 } from "three";
+import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
+import { BackSide, CatmullRomCurve3, Color, MeshStandardMaterial, TubeGeometry, Vector3 } from "three";
 import type { VesselGeometry, VesselSegment } from "../anatomy/anatomy";
 import { riskColor } from "../anatomy/riskColor";
 
@@ -29,6 +29,45 @@ export function Vessel({ vessel, probability, selected, hovered, onSelect, onHov
   const mainRadius = vessel.segments.find((s) => s.main)?.radius ?? 0.05;
   const glow = selected ? 0.75 : hovered ? 0.5 : 0.22;
 
+  // One shared material for the tubes and one for the nodes; the colour fades smoothly towards
+  // the new risk colour when the probability changes (renders only while the fade runs).
+  const tubeMat = useMemo(() => new MeshStandardMaterial({ roughness: 0.35, metalness: 0.05 }), []);
+  const nodeMat = useMemo(() => new MeshStandardMaterial({ roughness: 0.25 }), []);
+  const current = useRef<Color | null>(null);
+  const target = useMemo(() => new Color(color), [color]);
+  const invalidate = useThree((st) => st.invalidate);
+
+  useEffect(() => {
+    if (!current.current) {
+      current.current = target.clone();
+      for (const m of [tubeMat, nodeMat]) {
+        m.color.copy(target);
+        m.emissive.copy(target);
+      }
+    }
+    invalidate();
+  }, [target, tubeMat, nodeMat, invalidate]);
+
+  useEffect(() => {
+    tubeMat.emissiveIntensity = glow;
+    nodeMat.emissiveIntensity = glow + 0.25;
+    invalidate();
+  }, [glow, tubeMat, nodeMat, invalidate]);
+
+  useEffect(() => () => [tubeMat, nodeMat].forEach((m) => m.dispose()), [tubeMat, nodeMat]);
+
+  useFrame((_, dt) => {
+    const c = current.current;
+    if (!c || c.equals(target)) return;
+    c.lerp(target, 1 - Math.exp(-dt * 7));
+    if (Math.abs(c.r - target.r) + Math.abs(c.g - target.g) + Math.abs(c.b - target.b) < 0.003) c.copy(target);
+    for (const m of [tubeMat, nodeMat]) {
+      m.color.copy(c);
+      m.emissive.copy(c);
+    }
+    invalidate();
+  });
+
   const handlers = {
     onClick: (e: ThreeEvent<MouseEvent>) => {
       e.stopPropagation();
@@ -53,9 +92,7 @@ export function Vessel({ vessel, probability, selected, hovered, onSelect, onHov
         </mesh>
       ))}
       {tubes.map((g, i) => (
-        <mesh key={i} geometry={g} {...handlers}>
-          <meshStandardMaterial color={color} emissive={color} emissiveIntensity={glow} roughness={0.35} metalness={0.05} />
-        </mesh>
+        <mesh key={i} geometry={g} material={tubeMat} {...handlers} />
       ))}
       {(selected || hovered) &&
         outlines.map((g, i) => (
@@ -64,9 +101,8 @@ export function Vessel({ vessel, probability, selected, hovered, onSelect, onHov
           </mesh>
         ))}
       {vessel.nodes.map((p, i) => (
-        <mesh key={`n${i}`} position={p} scale={mainRadius * (selected ? 1.9 : 1.55)} {...handlers}>
+        <mesh key={`n${i}`} position={p} scale={mainRadius * (selected ? 1.9 : 1.55)} material={nodeMat} {...handlers}>
           <sphereGeometry args={[1, 16, 12]} />
-          <meshStandardMaterial color={color} emissive={color} emissiveIntensity={glow + 0.25} roughness={0.25} />
         </mesh>
       ))}
     </group>

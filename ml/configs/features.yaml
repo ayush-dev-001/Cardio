@@ -21,6 +21,7 @@
 #   derived       name of a derivation in cardioscope_ml/derived.py; the API computes the value
 #                 from other inputs instead of accepting it (keeps inputs consistent)
 #   option_labels display label per cleaned value (binary/ordinal/categorical); default No/Yes
+#   what_if       true = offered as a what-if slider/toggle in the dashboard (modifiable risk factor)
 #   note          caveats found during Phase 1 exploration
 #
 # Reference ranges are typical adult values from standard clinical references and are
@@ -62,6 +63,7 @@ features:
   - id: weight
     column: Weight
     label: Weight
+    what_if: true
     group: demographic
     type: numeric
     unit: kg
@@ -93,6 +95,7 @@ features:
   - id: dm
     column: DM
     label: Diabetes mellitus
+    what_if: true
     group: history
     type: binary
     unit: null
@@ -102,6 +105,7 @@ features:
   - id: htn
     column: HTN
     label: Hypertension
+    what_if: true
     group: history
     type: binary
     unit: null
@@ -111,6 +115,7 @@ features:
   - id: current_smoker
     column: Current Smoker
     label: Current smoker
+    what_if: true
     group: history
     type: binary
     unit: null
@@ -200,6 +205,7 @@ features:
   - id: dlp
     column: DLP
     label: Dyslipidemia
+    what_if: true
     group: history
     type: binary
     unit: null
@@ -210,6 +216,7 @@ features:
   - id: bp
     column: BP
     label: Blood pressure (systolic)
+    what_if: true
     group: exam
     type: numeric
     unit: mmHg
@@ -414,6 +421,7 @@ features:
   - id: fbs
     column: FBS
     label: Fasting blood sugar
+    what_if: true
     group: lab
     type: numeric
     unit: mg/dL
@@ -434,6 +442,7 @@ features:
   - id: tg
     column: TG
     label: Triglycerides
+    what_if: true
     group: lab
     type: numeric
     unit: mg/dL
@@ -444,6 +453,7 @@ features:
   - id: ldl
     column: LDL
     label: LDL cholesterol
+    what_if: true
     group: lab
     type: numeric
     unit: mg/dL
@@ -454,6 +464,7 @@ features:
   - id: hdl
     column: HDL
     label: HDL cholesterol
+    what_if: true
     group: lab
     type: numeric
     unit: mg/dL

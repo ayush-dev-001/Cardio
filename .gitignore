@@ -28,3 +28,6 @@ Thumbs.db
 # training smoke-test outputs
 models/_fast/
 reports/figures/_fast/
+
+# generated deployment bundle
+deploy/hf-space/

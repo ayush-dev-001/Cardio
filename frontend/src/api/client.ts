@@ -16,7 +16,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       ...init,
       headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
     });
-  } catch {
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "AbortError") throw e;
     throw new ApiError(`Cannot reach the CardioScope API at ${API_URL}.`);
   }
   if (!res.ok) {
@@ -32,6 +33,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   schema: () => request<Schema>("/schema"),
   samples: () => request<SamplePatient[]>("/patients/sample"),
-  predict: (patient: Patient) => request<PredictResponse>("/predict", { method: "POST", body: JSON.stringify({ patient }) }),
-  explain: (patient: Patient) => request<ExplainResponse>("/explain", { method: "POST", body: JSON.stringify({ patient }) }),
+  predict: (patient: Patient, signal?: AbortSignal) =>
+    request<PredictResponse>("/predict", { method: "POST", body: JSON.stringify({ patient }), signal }),
+  explain: (patient: Patient, signal?: AbortSignal) =>
+    request<ExplainResponse>("/explain", { method: "POST", body: JSON.stringify({ patient }), signal }),
 };

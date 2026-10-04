@@ -1,0 +1,14 @@
+# Minimal runtime dependencies for the deployed API (no notebooks, plotting or training extras).
+# Versions match requirements.txt so the saved models unpickle identically.
+numpy==2.5.3
+pandas==3.0.6
+scipy==1.18.1
+scikit-learn==1.9.1
+xgboost==3.4.1
+catboost==1.2.10      # only needed if a CatBoost model is selected at training time
+joblib==1.6.0
+PyYAML==6.0.3
+fastapi==0.142.2
+pydantic==2.13.5
+starlette==1.7.0
+uvicorn==0.54.0

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -9,7 +10,8 @@ from typing import Any
 
 import yaml
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+# Repository root (configs, shared/, models/, data/). Overridable for deployments.
+PROJECT_ROOT = Path(os.getenv("CARDIOSCOPE_ROOT", Path(__file__).resolve().parents[2]))
 CONFIG_DIR = PROJECT_ROOT / "ml" / "configs"
 VESSELS_PATH = PROJECT_ROOT / "shared" / "vessels.json"
 

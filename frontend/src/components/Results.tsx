@@ -22,6 +22,19 @@ const sensitivityGoal = (schema: Schema, targetId: string) => {
   return r ? ` (tuned for ≥${Math.round(r * 100)}% sensitivity)` : "";
 };
 
+/** Change vs the baseline patient in percentage points (icon + sign, never colour alone). */
+export function Delta({ now, before }: { now: number; before: number | undefined }) {
+  if (before === undefined) return null;
+  const d = Math.round((now - before) * 100);
+  if (d === 0) return <span className="text-[11px] text-slate-500">±0 pts</span>;
+  return (
+    <span className={`whitespace-nowrap text-[11px] font-medium ${d > 0 ? "text-red-300" : "text-sky-300"}`} title="Change vs baseline">
+      {d > 0 ? "▲ +" : "▼ −"}
+      {Math.abs(d)} pts
+    </span>
+  );
+}
+
 function cvText(schema: Schema, targetId: string) {
   const t = schema.targets.find((x) => x.id === targetId);
   if (!t) return "";
@@ -29,12 +42,13 @@ function cvText(schema: Schema, targetId: string) {
   return `${MODEL_NAMES[t.model] ?? t.model}${auc}`;
 }
 
-export function CadStatusCard({ cad, schema }: { cad: TargetPrediction; schema: Schema }) {
+export function CadStatusCard({ cad, schema, baseline }: { cad: TargetPrediction; schema: Schema; baseline?: number }) {
   return (
     <Panel title="Overall coronary artery disease" right={<RiskChip level={cad.risk_level} suffix=" risk" />}>
       <div className="flex items-end gap-3">
         <span className="text-4xl font-bold tabular-nums text-white">{formatPct(cad.probability)}</span>
         <span className="pb-1 text-sm text-slate-300">
+          <Delta now={cad.probability} before={baseline} />{" "}
           {cad.predicted_positive ? "CAD likely: above the decision threshold" : "CAD unlikely: below the decision threshold"}
         </span>
       </div>
@@ -59,7 +73,9 @@ export function VesselBars({
   schema,
   selectedId,
   onSelect,
+  baseline,
 }: {
+  baseline?: PredictResponse | null;
   prediction: PredictResponse;
   schema: Schema;
   selectedId: string | null;
@@ -86,7 +102,8 @@ export function VesselBars({
                     <span className="text-xs text-slate-400">{info?.name}</span>
                   </span>
                   <span className="flex items-center gap-2">
-                    {v.predicted_positive && <span className="text-[11px] text-slate-300">▲ above threshold</span>}
+                    <Delta now={v.probability} before={baseline?.vessels.find((b) => b.vessel_id === v.vessel_id)?.probability} />
+                    {v.predicted_positive && <span className="text-[11px] text-slate-300">above threshold</span>}
                     <span className="w-10 text-right text-sm font-semibold tabular-nums text-white">{formatPct(v.probability)}</span>
                   </span>
                 </div>

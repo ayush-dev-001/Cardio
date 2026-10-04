@@ -158,6 +158,10 @@ class ModelService:
             item = {k: spec.get(k) for k in ("id", "label", "group", "type", "unit", "description",
                                               "normal_range", "valid_range", "note")}
             item["derived"] = bool(spec.get("derived"))
+            item["what_if"] = bool(spec.get("what_if"))
+            if spec["type"] == "numeric":
+                col = self.data[spec["id"]]
+                item["observed_range"] = [float(col.min()), float(col.max())]  # training-data min/max
             item["input"] = not item["derived"]
             item["default"] = self.defaults.get(spec["id"])
             if spec["type"] in ("binary", "ordinal"):

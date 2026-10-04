@@ -11,6 +11,8 @@ interface Props {
   activeSample: SamplePatient | null;
   busy: boolean;
   dirty: boolean;
+  live: boolean;
+  latencyMs: number | null;
   onChange: (id: string, raw: string) => void;
   onLoadSample: (s: SamplePatient) => void;
   onReset: () => void;
@@ -173,19 +175,34 @@ export function PatientForm(p: Props) {
 
       <div className="sticky bottom-0 mt-auto border-t border-slate-800 bg-slate-950/95 p-3 backdrop-blur">
         <div className="flex gap-2">
-          <button
-            type="submit"
-            disabled={p.busy || nErrors > 0}
-            className="flex-1 rounded-md bg-sky-500 px-3 py-2 text-sm font-semibold text-slate-950 hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {p.busy ? "Predicting…" : "Predict"}
-          </button>
+          {p.live ? (
+            <div className="flex flex-1 items-center gap-2 rounded-md border border-slate-800 px-3 py-2 text-xs text-slate-300">
+              <span className={`h-2 w-2 rounded-full ${nErrors ? "bg-red-500" : p.busy || p.dirty ? "animate-pulse bg-amber-400" : "bg-emerald-500"}`} />
+              Live: results follow your edits
+            </div>
+          ) : (
+            <button
+              type="submit"
+              disabled={p.busy || nErrors > 0}
+              className="flex-1 rounded-md bg-sky-500 px-3 py-2 text-sm font-semibold text-slate-950 hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {p.busy ? "Predicting…" : "Predict"}
+            </button>
+          )}
           <button type="button" onClick={p.onReset} className="rounded-md border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:border-slate-500">
             Reset
           </button>
         </div>
         <p className="mt-1.5 text-[11px] text-slate-500" aria-live="polite">
-          {nErrors > 0 ? nErrors === 1 ? "1 field needs attention" : `${nErrors} fields need attention` : p.dirty ? "Inputs changed since the last prediction" : "Results are up to date"}
+          {nErrors > 0
+            ? nErrors === 1
+              ? "1 field needs attention"
+              : `${nErrors} fields need attention`
+            : p.busy || (p.live && p.dirty)
+              ? "Updating…"
+              : p.dirty
+                ? "Inputs changed since the last prediction"
+                : `Results are up to date${p.latencyMs !== null ? ` · last update ${p.latencyMs} ms` : ""}`}
         </p>
       </div>
     </form>

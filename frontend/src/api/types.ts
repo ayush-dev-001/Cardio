@@ -23,6 +23,8 @@ export interface FeatureSchema {
   note: string | null;
   derived: boolean;
   input: boolean;
+  what_if: boolean;
+  observed_range?: [number, number]; // training-data min/max (numeric only)
   default: FeatureValue | null;
   options?: FeatureOption[];
 }

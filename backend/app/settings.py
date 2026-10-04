@@ -17,6 +17,8 @@ def _origins() -> list[str]:
 class Settings:
     models_dir: Path = field(default_factory=lambda: Path(os.getenv("CARDIOSCOPE_MODELS_DIR", str(MODELS_DIR))))
     cors_origins: list[str] = field(default_factory=_origins)
+    # optional regex for extra origins, e.g. Vercel previews: https://cardioscope(-[a-z0-9-]+)?.vercel.app
+    cors_origin_regex: str | None = field(default_factory=lambda: os.getenv("CARDIOSCOPE_CORS_ORIGIN_REGEX") or None)
 
 
 DISCLAIMER = (

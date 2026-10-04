@@ -11,11 +11,11 @@ const schema = {
   risk_bands: [],
   disclaimer: "",
   features: [
-    { id: "age", label: "Age", group: "demographic", type: "numeric", unit: "years", description: "", normal_range: null, valid_range: [18, 110], note: null, derived: false, input: true, default: 58 },
-    { id: "fbs", label: "FBS", group: "lab", type: "numeric", unit: "mg/dL", description: "", normal_range: [70, 99], valid_range: [30, 700], note: null, derived: false, input: true, default: 98 },
-    { id: "sex", label: "Sex", group: "demographic", type: "binary", unit: null, description: "", normal_range: null, valid_range: null, note: null, derived: false, input: true, default: 1, options: [{ value: 0, label: "Female" }, { value: 1, label: "Male" }] },
-    { id: "bbb", label: "BBB", group: "ecg", type: "categorical", unit: null, description: "", normal_range: null, valid_range: null, note: null, derived: false, input: true, default: "N", options: [{ value: "N", label: "None" }, { value: "LBBB", label: "Left" }] },
-    { id: "bmi", label: "BMI", group: "demographic", type: "numeric", unit: "kg/m²", description: "", normal_range: [18.5, 24.9], valid_range: [12, 70], note: null, derived: true, input: false, default: null },
+    { id: "age", label: "Age", group: "demographic", type: "numeric", unit: "years", description: "", normal_range: null, valid_range: [18, 110], note: null, derived: false, input: true, what_if: false, default: 58 },
+    { id: "fbs", label: "FBS", group: "lab", type: "numeric", unit: "mg/dL", description: "", normal_range: [70, 99], valid_range: [30, 700], note: null, derived: false, input: true, what_if: false, default: 98 },
+    { id: "sex", label: "Sex", group: "demographic", type: "binary", unit: null, description: "", normal_range: null, valid_range: null, note: null, derived: false, input: true, what_if: false, default: 1, options: [{ value: 0, label: "Female" }, { value: 1, label: "Male" }] },
+    { id: "bbb", label: "BBB", group: "ecg", type: "categorical", unit: null, description: "", normal_range: null, valid_range: null, note: null, derived: false, input: true, what_if: false, default: "N", options: [{ value: "N", label: "None" }, { value: "LBBB", label: "Left" }] },
+    { id: "bmi", label: "BMI", group: "demographic", type: "numeric", unit: "kg/m²", description: "", normal_range: [18.5, 24.9], valid_range: [12, 70], note: null, derived: true, input: false, what_if: false, default: null },
   ],
 } as Schema;
 

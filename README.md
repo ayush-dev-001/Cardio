@@ -14,6 +14,12 @@ Phases 1–5 complete: data findings in `docs/phase1_data_findings.md`, model re
 `docs/phase2_model_results.md`, 3D viewer in `docs/phase3_3d_anatomy.md`, API in
 `docs/phase4_backend_api.md`, dashboard in `docs/phase5_dashboard.md`.
 
+## Live demo
+- Dashboard: _to be added after deployment (Vercel)_
+- API docs: _to be added after deployment (Hugging Face Space)_ `/docs`
+
+Deployment guide: `docs/deployment.md`.
+
 ## Setup (Windows, PowerShell)
 Requires Python 3.10+ (developed on 3.14).
 
