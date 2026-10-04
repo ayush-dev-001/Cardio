@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+html, body, #root { height: 100%; }
+body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+input[type="range"] { accent-color: #38bdf8; }

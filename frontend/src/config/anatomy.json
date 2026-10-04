@@ -1,0 +1,119 @@
+{
+  "_comment": [
+    "Procedural coronary anatomy. Vessel keys MUST match the ids in shared/vessels.json (checked by tests).",
+    "Surface points are [t, a]: t = 0 (base, top of atria) .. 1 (apex); a = degrees around the heart's long axis,",
+    "0 = anterior, +90 = patient's left, 180 = posterior, -90 = patient's right. They are projected onto the",
+    "heart surface (src/anatomy/heartSurface.ts). `from` = optional free start point in heart-local xyz (e.g. aortic ostium).",
+    "Paths show typical (right-dominant) anatomy. The model predicts per-vessel stenosis status only, NOT lesion location."
+  ],
+  "heart": {
+    "position": [0.3, 0.42, 0.3],
+    "rotationDeg": [-30, 10, 32],
+    "scale": 0.62
+  },
+  "nodesPerVessel": 6,
+  "vessels": {
+    "LAD": {
+      "segments": [
+        {
+          "id": "LAD",
+          "name": "LAD",
+          "main": true,
+          "radius": 0.05,
+          "points": [[0.25, 35], [0.31, 24], [0.42, 19], [0.56, 17], [0.7, 15], [0.83, 11], [0.93, 4], [0.985, -40]]
+        },
+        {
+          "id": "D1",
+          "name": "First diagonal",
+          "radius": 0.032,
+          "points": [[0.37, 21], [0.45, 38], [0.56, 55], [0.66, 66]]
+        },
+        {
+          "id": "D2",
+          "name": "Second diagonal",
+          "radius": 0.028,
+          "points": [[0.55, 17], [0.64, 34], [0.74, 48], [0.82, 56]]
+        }
+      ]
+    },
+    "LCX": {
+      "segments": [
+        {
+          "id": "LCX",
+          "name": "LCX",
+          "main": true,
+          "radius": 0.046,
+          "points": [[0.25, 35], [0.265, 55], [0.275, 80], [0.28, 105], [0.285, 130], [0.29, 152], [0.3, 168]]
+        },
+        {
+          "id": "OM1",
+          "name": "First obtuse marginal",
+          "radius": 0.032,
+          "points": [[0.276, 88], [0.38, 93], [0.52, 96], [0.66, 94], [0.76, 90]]
+        },
+        {
+          "id": "OM2",
+          "name": "Second obtuse marginal",
+          "radius": 0.028,
+          "points": [[0.286, 132], [0.4, 134], [0.54, 130], [0.66, 124]]
+        }
+      ]
+    },
+    "RCA": {
+      "segments": [
+        {
+          "id": "RCA",
+          "name": "RCA",
+          "main": true,
+          "radius": 0.05,
+          "from": [[-0.16, 0.9, 0.3]],
+          "points": [[0.24, -22], [0.265, -45], [0.275, -75], [0.282, -105], [0.29, -135], [0.3, -160], [0.31, -178]]
+        },
+        {
+          "id": "AM",
+          "name": "Acute marginal",
+          "radius": 0.03,
+          "points": [[0.277, -82], [0.4, -78], [0.54, -70], [0.66, -62], [0.74, -57]]
+        },
+        {
+          "id": "PDA",
+          "name": "Posterior descending",
+          "radius": 0.034,
+          "points": [[0.31, -178], [0.42, -181], [0.56, -183], [0.7, -180], [0.82, -175], [0.9, -168]]
+        }
+      ]
+    }
+  },
+  "neutral": [
+    {
+      "id": "LM",
+      "name": "Left main (not a prediction target)",
+      "radius": 0.055,
+      "from": [[0.1, 0.93, 0.26]],
+      "points": [[0.21, 45], [0.25, 35]]
+    }
+  ],
+  "greatVessels": [
+    {
+      "id": "aorta",
+      "name": "Aorta",
+      "radius": 0.2,
+      "color": "#c9a49b",
+      "points": [[-0.02, 0.75, 0.1], [-0.08, 1.25, 0.2], [-0.05, 1.7, 0.05], [0.2, 1.95, -0.3], [0.45, 1.8, -0.65], [0.55, 1.35, -0.8]]
+    },
+    {
+      "id": "pulmonary",
+      "name": "Pulmonary trunk",
+      "radius": 0.18,
+      "color": "#8f9cbf",
+      "points": [[0.22, 0.75, 0.42], [0.3, 1.15, 0.45], [0.35, 1.45, 0.2], [0.55, 1.55, -0.1]]
+    },
+    {
+      "id": "svc",
+      "name": "Superior vena cava",
+      "radius": 0.14,
+      "color": "#7f8fb5",
+      "points": [[-0.55, 0.6, -0.05], [-0.6, 1.1, -0.05], [-0.62, 1.7, -0.05]]
+    }
+  ]
+}
