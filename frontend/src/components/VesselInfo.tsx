@@ -1,35 +1,91 @@
-import type { VesselInfo as Info } from "../anatomy/anatomy";
-import { riskColor, riskLabel } from "../anatomy/riskColor";
+import type { TargetExplanation, TargetPrediction, VesselSchema } from "../api/types";
+import { riskColor } from "../anatomy/riskColor";
+import { formatPct } from "../lib/waterfall";
+import { LOWERS, RAISES } from "./ShapWaterfall";
+import { MODEL_NAMES, RiskChip } from "./ui";
 
 interface Props {
-  vessel: Info;
-  probability: number;
+  vessel: VesselSchema;
+  prediction: TargetPrediction | null;
+  explanation: TargetExplanation | null;
+  onShowExplanation: () => void;
   onClose: () => void;
 }
 
-/** Minimal vessel detail card (the full panel with SHAP factors arrives in Phase 5). */
-export function VesselInfo({ vessel, probability, onClose }: Props) {
-  const color = riskColor(probability);
+/** Vessel detail panel, opened by clicking an artery in the 3D view (or its probability bar). */
+export function VesselInfo({ vessel, prediction, explanation, onShowExplanation, onClose }: Props) {
+  const p = prediction?.probability ?? null;
+  const sorted = explanation ? [...explanation.contributions].sort((a, b) => b.shap - a.shap) : [];
+  const raising = sorted.filter((c) => c.shap > 0).slice(0, 3);
+  const lowering = sorted.filter((c) => c.shap < 0).reverse().slice(0, 2);
+
   return (
-    <div className="w-72 rounded-lg border border-slate-700 bg-slate-900/90 p-4 text-sm text-slate-300 shadow-xl backdrop-blur">
+    <div className="w-80 max-w-[calc(100vw-1.5rem)] rounded-xl border border-slate-700 bg-slate-900/95 p-4 text-sm text-slate-300 shadow-2xl backdrop-blur">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <div className="text-xs uppercase tracking-wide text-slate-500">Selected vessel</div>
+          <div className="text-[11px] uppercase tracking-wide text-slate-500">Selected vessel</div>
           <div className="text-base font-semibold text-white">
             {vessel.name} ({vessel.id})
           </div>
         </div>
-        <button onClick={onClose} className="rounded px-1.5 text-slate-400 hover:bg-slate-800 hover:text-white" aria-label="Close">
+        <button onClick={onClose} className="rounded px-1.5 text-slate-400 hover:bg-slate-800 hover:text-white" aria-label="Close vessel details">
           ✕
         </button>
       </div>
-      <div className="mt-3 flex items-baseline gap-2">
-        <span className="text-3xl font-bold" style={{ color }}>
-          {Math.round(probability * 100)}%
-        </span>
-        <span className="text-slate-400">{riskLabel(probability)} predicted stenosis probability</span>
-      </div>
-      <div className="mt-3 text-xs leading-relaxed text-slate-400">
+
+      {p !== null && prediction && (
+        <>
+          <div className="mt-3 flex items-center gap-3">
+            <span className="h-3 w-3 rounded-full" style={{ background: riskColor(p) }} aria-hidden />
+            <span className="text-3xl font-bold tabular-nums text-white">{formatPct(p)}</span>
+            <RiskChip level={prediction.risk_level} />
+          </div>
+          <p className="mt-1 text-xs text-slate-400">
+            Predicted stenosis probability ({prediction.predicted_positive ? "above" : "below"} the {formatPct(prediction.threshold)} threshold) ·{" "}
+            {MODEL_NAMES[prediction.model] ?? prediction.model}
+          </p>
+        </>
+      )}
+
+      {explanation && (
+        <div className="mt-3 space-y-2 text-xs">
+          <div>
+            <div className="mb-1 font-semibold text-slate-200">Main factors raising risk</div>
+            {raising.length ? (
+              <ul className="space-y-0.5">
+                {raising.map((c) => (
+                  <li key={c.feature} className="flex justify-between gap-2">
+                    <span>
+                      <span style={{ color: RAISES }}>▲</span> {c.label}
+                    </span>
+                    <span className="text-slate-400">{c.display_value}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-slate-500">None</p>
+            )}
+          </div>
+          <div>
+            <div className="mb-1 font-semibold text-slate-200">Main factors lowering risk</div>
+            <ul className="space-y-0.5">
+              {lowering.map((c) => (
+                <li key={c.feature} className="flex justify-between gap-2">
+                  <span>
+                    <span style={{ color: LOWERS }}>▼</span> {c.label}
+                  </span>
+                  <span className="text-slate-400">{c.display_value}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button onClick={onShowExplanation} className="text-sky-300 hover:text-sky-200">
+            Full explanation →
+          </button>
+        </div>
+      )}
+
+      <div className="mt-3 border-t border-slate-800 pt-2 text-xs leading-relaxed text-slate-400">
         <span className="font-semibold text-slate-300">Supplies: </span>
         {vessel.supplies}
       </div>

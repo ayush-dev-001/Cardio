@@ -10,9 +10,9 @@ interactive 3D heart, and explains each prediction with SHAP.
 > are not a substitute for formal diagnostic imaging (e.g. coronary angiography).
 
 ## Status
-Phases 1–4 complete: data findings in `docs/phase1_data_findings.md`, model results in
+Phases 1–5 complete: data findings in `docs/phase1_data_findings.md`, model results in
 `docs/phase2_model_results.md`, 3D viewer in `docs/phase3_3d_anatomy.md`, API in
-`docs/phase4_backend_api.md`.
+`docs/phase4_backend_api.md`, dashboard in `docs/phase5_dashboard.md`.
 
 ## Setup (Windows, PowerShell)
 Requires Python 3.10+ (developed on 3.14).
@@ -47,7 +47,7 @@ Frontend (Node 20+; developed on Node 24):
 ```powershell
 cd frontend
 npm install
-npm run dev        # http://localhost:5173 (3D viewer with mock probabilities)
+npm run dev        # http://localhost:5173 (dashboard; start the backend API first)
 npm test           # Vitest unit tests
 npm run build      # type-check + production build -> frontend/dist
 ```
