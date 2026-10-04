@@ -10,7 +10,8 @@ interactive 3D heart, and explains each prediction with SHAP.
 > are not a substitute for formal diagnostic imaging (e.g. coronary angiography).
 
 ## Status
-Phase 1 (data & setup) complete. See `docs/phase1_data_findings.md`.
+Phases 1–2 complete: data findings in `docs/phase1_data_findings.md`, model results in
+`docs/phase2_model_results.md`.
 
 ## Setup (Windows, PowerShell)
 Requires Python 3.10+ (developed on 3.14).
@@ -29,6 +30,8 @@ macOS / Linux: `python3 -m venv .venv && source .venv/bin/activate`, then the sa
 ## Common commands
 ```powershell
 python -m cardioscope_ml.data         # raw Excel -> data/processed/cardioscope_clean.csv
+python -m cardioscope_ml.train        # nested CV + final models -> models/, reports/figures/ (~30 min)
+python -m cardioscope_ml.train --fast # quick smoke test (~1 min) -> models/_fast/
 cd ml; python -m pytest -q; cd ..     # config, data and leakage tests
 jupyter lab notebooks/01_exploration.ipynb
 ```

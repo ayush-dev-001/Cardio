@@ -1,0 +1,1497 @@
+{
+  "generated_by": "python -m cardioscope_ml.train",
+  "seed": 42,
+  "validation": {
+    "outer_folds": 5,
+    "outer_repeats": 3,
+    "inner_folds": 3,
+    "n_iter": 15,
+    "scoring": "roc_auc",
+    "oof_folds": 5,
+    "bootstrap": 1000
+  },
+  "n_patients": 303,
+  "features": [
+    "age",
+    "sex",
+    "weight",
+    "height",
+    "bmi",
+    "dm",
+    "htn",
+    "current_smoker",
+    "ex_smoker",
+    "fh",
+    "obesity",
+    "crf",
+    "cva",
+    "airway_disease",
+    "thyroid_disease",
+    "chf",
+    "dlp",
+    "bp",
+    "pr",
+    "edema",
+    "weak_peripheral_pulse",
+    "lung_rales",
+    "systolic_murmur",
+    "diastolic_murmur",
+    "typical_chest_pain",
+    "atypical",
+    "nonanginal",
+    "lowth_ang",
+    "dyspnea",
+    "function_class",
+    "q_wave",
+    "st_elevation",
+    "st_depression",
+    "t_inversion",
+    "lvh",
+    "poor_r_progression",
+    "bbb",
+    "fbs",
+    "cr",
+    "tg",
+    "ldl",
+    "hdl",
+    "bun",
+    "esr",
+    "hb",
+    "k",
+    "na",
+    "wbc",
+    "lymph",
+    "neut",
+    "plt",
+    "ef_tte",
+    "region_rwma",
+    "vhd"
+  ],
+  "selection_metric": "roc_auc (mean of pooled out-of-fold AUC over CV repeats)",
+  "threshold_rule": "highest threshold with out-of-fold recall >= min_recall (per target)",
+  "targets": {
+    "cad": {
+      "selected_model": "logreg",
+      "final": {
+        "family": "logreg",
+        "model_file": "models\\cad.joblib",
+        "calibration": "platt",
+        "platt": {
+          "a": 0.844,
+          "b": 0.7328
+        },
+        "threshold": 0.5574,
+        "min_recall": 0.9,
+        "cv_threshold_mean": 0.5843,
+        "cv_threshold_range": [
+          0.5051,
+          0.6468
+        ],
+        "best_params": {
+          "C": 0.29507066707905333,
+          "class_weight": "balanced",
+          "l1_ratio": 0.5
+        }
+      },
+      "cv": {
+        "logreg": {
+          "roc_auc": {
+            "mean": 0.9288,
+            "ci_low": 0.8988,
+            "ci_high": 0.9549
+          },
+          "accuracy": {
+            "mean": 0.868,
+            "ci_low": 0.8306,
+            "ci_high": 0.9032
+          },
+          "precision": {
+            "mean": 0.9232,
+            "ci_low": 0.8881,
+            "ci_high": 0.9548
+          },
+          "recall": {
+            "mean": 0.8889,
+            "ci_low": 0.8485,
+            "ci_high": 0.928
+          },
+          "specificity": {
+            "mean": 0.8161,
+            "ci_low": 0.7319,
+            "ci_high": 0.8837
+          },
+          "f1": {
+            "mean": 0.9056,
+            "ci_low": 0.8763,
+            "ci_high": 0.9331
+          },
+          "brier": {
+            "mean": 0.0945,
+            "ci_low": 0.0731,
+            "ci_high": 0.117
+          },
+          "brier_raw": {
+            "mean": 0.1309,
+            "ci_low": 0.1161,
+            "ci_high": 0.1446
+          }
+        },
+        "random_forest": {
+          "roc_auc": {
+            "mean": 0.9157,
+            "ci_low": 0.8794,
+            "ci_high": 0.9477
+          },
+          "accuracy": {
+            "mean": 0.8713,
+            "ci_low": 0.8339,
+            "ci_high": 0.9043
+          },
+          "precision": {
+            "mean": 0.9116,
+            "ci_low": 0.8716,
+            "ci_high": 0.9453
+          },
+          "recall": {
+            "mean": 0.9074,
+            "ci_low": 0.8704,
+            "ci_high": 0.9423
+          },
+          "specificity": {
+            "mean": 0.7816,
+            "ci_low": 0.6923,
+            "ci_high": 0.8588
+          },
+          "f1": {
+            "mean": 0.9095,
+            "ci_low": 0.8796,
+            "ci_high": 0.9346
+          },
+          "brier": {
+            "mean": 0.101,
+            "ci_low": 0.0789,
+            "ci_high": 0.1249
+          },
+          "brier_raw": {
+            "mean": 0.1203,
+            "ci_low": 0.1043,
+            "ci_high": 0.1376
+          }
+        },
+        "xgboost": {
+          "roc_auc": {
+            "mean": 0.9148,
+            "ci_low": 0.8787,
+            "ci_high": 0.9467
+          },
+          "accuracy": {
+            "mean": 0.868,
+            "ci_low": 0.8328,
+            "ci_high": 0.901
+          },
+          "precision": {
+            "mean": 0.9166,
+            "ci_low": 0.8786,
+            "ci_high": 0.9503
+          },
+          "recall": {
+            "mean": 0.8966,
+            "ci_low": 0.8601,
+            "ci_high": 0.9319
+          },
+          "specificity": {
+            "mean": 0.7969,
+            "ci_low": 0.7159,
+            "ci_high": 0.8726
+          },
+          "f1": {
+            "mean": 0.9063,
+            "ci_low": 0.8793,
+            "ci_high": 0.9311
+          },
+          "brier": {
+            "mean": 0.1005,
+            "ci_low": 0.0788,
+            "ci_high": 0.1225
+          },
+          "brier_raw": {
+            "mean": 0.1035,
+            "ci_low": 0.0818,
+            "ci_high": 0.1254
+          }
+        },
+        "catboost": {
+          "roc_auc": {
+            "mean": 0.9192,
+            "ci_low": 0.8848,
+            "ci_high": 0.9481
+          },
+          "accuracy": {
+            "mean": 0.868,
+            "ci_low": 0.8339,
+            "ci_high": 0.901
+          },
+          "precision": {
+            "mean": 0.9112,
+            "ci_low": 0.8713,
+            "ci_high": 0.9453
+          },
+          "recall": {
+            "mean": 0.9028,
+            "ci_low": 0.8684,
+            "ci_high": 0.939
+          },
+          "specificity": {
+            "mean": 0.7816,
+            "ci_low": 0.6966,
+            "ci_high": 0.8556
+          },
+          "f1": {
+            "mean": 0.9069,
+            "ci_low": 0.8803,
+            "ci_high": 0.933
+          },
+          "brier": {
+            "mean": 0.0986,
+            "ci_low": 0.0784,
+            "ci_high": 0.1207
+          },
+          "brier_raw": {
+            "mean": 0.1004,
+            "ci_low": 0.0788,
+            "ci_high": 0.124
+          }
+        }
+      }
+    },
+    "lad": {
+      "selected_model": "random_forest",
+      "final": {
+        "family": "random_forest",
+        "model_file": "models\\lad.joblib",
+        "calibration": "platt",
+        "platt": {
+          "a": 2.6713,
+          "b": -0.4739
+        },
+        "threshold": 0.6215,
+        "min_recall": 0.8,
+        "cv_threshold_mean": 0.5849,
+        "cv_threshold_range": [
+          0.5253,
+          0.6259
+        ],
+        "best_params": {
+          "subsample": 0.6,
+          "min_child_weight": 1,
+          "max_depth": 3,
+          "colsample_bynode": 0.15
+        }
+      },
+      "cv": {
+        "logreg": {
+          "roc_auc": {
+            "mean": 0.8343,
+            "ci_low": 0.7904,
+            "ci_high": 0.8769
+          },
+          "accuracy": {
+            "mean": 0.7624,
+            "ci_low": 0.7194,
+            "ci_high": 0.8042
+          },
+          "precision": {
+            "mean": 0.7991,
+            "ci_low": 0.7391,
+            "ci_high": 0.8522
+          },
+          "recall": {
+            "mean": 0.7928,
+            "ci_low": 0.7415,
+            "ci_high": 0.841
+          },
+          "specificity": {
+            "mean": 0.7196,
+            "ci_low": 0.645,
+            "ci_high": 0.7913
+          },
+          "f1": {
+            "mean": 0.7959,
+            "ci_low": 0.7491,
+            "ci_high": 0.8352
+          },
+          "brier": {
+            "mean": 0.1613,
+            "ci_low": 0.1385,
+            "ci_high": 0.187
+          },
+          "brier_raw": {
+            "mean": 0.1834,
+            "ci_low": 0.1711,
+            "ci_high": 0.1983
+          }
+        },
+        "random_forest": {
+          "roc_auc": {
+            "mean": 0.8479,
+            "ci_low": 0.8018,
+            "ci_high": 0.8899
+          },
+          "accuracy": {
+            "mean": 0.7921,
+            "ci_low": 0.7502,
+            "ci_high": 0.8328
+          },
+          "precision": {
+            "mean": 0.8242,
+            "ci_low": 0.7666,
+            "ci_high": 0.876
+          },
+          "recall": {
+            "mean": 0.8192,
+            "ci_low": 0.7712,
+            "ci_high": 0.867
+          },
+          "specificity": {
+            "mean": 0.754,
+            "ci_low": 0.6815,
+            "ci_high": 0.8251
+          },
+          "f1": {
+            "mean": 0.8216,
+            "ci_low": 0.781,
+            "ci_high": 0.859
+          },
+          "brier": {
+            "mean": 0.1549,
+            "ci_low": 0.1324,
+            "ci_high": 0.1802
+          },
+          "brier_raw": {
+            "mean": 0.1732,
+            "ci_low": 0.1597,
+            "ci_high": 0.1897
+          }
+        },
+        "xgboost": {
+          "roc_auc": {
+            "mean": 0.8389,
+            "ci_low": 0.7922,
+            "ci_high": 0.8815
+          },
+          "accuracy": {
+            "mean": 0.7778,
+            "ci_low": 0.7338,
+            "ci_high": 0.8196
+          },
+          "precision": {
+            "mean": 0.8076,
+            "ci_low": 0.7489,
+            "ci_high": 0.8617
+          },
+          "recall": {
+            "mean": 0.8136,
+            "ci_low": 0.7636,
+            "ci_high": 0.8629
+          },
+          "specificity": {
+            "mean": 0.7275,
+            "ci_low": 0.65,
+            "ci_high": 0.8011
+          },
+          "f1": {
+            "mean": 0.8105,
+            "ci_low": 0.7669,
+            "ci_high": 0.8499
+          },
+          "brier": {
+            "mean": 0.1589,
+            "ci_low": 0.1363,
+            "ci_high": 0.1835
+          },
+          "brier_raw": {
+            "mean": 0.1635,
+            "ci_low": 0.142,
+            "ci_high": 0.188
+          }
+        },
+        "catboost": {
+          "roc_auc": {
+            "mean": 0.8358,
+            "ci_low": 0.7897,
+            "ci_high": 0.8792
+          },
+          "accuracy": {
+            "mean": 0.7789,
+            "ci_low": 0.7371,
+            "ci_high": 0.8207
+          },
+          "precision": {
+            "mean": 0.8078,
+            "ci_low": 0.7493,
+            "ci_high": 0.8577
+          },
+          "recall": {
+            "mean": 0.8154,
+            "ci_low": 0.7672,
+            "ci_high": 0.8667
+          },
+          "specificity": {
+            "mean": 0.7275,
+            "ci_low": 0.6588,
+            "ci_high": 0.7957
+          },
+          "f1": {
+            "mean": 0.8116,
+            "ci_low": 0.7685,
+            "ci_high": 0.8521
+          },
+          "brier": {
+            "mean": 0.1605,
+            "ci_low": 0.1375,
+            "ci_high": 0.1864
+          },
+          "brier_raw": {
+            "mean": 0.16,
+            "ci_low": 0.1362,
+            "ci_high": 0.1876
+          }
+        }
+      }
+    },
+    "lcx": {
+      "selected_model": "random_forest",
+      "final": {
+        "family": "random_forest",
+        "model_file": "models\\lcx.joblib",
+        "calibration": "platt",
+        "platt": {
+          "a": 1.536,
+          "b": 0.1025
+        },
+        "threshold": 0.3377,
+        "min_recall": 0.8,
+        "cv_threshold_mean": 0.3277,
+        "cv_threshold_range": [
+          0.3062,
+          0.3787
+        ],
+        "best_params": {
+          "subsample": 0.6,
+          "min_child_weight": 1,
+          "max_depth": 5,
+          "colsample_bynode": 0.3
+        }
+      },
+      "cv": {
+        "logreg": {
+          "roc_auc": {
+            "mean": 0.7051,
+            "ci_low": 0.644,
+            "ci_high": 0.7547
+          },
+          "accuracy": {
+            "mean": 0.6249,
+            "ci_low": 0.5743,
+            "ci_high": 0.6722
+          },
+          "precision": {
+            "mean": 0.5153,
+            "ci_low": 0.4423,
+            "ci_high": 0.5855
+          },
+          "recall": {
+            "mean": 0.7731,
+            "ci_low": 0.7037,
+            "ci_high": 0.8395
+          },
+          "specificity": {
+            "mean": 0.529,
+            "ci_low": 0.4649,
+            "ci_high": 0.5894
+          },
+          "f1": {
+            "mean": 0.6183,
+            "ci_low": 0.5525,
+            "ci_high": 0.6774
+          },
+          "brier": {
+            "mean": 0.2118,
+            "ci_low": 0.1933,
+            "ci_high": 0.2325
+          },
+          "brier_raw": {
+            "mean": 0.216,
+            "ci_low": 0.2017,
+            "ci_high": 0.2335
+          }
+        },
+        "random_forest": {
+          "roc_auc": {
+            "mean": 0.7286,
+            "ci_low": 0.6718,
+            "ci_high": 0.7804
+          },
+          "accuracy": {
+            "mean": 0.6392,
+            "ci_low": 0.5941,
+            "ci_high": 0.6887
+          },
+          "precision": {
+            "mean": 0.5272,
+            "ci_low": 0.4526,
+            "ci_high": 0.5981
+          },
+          "recall": {
+            "mean": 0.7871,
+            "ci_low": 0.7231,
+            "ci_high": 0.8468
+          },
+          "specificity": {
+            "mean": 0.5435,
+            "ci_low": 0.4785,
+            "ci_high": 0.6084
+          },
+          "f1": {
+            "mean": 0.6315,
+            "ci_low": 0.5697,
+            "ci_high": 0.6894
+          },
+          "brier": {
+            "mean": 0.2048,
+            "ci_low": 0.187,
+            "ci_high": 0.2264
+          },
+          "brier_raw": {
+            "mean": 0.2075,
+            "ci_low": 0.1933,
+            "ci_high": 0.2235
+          }
+        },
+        "xgboost": {
+          "roc_auc": {
+            "mean": 0.7172,
+            "ci_low": 0.667,
+            "ci_high": 0.7673
+          },
+          "accuracy": {
+            "mean": 0.6084,
+            "ci_low": 0.5633,
+            "ci_high": 0.6546
+          },
+          "precision": {
+            "mean": 0.5019,
+            "ci_low": 0.4336,
+            "ci_high": 0.5687
+          },
+          "recall": {
+            "mean": 0.8207,
+            "ci_low": 0.7627,
+            "ci_high": 0.873
+          },
+          "specificity": {
+            "mean": 0.471,
+            "ci_low": 0.4117,
+            "ci_high": 0.5334
+          },
+          "f1": {
+            "mean": 0.6223,
+            "ci_low": 0.5584,
+            "ci_high": 0.6789
+          },
+          "brier": {
+            "mean": 0.2202,
+            "ci_low": 0.1981,
+            "ci_high": 0.244
+          },
+          "brier_raw": {
+            "mean": 0.2173,
+            "ci_low": 0.1906,
+            "ci_high": 0.2446
+          }
+        },
+        "catboost": {
+          "roc_auc": {
+            "mean": 0.713,
+            "ci_low": 0.6605,
+            "ci_high": 0.7605
+          },
+          "accuracy": {
+            "mean": 0.5996,
+            "ci_low": 0.5533,
+            "ci_high": 0.648
+          },
+          "precision": {
+            "mean": 0.4944,
+            "ci_low": 0.4241,
+            "ci_high": 0.5652
+          },
+          "recall": {
+            "mean": 0.8151,
+            "ci_low": 0.7573,
+            "ci_high": 0.8701
+          },
+          "specificity": {
+            "mean": 0.4601,
+            "ci_low": 0.4011,
+            "ci_high": 0.5183
+          },
+          "f1": {
+            "mean": 0.6151,
+            "ci_low": 0.5538,
+            "ci_high": 0.6715
+          },
+          "brier": {
+            "mean": 0.2144,
+            "ci_low": 0.1941,
+            "ci_high": 0.2358
+          },
+          "brier_raw": {
+            "mean": 0.2146,
+            "ci_low": 0.1918,
+            "ci_high": 0.2399
+          }
+        }
+      }
+    },
+    "rca": {
+      "selected_model": "logreg",
+      "final": {
+        "family": "logreg",
+        "model_file": "models\\rca.joblib",
+        "calibration": "platt",
+        "platt": {
+          "a": 1.1953,
+          "b": 0.0747
+        },
+        "threshold": 0.3191,
+        "min_recall": 0.8,
+        "cv_threshold_mean": 0.3189,
+        "cv_threshold_range": [
+          0.2995,
+          0.3516
+        ],
+        "best_params": {
+          "C": 0.06672367170464207,
+          "class_weight": null,
+          "l1_ratio": 0.5
+        }
+      },
+      "cv": {
+        "logreg": {
+          "roc_auc": {
+            "mean": 0.7313,
+            "ci_low": 0.6772,
+            "ci_high": 0.7831
+          },
+          "accuracy": {
+            "mean": 0.6403,
+            "ci_low": 0.5896,
+            "ci_high": 0.6876
+          },
+          "precision": {
+            "mean": 0.5147,
+            "ci_low": 0.4368,
+            "ci_high": 0.5911
+          },
+          "recall": {
+            "mean": 0.769,
+            "ci_low": 0.6994,
+            "ci_high": 0.8348
+          },
+          "specificity": {
+            "mean": 0.5626,
+            "ci_low": 0.4974,
+            "ci_high": 0.6252
+          },
+          "f1": {
+            "mean": 0.6165,
+            "ci_low": 0.5506,
+            "ci_high": 0.6765
+          },
+          "brier": {
+            "mean": 0.2,
+            "ci_low": 0.1797,
+            "ci_high": 0.2208
+          },
+          "brier_raw": {
+            "mean": 0.2072,
+            "ci_low": 0.1886,
+            "ci_high": 0.2277
+          }
+        },
+        "random_forest": {
+          "roc_auc": {
+            "mean": 0.7187,
+            "ci_low": 0.6645,
+            "ci_high": 0.7722
+          },
+          "accuracy": {
+            "mean": 0.6315,
+            "ci_low": 0.5841,
+            "ci_high": 0.6799
+          },
+          "precision": {
+            "mean": 0.5067,
+            "ci_low": 0.4374,
+            "ci_high": 0.5799
+          },
+          "recall": {
+            "mean": 0.7807,
+            "ci_low": 0.7109,
+            "ci_high": 0.8449
+          },
+          "specificity": {
+            "mean": 0.5414,
+            "ci_low": 0.4767,
+            "ci_high": 0.6026
+          },
+          "f1": {
+            "mean": 0.6145,
+            "ci_low": 0.554,
+            "ci_high": 0.673
+          },
+          "brier": {
+            "mean": 0.2032,
+            "ci_low": 0.1821,
+            "ci_high": 0.2245
+          },
+          "brier_raw": {
+            "mean": 0.2076,
+            "ci_low": 0.1918,
+            "ci_high": 0.2241
+          }
+        },
+        "xgboost": {
+          "roc_auc": {
+            "mean": 0.6968,
+            "ci_low": 0.6433,
+            "ci_high": 0.7469
+          },
+          "accuracy": {
+            "mean": 0.6139,
+            "ci_low": 0.5655,
+            "ci_high": 0.659
+          },
+          "precision": {
+            "mean": 0.4921,
+            "ci_low": 0.4221,
+            "ci_high": 0.5657
+          },
+          "recall": {
+            "mean": 0.7544,
+            "ci_low": 0.6837,
+            "ci_high": 0.8184
+          },
+          "specificity": {
+            "mean": 0.5291,
+            "ci_low": 0.462,
+            "ci_high": 0.5869
+          },
+          "f1": {
+            "mean": 0.5954,
+            "ci_low": 0.5295,
+            "ci_high": 0.6561
+          },
+          "brier": {
+            "mean": 0.2187,
+            "ci_low": 0.1963,
+            "ci_high": 0.2413
+          },
+          "brier_raw": {
+            "mean": 0.2118,
+            "ci_low": 0.1886,
+            "ci_high": 0.2355
+          }
+        },
+        "catboost": {
+          "roc_auc": {
+            "mean": 0.6555,
+            "ci_low": 0.6063,
+            "ci_high": 0.7025
+          },
+          "accuracy": {
+            "mean": 0.5435,
+            "ci_low": 0.4994,
+            "ci_high": 0.5897
+          },
+          "precision": {
+            "mean": 0.4492,
+            "ci_low": 0.3838,
+            "ci_high": 0.5176
+          },
+          "recall": {
+            "mean": 0.8421,
+            "ci_low": 0.7876,
+            "ci_high": 0.888
+          },
+          "specificity": {
+            "mean": 0.3633,
+            "ci_low": 0.3095,
+            "ci_high": 0.4154
+          },
+          "f1": {
+            "mean": 0.5832,
+            "ci_low": 0.5213,
+            "ci_high": 0.6425
+          },
+          "brier": {
+            "mean": 0.2475,
+            "ci_low": 0.2193,
+            "ci_high": 0.2749
+          },
+          "brier_raw": {
+            "mean": 0.2285,
+            "ci_low": 0.2008,
+            "ci_high": 0.2558
+          }
+        }
+      }
+    }
+  },
+  "vessel_strategy": {
+    "final": "independent",
+    "chain_order": [
+      "LAD",
+      "LCX",
+      "RCA"
+    ],
+    "comparison": {
+      "logreg": {
+        "lcx": {
+          "auc_difference": {
+            "mean": 0.0106,
+            "ci_low": -0.0057,
+            "ci_high": 0.0257
+          },
+          "chain_metrics": {
+            "roc_auc": {
+              "mean": 0.7157,
+              "ci_low": 0.655,
+              "ci_high": 0.7662
+            },
+            "accuracy": {
+              "mean": 0.6425,
+              "ci_low": 0.5886,
+              "ci_high": 0.6876
+            },
+            "precision": {
+              "mean": 0.531,
+              "ci_low": 0.4552,
+              "ci_high": 0.6009
+            },
+            "recall": {
+              "mean": 0.7675,
+              "ci_low": 0.7014,
+              "ci_high": 0.8333
+            },
+            "specificity": {
+              "mean": 0.5616,
+              "ci_low": 0.4928,
+              "ci_high": 0.6227
+            },
+            "f1": {
+              "mean": 0.6277,
+              "ci_low": 0.5619,
+              "ci_high": 0.6856
+            },
+            "brier": {
+              "mean": 0.2081,
+              "ci_low": 0.189,
+              "ci_high": 0.2304
+            },
+            "brier_raw": {
+              "mean": 0.214,
+              "ci_low": 0.2008,
+              "ci_high": 0.2298
+            }
+          }
+        },
+        "rca": {
+          "auc_difference": {
+            "mean": -0.0408,
+            "ci_low": -0.0693,
+            "ci_high": -0.0135
+          },
+          "chain_metrics": {
+            "roc_auc": {
+              "mean": 0.6906,
+              "ci_low": 0.6406,
+              "ci_high": 0.7373
+            },
+            "accuracy": {
+              "mean": 0.6326,
+              "ci_low": 0.5864,
+              "ci_high": 0.6788
+            },
+            "precision": {
+              "mean": 0.5082,
+              "ci_low": 0.4348,
+              "ci_high": 0.582
+            },
+            "recall": {
+              "mean": 0.7836,
+              "ci_low": 0.7173,
+              "ci_high": 0.845
+            },
+            "specificity": {
+              "mean": 0.5414,
+              "ci_low": 0.4757,
+              "ci_high": 0.5983
+            },
+            "f1": {
+              "mean": 0.6159,
+              "ci_low": 0.5516,
+              "ci_high": 0.6742
+            },
+            "brier": {
+              "mean": 0.2284,
+              "ci_low": 0.2085,
+              "ci_high": 0.2501
+            },
+            "brier_raw": {
+              "mean": 0.2082,
+              "ci_low": 0.1898,
+              "ci_high": 0.2289
+            }
+          }
+        }
+      },
+      "random_forest": {
+        "lcx": {
+          "auc_difference": {
+            "mean": 0.0026,
+            "ci_low": -0.015,
+            "ci_high": 0.0205
+          },
+          "chain_metrics": {
+            "roc_auc": {
+              "mean": 0.7312,
+              "ci_low": 0.6744,
+              "ci_high": 0.778
+            },
+            "accuracy": {
+              "mean": 0.6645,
+              "ci_low": 0.6172,
+              "ci_high": 0.7074
+            },
+            "precision": {
+              "mean": 0.5504,
+              "ci_low": 0.4764,
+              "ci_high": 0.6208
+            },
+            "recall": {
+              "mean": 0.7983,
+              "ci_low": 0.7362,
+              "ci_high": 0.8519
+            },
+            "specificity": {
+              "mean": 0.5779,
+              "ci_low": 0.5108,
+              "ci_high": 0.639
+            },
+            "f1": {
+              "mean": 0.6515,
+              "ci_low": 0.5915,
+              "ci_high": 0.7065
+            },
+            "brier": {
+              "mean": 0.2033,
+              "ci_low": 0.1854,
+              "ci_high": 0.2253
+            },
+            "brier_raw": {
+              "mean": 0.2052,
+              "ci_low": 0.1907,
+              "ci_high": 0.2218
+            }
+          }
+        },
+        "rca": {
+          "auc_difference": {
+            "mean": 0.0182,
+            "ci_low": -0.0022,
+            "ci_high": 0.0392
+          },
+          "chain_metrics": {
+            "roc_auc": {
+              "mean": 0.7368,
+              "ci_low": 0.6838,
+              "ci_high": 0.7875
+            },
+            "accuracy": {
+              "mean": 0.6491,
+              "ci_low": 0.5985,
+              "ci_high": 0.6964
+            },
+            "precision": {
+              "mean": 0.5221,
+              "ci_low": 0.4475,
+              "ci_high": 0.5945
+            },
+            "recall": {
+              "mean": 0.7924,
+              "ci_low": 0.7222,
+              "ci_high": 0.8564
+            },
+            "specificity": {
+              "mean": 0.5626,
+              "ci_low": 0.4991,
+              "ci_high": 0.6231
+            },
+            "f1": {
+              "mean": 0.6294,
+              "ci_low": 0.5655,
+              "ci_high": 0.6875
+            },
+            "brier": {
+              "mean": 0.1982,
+              "ci_low": 0.1773,
+              "ci_high": 0.2191
+            },
+            "brier_raw": {
+              "mean": 0.1998,
+              "ci_low": 0.1827,
+              "ci_high": 0.2161
+            }
+          }
+        }
+      },
+      "xgboost": {
+        "lcx": {
+          "auc_difference": {
+            "mean": -0.0338,
+            "ci_low": -0.0688,
+            "ci_high": 0.0017
+          },
+          "chain_metrics": {
+            "roc_auc": {
+              "mean": 0.6834,
+              "ci_low": 0.6333,
+              "ci_high": 0.7282
+            },
+            "accuracy": {
+              "mean": 0.6502,
+              "ci_low": 0.6072,
+              "ci_high": 0.6942
+            },
+            "precision": {
+              "mean": 0.539,
+              "ci_low": 0.4688,
+              "ci_high": 0.6091
+            },
+            "recall": {
+              "mean": 0.7871,
+              "ci_low": 0.7245,
+              "ci_high": 0.8469
+            },
+            "specificity": {
+              "mean": 0.5616,
+              "ci_low": 0.5036,
+              "ci_high": 0.6188
+            },
+            "f1": {
+              "mean": 0.6387,
+              "ci_low": 0.5775,
+              "ci_high": 0.6944
+            },
+            "brier": {
+              "mean": 0.2361,
+              "ci_low": 0.2174,
+              "ci_high": 0.2575
+            },
+            "brier_raw": {
+              "mean": 0.2095,
+              "ci_low": 0.1861,
+              "ci_high": 0.2345
+            }
+          }
+        },
+        "rca": {
+          "auc_difference": {
+            "mean": 0.0263,
+            "ci_low": 0.0023,
+            "ci_high": 0.0497
+          },
+          "chain_metrics": {
+            "roc_auc": {
+              "mean": 0.723,
+              "ci_low": 0.6703,
+              "ci_high": 0.7741
+            },
+            "accuracy": {
+              "mean": 0.6458,
+              "ci_low": 0.5995,
+              "ci_high": 0.6909
+            },
+            "precision": {
+              "mean": 0.5195,
+              "ci_low": 0.4464,
+              "ci_high": 0.5976
+            },
+            "recall": {
+              "mean": 0.7807,
+              "ci_low": 0.7168,
+              "ci_high": 0.8439
+            },
+            "specificity": {
+              "mean": 0.5644,
+              "ci_low": 0.4991,
+              "ci_high": 0.6244
+            },
+            "f1": {
+              "mean": 0.6237,
+              "ci_low": 0.5611,
+              "ci_high": 0.6838
+            },
+            "brier": {
+              "mean": 0.204,
+              "ci_low": 0.184,
+              "ci_high": 0.2238
+            },
+            "brier_raw": {
+              "mean": 0.211,
+              "ci_low": 0.1881,
+              "ci_high": 0.2337
+            }
+          }
+        }
+      },
+      "catboost": {
+        "lcx": {
+          "auc_difference": {
+            "mean": -0.0175,
+            "ci_low": -0.0485,
+            "ci_high": 0.0146
+          },
+          "chain_metrics": {
+            "roc_auc": {
+              "mean": 0.6955,
+              "ci_low": 0.6533,
+              "ci_high": 0.7374
+            },
+            "accuracy": {
+              "mean": 0.6216,
+              "ci_low": 0.5776,
+              "ci_high": 0.6656
+            },
+            "precision": {
+              "mean": 0.516,
+              "ci_low": 0.4437,
+              "ci_high": 0.585
+            },
+            "recall": {
+              "mean": 0.8263,
+              "ci_low": 0.7732,
+              "ci_high": 0.8777
+            },
+            "specificity": {
+              "mean": 0.4891,
+              "ci_low": 0.4362,
+              "ci_high": 0.5432
+            },
+            "f1": {
+              "mean": 0.6331,
+              "ci_low": 0.5704,
+              "ci_high": 0.691
+            },
+            "brier": {
+              "mean": 0.2323,
+              "ci_low": 0.2132,
+              "ci_high": 0.2529
+            },
+            "brier_raw": {
+              "mean": 0.2104,
+              "ci_low": 0.1864,
+              "ci_high": 0.2376
+            }
+          }
+        },
+        "rca": {
+          "auc_difference": {
+            "mean": 0.0152,
+            "ci_low": -0.0219,
+            "ci_high": 0.0523
+          },
+          "chain_metrics": {
+            "roc_auc": {
+              "mean": 0.6707,
+              "ci_low": 0.6166,
+              "ci_high": 0.7191
+            },
+            "accuracy": {
+              "mean": 0.582,
+              "ci_low": 0.5336,
+              "ci_high": 0.626
+            },
+            "precision": {
+              "mean": 0.4707,
+              "ci_low": 0.4028,
+              "ci_high": 0.5391
+            },
+            "recall": {
+              "mean": 0.8158,
+              "ci_low": 0.7596,
+              "ci_high": 0.8685
+            },
+            "specificity": {
+              "mean": 0.4409,
+              "ci_low": 0.379,
+              "ci_high": 0.4991
+            },
+            "f1": {
+              "mean": 0.5954,
+              "ci_low": 0.533,
+              "ci_high": 0.653
+            },
+            "brier": {
+              "mean": 0.2306,
+              "ci_low": 0.2075,
+              "ci_high": 0.2563
+            },
+            "brier_raw": {
+              "mean": 0.2256,
+              "ci_low": 0.1985,
+              "ci_high": 0.253
+            }
+          }
+        }
+      }
+    }
+  },
+  "shap_global_importance": {
+    "cad": {
+      "typical_chest_pain": 1.0194,
+      "region_rwma": 0.5877,
+      "age": 0.5507,
+      "t_inversion": 0.5185,
+      "dm": 0.5054,
+      "htn": 0.3665,
+      "tg": 0.3294,
+      "dyspnea": 0.3228,
+      "fh": 0.3016,
+      "pr": 0.2248,
+      "vhd": 0.2025,
+      "sex": 0.1807,
+      "ef_tte": 0.1787,
+      "hb": 0.1526,
+      "st_depression": 0.1389,
+      "st_elevation": 0.1306,
+      "bp": 0.1293,
+      "nonanginal": 0.126,
+      "esr": 0.1251,
+      "dlp": 0.1236,
+      "atypical": 0.1036,
+      "function_class": 0.0987,
+      "lung_rales": 0.0849,
+      "q_wave": 0.0818,
+      "lvh": 0.0762,
+      "ldl": 0.066,
+      "bmi": 0.0657,
+      "neut": 0.0558,
+      "edema": 0.051,
+      "airway_disease": 0.0503,
+      "poor_r_progression": 0.0465,
+      "fbs": 0.0379,
+      "lymph": 0.0294,
+      "k": 0.0261,
+      "current_smoker": 0.0132,
+      "cr": 0.0121,
+      "lowth_ang": 0.0066,
+      "plt": 0.002,
+      "weak_peripheral_pulse": 0.0,
+      "thyroid_disease": 0.0,
+      "chf": 0.0,
+      "cva": 0.0,
+      "ex_smoker": 0.0,
+      "obesity": 0.0,
+      "crf": 0.0,
+      "weight": 0.0,
+      "height": 0.0,
+      "bbb": 0.0,
+      "systolic_murmur": 0.0,
+      "diastolic_murmur": 0.0,
+      "bun": 0.0,
+      "hdl": 0.0,
+      "na": 0.0,
+      "wbc": 0.0
+    },
+    "lad": {
+      "typical_chest_pain": 0.74,
+      "atypical": 0.3897,
+      "region_rwma": 0.3733,
+      "ef_tte": 0.3435,
+      "age": 0.3431,
+      "esr": 0.1513,
+      "lymph": 0.0985,
+      "t_inversion": 0.0969,
+      "neut": 0.095,
+      "htn": 0.0883,
+      "pr": 0.0714,
+      "bp": 0.0617,
+      "tg": 0.0598,
+      "nonanginal": 0.0549,
+      "cr": 0.0472,
+      "wbc": 0.0442,
+      "na": 0.0415,
+      "k": 0.0401,
+      "fbs": 0.0395,
+      "weight": 0.037,
+      "bmi": 0.0356,
+      "st_depression": 0.034,
+      "hdl": 0.0324,
+      "ldl": 0.0288,
+      "plt": 0.0225,
+      "hb": 0.018,
+      "height": 0.0176,
+      "current_smoker": 0.0176,
+      "dlp": 0.0156,
+      "vhd": 0.0154,
+      "dm": 0.0153,
+      "function_class": 0.0152,
+      "bun": 0.0136,
+      "q_wave": 0.013,
+      "dyspnea": 0.0121,
+      "obesity": 0.0081,
+      "sex": 0.0055,
+      "fh": 0.0031,
+      "diastolic_murmur": 0.0026,
+      "st_elevation": 0.0023,
+      "edema": 0.0022,
+      "systolic_murmur": 0.0015,
+      "lvh": 0.0008,
+      "ex_smoker": 0.0007,
+      "airway_disease": 0.0,
+      "crf": 0.0,
+      "lung_rales": 0.0,
+      "weak_peripheral_pulse": 0.0,
+      "chf": 0.0,
+      "thyroid_disease": 0.0,
+      "cva": 0.0,
+      "bbb": 0.0,
+      "lowth_ang": 0.0,
+      "poor_r_progression": 0.0
+    },
+    "lcx": {
+      "age": 0.4907,
+      "typical_chest_pain": 0.4067,
+      "cr": 0.2013,
+      "plt": 0.1681,
+      "tg": 0.1412,
+      "fbs": 0.1066,
+      "na": 0.0947,
+      "height": 0.0909,
+      "bp": 0.0789,
+      "ldl": 0.075,
+      "bun": 0.0587,
+      "bmi": 0.0553,
+      "weight": 0.0458,
+      "ef_tte": 0.0457,
+      "hb": 0.0435,
+      "hdl": 0.0426,
+      "esr": 0.042,
+      "lymph": 0.0384,
+      "k": 0.0372,
+      "region_rwma": 0.037,
+      "wbc": 0.0339,
+      "atypical": 0.0335,
+      "sex": 0.0294,
+      "htn": 0.0265,
+      "dm": 0.0259,
+      "neut": 0.0206,
+      "current_smoker": 0.0153,
+      "t_inversion": 0.0117,
+      "fh": 0.0104,
+      "function_class": 0.0099,
+      "vhd": 0.0078,
+      "obesity": 0.0068,
+      "pr": 0.006,
+      "dlp": 0.0059,
+      "st_depression": 0.0049,
+      "dyspnea": 0.0047,
+      "systolic_murmur": 0.0024,
+      "ex_smoker": 0.0014,
+      "lvh": 0.0009,
+      "nonanginal": 0.0007,
+      "poor_r_progression": 0.0007,
+      "q_wave": 0.0007,
+      "st_elevation": 0.0006,
+      "crf": 0.0,
+      "cva": 0.0,
+      "airway_disease": 0.0,
+      "lung_rales": 0.0,
+      "weak_peripheral_pulse": 0.0,
+      "edema": 0.0,
+      "thyroid_disease": 0.0,
+      "chf": 0.0,
+      "bbb": 0.0,
+      "diastolic_murmur": 0.0,
+      "lowth_ang": 0.0
+    },
+    "rca": {
+      "dm": 0.391,
+      "typical_chest_pain": 0.3707,
+      "sex": 0.2909,
+      "age": 0.2407,
+      "neut": 0.2211,
+      "esr": 0.1511,
+      "function_class": 0.1461,
+      "dyspnea": 0.1411,
+      "tg": 0.1249,
+      "poor_r_progression": 0.0555,
+      "atypical": 0.0523,
+      "htn": 0.0511,
+      "lymph": 0.0446,
+      "nonanginal": 0.0271,
+      "diastolic_murmur": 0.0209,
+      "weight": 0.0135,
+      "hdl": 0.0119,
+      "k": 0.0097,
+      "crf": 0.0071,
+      "chf": 0.0065,
+      "fh": 0.0034,
+      "cva": 0.0029,
+      "q_wave": 0.0,
+      "lung_rales": 0.0,
+      "edema": 0.0,
+      "pr": 0.0,
+      "bp": 0.0,
+      "weak_peripheral_pulse": 0.0,
+      "thyroid_disease": 0.0,
+      "airway_disease": 0.0,
+      "current_smoker": 0.0,
+      "obesity": 0.0,
+      "ex_smoker": 0.0,
+      "bmi": 0.0,
+      "height": 0.0,
+      "dlp": 0.0,
+      "lowth_ang": 0.0,
+      "systolic_murmur": 0.0,
+      "fbs": 0.0,
+      "bbb": 0.0,
+      "lvh": 0.0,
+      "t_inversion": 0.0,
+      "st_elevation": 0.0,
+      "st_depression": 0.0,
+      "ldl": 0.0,
+      "cr": 0.0,
+      "hb": 0.0,
+      "bun": 0.0,
+      "wbc": 0.0,
+      "na": 0.0,
+      "plt": 0.0,
+      "ef_tte": 0.0,
+      "region_rwma": 0.0,
+      "vhd": 0.0
+    }
+  },
+  "versions": {
+    "python": "3.14.7",
+    "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1",
+    "catboost": "1.2.10",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6"
+  },
+  "runtime_seconds": 451
+}

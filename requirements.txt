@@ -12,7 +12,10 @@ scipy==1.18.1
 scikit-learn==1.9.1
 xgboost==3.4.1
 catboost==1.2.10
-shap==0.52.0
+# SHAP values are computed with XGBoost/CatBoost's built-in TreeSHAP and exact linear SHAP
+# (cardioscope_ml/explain.py); the `shap` package is not used because its llvmlite
+# dependency is blocked by Windows Smart App Control on the dev machine.
+joblib==1.6.0
 
 # plots
 matplotlib==3.11.2

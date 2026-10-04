@@ -87,3 +87,22 @@ def assert_no_leakage(feature_names: list[str]) -> None:
     leaked = sorted(n for n in feature_names if str(n).lower() in forbidden_input_names())
     if leaked:
         raise ValueError(f"Target leakage: target columns used as features: {leaked}")
+
+
+MODELS_DIR = PROJECT_ROOT / "models"
+FIGURES_DIR = PROJECT_ROOT / "reports" / "figures"
+
+
+@lru_cache
+def load_models() -> dict[str, Any]:
+    return _read_yaml("models.yaml")
+
+
+def target_spec(target_id: str) -> dict[str, Any]:
+    return next(t for t in target_specs() if t["id"] == target_id)
+
+
+def vessel_target_order() -> list[str]:
+    """Vessel target ids in the configured classifier-chain order."""
+    by_vessel = {t["vessel_id"]: t["id"] for t in target_specs() if t["kind"] == "vessel"}
+    return [by_vessel[v] for v in load_models()["vessels"]["chain_order"]]

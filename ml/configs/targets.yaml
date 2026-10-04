@@ -1,6 +1,8 @@
 # Prediction targets. These columns must NEVER be used as model inputs
 # (enforced by cardioscope_ml.config.assert_no_leakage and ml/tests).
 #
+# min_recall: decision threshold = highest threshold whose out-of-fold recall >= this value
+#             (favours catching disease over avoiding false alarms; see docs).
 # vessel_id links each vessel target to shared/vessels.json (used by backend + 3D view).
 
 dataset:
@@ -14,6 +16,7 @@ targets:
     column: Cath
     label: Coronary artery disease (overall)
     kind: overall
+    min_recall: 0.90
     positive: CAD
     negative: Normal
 
@@ -21,6 +24,7 @@ targets:
     column: LAD
     label: LAD stenosis
     kind: vessel
+    min_recall: 0.80
     vessel_id: LAD
     positive: Stenotic
     negative: Normal
@@ -29,6 +33,7 @@ targets:
     column: LCX
     label: LCX stenosis
     kind: vessel
+    min_recall: 0.80
     vessel_id: LCX
     positive: Stenotic
     negative: Normal
@@ -37,6 +42,7 @@ targets:
     column: RCA
     label: RCA stenosis
     kind: vessel
+    min_recall: 0.80
     vessel_id: RCA
     positive: Stenotic
     negative: Normal

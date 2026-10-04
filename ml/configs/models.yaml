@@ -1,0 +1,86 @@
+# Model families, hyperparameter search spaces and validation settings.
+# Adding a model = adding an entry under `models` with a `class` the factory knows
+# (see cardioscope_ml/models.py) and a `search` space.
+#
+# Search-space syntax
+#   [a, b, c]                         -> uniform choice
+#   {dist: loguniform, low:, high:}   -> log-uniform float
+#   {dist: uniform,    low:, high:}   -> uniform float in [low, high]
+#   {dist: randint,    low:, high:}   -> integer in [low, high]
+
+seed: 42
+
+validation:
+  outer_folds: 5          # repeated stratified K-fold for performance estimation
+  outer_repeats: 3
+  inner_folds: 3          # stratified K-fold for hyperparameter search (nested inside outer)
+  n_iter: 15              # random-search candidates per inner search
+  scoring: roc_auc        # inner-search objective and model-selection metric
+  oof_folds: 5            # folds for out-of-fold predictions (calibration, thresholds, chain)
+  bootstrap: 1000         # resamples for 95% confidence intervals
+
+fast:                     # `python -m cardioscope_ml.train --fast` (smoke test only)
+  outer_folds: 3
+  outer_repeats: 1
+  inner_folds: 2
+  n_iter: 2
+  oof_folds: 3
+  bootstrap: 50
+
+calibration: sigmoid      # Platt scaling on out-of-fold scores; compared against raw by Brier
+
+vessels:
+  chain_order: [LAD, LCX, RCA]   # most common -> least common stenosis
+  # independent | chain. Chosen from the nested-CV comparison in metrics.json
+  # (see docs/phase2_model_results.md for the evidence).
+  final_strategy: independent
+
+models:
+  logreg:
+    label: Logistic Regression
+    class: logistic_regression
+    scale: true
+    params: {solver: saga, max_iter: 5000}
+    search:
+      C: {dist: loguniform, low: 0.001, high: 10}
+      l1_ratio: [0.0, 0.5, 1.0]
+      class_weight: [null, balanced]
+
+  random_forest:
+    # A true random forest (bagged, random-subspace trees averaged in one round, no boosting),
+    # built with XGBoost: n_estimators=1 boosting round of `num_parallel_tree` trees with
+    # learning_rate=1 (XGBoost's documented RF recipe). Used because scikit-learn's
+    # RandomForestClassifier is blocked by Windows Smart App Control on the dev machine.
+    label: Random Forest
+    class: xgboost
+    scale: false
+    params: {n_estimators: 1, num_parallel_tree: 300, learning_rate: 1.0, reg_lambda: 0.00001,
+             n_jobs: 1, tree_method: hist, eval_metric: logloss}
+    search:
+      max_depth: [3, 5, 8, 12]
+      subsample: [0.6, 0.8, 1.0]
+      colsample_bynode: [0.15, 0.3, 0.5]
+      min_child_weight: [1, 3, 5]
+
+  xgboost:
+    label: XGBoost
+    class: xgboost
+    scale: false
+    params: {n_estimators: 300, n_jobs: 1, tree_method: hist, eval_metric: logloss}
+    search:
+      max_depth: [2, 3, 4, 5]
+      learning_rate: {dist: loguniform, low: 0.01, high: 0.2}
+      subsample: {dist: uniform, low: 0.6, high: 1.0}
+      colsample_bytree: {dist: uniform, low: 0.4, high: 1.0}
+      min_child_weight: [1, 3, 5]
+      reg_lambda: {dist: loguniform, low: 0.1, high: 10}
+
+  catboost:
+    label: CatBoost
+    class: catboost
+    scale: false
+    params: {iterations: 300, thread_count: 1, verbose: 0, allow_writing_files: false}
+    search:
+      depth: [3, 4, 5, 6]
+      learning_rate: {dist: loguniform, low: 0.02, high: 0.2}
+      l2_leaf_reg: {dist: loguniform, low: 1, high: 10}

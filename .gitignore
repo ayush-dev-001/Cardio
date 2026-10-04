@@ -24,3 +24,7 @@ Thumbs.db
 
 # Excel lock files
 ~$*.xlsx
+
+# training smoke-test outputs
+models/_fast/
+reports/figures/_fast/
