@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { VESSELS } from "../anatomy/anatomy";
 import { riskColor } from "../anatomy/riskColor";
@@ -28,7 +29,8 @@ export function MockPanel({ values, onChange }: Props) {
         aria-expanded={open}
         className="flex w-full items-center justify-between font-semibold text-white"
       >
-        Mock probabilities <span className="text-xs text-slate-400">{open ? "▲" : "▼"}</span>
+        Mock probabilities
+        <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`} aria-hidden />
       </button>
       {open && (
         <>

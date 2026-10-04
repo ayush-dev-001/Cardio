@@ -1,3 +1,4 @@
+import { ChevronDown, CircleAlert } from "lucide-react";
 import type { FeatureSchema, SamplePatient, Schema } from "../api/types";
 import { formatRange, outsideNormal, type FormErrors, type FormValues } from "../lib/form";
 import { RangeChip } from "./ui";
@@ -145,8 +146,12 @@ export function PatientForm(p: Props) {
                 <span>{g.label}</span>
                 <span className="flex items-center gap-2 font-normal">
                   {groupErrors > 0 && <span className="text-red-400">{groupErrors} to fix</span>}
-                  {flagged > 0 && <span className="text-amber-300">▲▼ {flagged} outside normal</span>}
-                  <span className="text-slate-500 transition-transform group-open:rotate-180">▾</span>
+                  {flagged > 0 && (
+                    <span className="inline-flex items-center gap-1 text-amber-300">
+                      <CircleAlert className="h-3.5 w-3.5" aria-hidden /> {flagged} outside normal
+                    </span>
+                  )}
+                  <ChevronDown className="h-4 w-4 text-slate-500 transition-transform duration-200 group-open:rotate-180" aria-hidden />
                 </span>
               </summary>
               <div className="grid grid-cols-2 gap-x-3 gap-y-3 px-3 pb-3">

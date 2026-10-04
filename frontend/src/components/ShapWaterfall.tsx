@@ -1,3 +1,4 @@
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { Bar, BarChart, Cell, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { TargetExplanation } from "../api/types";
 import { buildWaterfall, formatPct, formatTickPct, probabilityTicks, sigmoid, waterfallDomain, type WaterfallRow } from "../lib/waterfall";
@@ -83,10 +84,12 @@ export function ShapWaterfall({ explanation, topN = 10 }: { explanation: TargetE
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: RAISES }} />▲ raises risk
+          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: RAISES }} />
+          <ArrowUp className="-ml-1 h-3 w-3" aria-hidden /> raises risk
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: LOWERS }} />▼ lowers risk
+          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: LOWERS }} />
+          <ArrowDown className="-ml-1 h-3 w-3" aria-hidden /> lowers risk
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 border-l border-dashed border-slate-500" /> average patient

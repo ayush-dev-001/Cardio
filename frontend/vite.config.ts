@@ -9,6 +9,8 @@ export default defineConfig({
     alias: {
       // Single source of truth for vessel IDs, shared with the backend.
       "@shared": fileURLToPath(new URL("../shared", import.meta.url)),
+      // validation metrics written by the training pipeline (shown on the landing page)
+      "@models": fileURLToPath(new URL("../models", import.meta.url)),
     },
   },
   server: { fs: { allow: [".."] } },

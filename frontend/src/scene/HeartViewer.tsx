@@ -16,13 +16,25 @@ export interface HeartViewerProps {
   showLabels?: boolean;
   /** Increment to fly the camera back to the overview. */
   resetToken?: number;
+  /** Let the page background show through (landing hero). */
+  transparent?: boolean;
+  /** Scroll-wheel zoom; off where the canvas sits inside a scrolling page. */
+  zoom?: boolean;
 }
 
 /**
  * Interactive torso + heart. GPU-friendly: renders on demand (only while something changes),
  * adapts pixel ratio under load, no shadows or post-processing.
  */
-export function HeartViewer({ probabilities, selectedId, onSelect, showLabels = true, resetToken = 0 }: HeartViewerProps) {
+export function HeartViewer({
+  probabilities,
+  selectedId,
+  onSelect,
+  showLabels = true,
+  resetToken = 0,
+  transparent = false,
+  zoom = true,
+}: HeartViewerProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [dprMax, setDprMax] = useState(1.75);
   const labelRefs = useRef<LabelRefs>({}).current;
@@ -49,8 +61,8 @@ export function HeartViewer({ probabilities, selectedId, onSelect, showLabels = 
       frameloop="demand"
       dpr={[1, dprMax]}
       camera={{ position: DEFAULT_VIEW.position.toArray(), fov: 38, near: 0.05, far: 100 }}
-      gl={{ antialias: true, powerPreference: "default" }}
-      onCreated={({ gl }) => gl.setClearColor("#020617")}
+      gl={{ antialias: true, powerPreference: "default", alpha: transparent }}
+      onCreated={({ gl }) => (transparent ? gl.setClearAlpha(0) : gl.setClearColor("#020617"))}
     >
       <PerformanceMonitor onDecline={() => setDprMax(1)} />
       <AdaptiveDpr pixelated />
@@ -65,7 +77,7 @@ export function HeartViewer({ probabilities, selectedId, onSelect, showLabels = 
         onHover={setHoveredId}
       />
       <Torso />
-      <CameraRig goal={goal} />
+      <CameraRig goal={goal} zoom={zoom} />
       <LabelTracker refs={labelRefs} visibleIds={visibleLabels} />
     </Canvas>
     <LabelLayer refs={labelRefs} probabilities={probabilities} onSelect={onSelect} />

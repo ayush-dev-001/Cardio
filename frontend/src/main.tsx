@@ -1,10 +1,31 @@
-import { StrictMode } from "react";
+import { MotionConfig } from "motion/react";
+import { StrictMode, Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";
 import "./index.css";
+import { Landing } from "./landing/Landing";
+import { usePath } from "./router";
+
+// The dashboard (form, charts, API wiring) loads only when opened.
+const Dashboard = lazy(() => import("./App"));
+
+function Root() {
+  const path = usePath();
+  return (
+    // reducedMotion="user": every motion animation is disabled when the OS asks for reduced motion
+    <MotionConfig reducedMotion="user" transition={{ ease: [0.22, 1, 0.36, 1] }}>
+      {path.startsWith("/app") ? (
+        <Suspense fallback={<div className="grid h-full place-items-center text-sm text-slate-400">Loading dashboard…</div>}>
+          <Dashboard />
+        </Suspense>
+      ) : (
+        <Landing />
+      )}
+    </MotionConfig>
+  );
+}
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <Root />
   </StrictMode>,
 );

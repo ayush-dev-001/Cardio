@@ -9,13 +9,14 @@ export const DEFAULT_VIEW = { position: new Vector3(0.55, 0.95, 4.9), target: ne
 interface Props {
   /** Where the camera should fly to. A new object (even with equal values) re-triggers the move. */
   goal: { position: Vector3; target: Vector3 };
+  zoom?: boolean;
 }
 
 /**
  * Orbit/zoom controls plus a smooth fly-to animation. Works with frameloop="demand":
  * frames are only rendered while the camera is moving or the user interacts.
  */
-export function CameraRig({ goal }: Props) {
+export function CameraRig({ goal, zoom = true }: Props) {
   const controls = useRef<OrbitControlsImpl>(null);
   const animating = useRef(false);
   const invalidate = useThree((s) => s.invalidate);
@@ -70,6 +71,7 @@ export function CameraRig({ goal }: Props) {
       ref={controls}
       makeDefault
       enableDamping
+      enableZoom={zoom}
       dampingFactor={0.12}
       minDistance={1.2}
       maxDistance={16}

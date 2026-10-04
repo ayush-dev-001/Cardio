@@ -1,3 +1,4 @@
+import { ArrowDown, ArrowRight, ArrowUp, X } from "lucide-react";
 import type { TargetExplanation, TargetPrediction, VesselSchema } from "../api/types";
 import { riskColor } from "../anatomy/riskColor";
 import { formatPct } from "../lib/waterfall";
@@ -29,7 +30,7 @@ export function VesselInfo({ vessel, prediction, explanation, onShowExplanation,
           </div>
         </div>
         <button onClick={onClose} className="rounded px-1.5 text-slate-400 hover:bg-slate-800 hover:text-white" aria-label="Close vessel details">
-          ✕
+          <X className="h-4 w-4" aria-hidden />
         </button>
       </div>
 
@@ -56,7 +57,8 @@ export function VesselInfo({ vessel, prediction, explanation, onShowExplanation,
                 {raising.map((c) => (
                   <li key={c.feature} className="flex justify-between gap-2">
                     <span>
-                      <span style={{ color: RAISES }}>▲</span> {c.label}
+                      <ArrowUp className="mr-1 inline h-3.5 w-3.5" style={{ color: RAISES }} aria-hidden />
+                      {c.label}
                     </span>
                     <span className="text-slate-400">{c.display_value}</span>
                   </li>
@@ -72,7 +74,8 @@ export function VesselInfo({ vessel, prediction, explanation, onShowExplanation,
               {lowering.map((c) => (
                 <li key={c.feature} className="flex justify-between gap-2">
                   <span>
-                    <span style={{ color: LOWERS }}>▼</span> {c.label}
+                    <ArrowDown className="mr-1 inline h-3.5 w-3.5" style={{ color: LOWERS }} aria-hidden />
+                    {c.label}
                   </span>
                   <span className="text-slate-400">{c.display_value}</span>
                 </li>
@@ -80,7 +83,7 @@ export function VesselInfo({ vessel, prediction, explanation, onShowExplanation,
             </ul>
           </div>
           <button onClick={onShowExplanation} className="text-sky-300 hover:text-sky-200">
-            Full explanation →
+            Full explanation <ArrowRight className="ml-0.5 inline h-3.5 w-3.5" aria-hidden />
           </button>
         </div>
       )}

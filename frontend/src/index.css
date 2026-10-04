@@ -1,5 +1,48 @@
 @import "tailwindcss";
 
+/* Design tokens: design-system/cardioscope/MASTER.md + pages/dark-theme.md */
+@theme {
+  --font-sans: "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-700: #1e40af;
+  --color-cta: #f59e0b;
+  --color-cta-hover: #fbbf24;
+  --color-cta-ink: #0b1120;
+}
+
 html, body, #root { height: 100%; }
-body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
 input[type="range"] { accent-color: #38bdf8; }
+
+/* Visible keyboard focus everywhere (MASTER: clear focus rings 3-4px) */
+:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+button, a, summary, [role="tab"], [role="radio"], label:has(input) { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+
+.text-gradient {
+  background: linear-gradient(100deg, #60a5fa 0%, #3b82f6 35%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,13 +1,18 @@
+import { ArrowDown, ArrowUp } from "lucide-react";
 import type { PredictResponse, Schema, TargetPrediction } from "../api/types";
 import { riskColor } from "../anatomy/riskColor";
 import { formatPct } from "../lib/waterfall";
+import { AnimatedNumber } from "./AnimatedNumber";
 import { MODEL_NAMES, Panel, RiskChip } from "./ui";
 
 /** Probability track with the decision-threshold tick. Fill colour = the same risk scale as 3D. */
 function ProbabilityTrack({ p, threshold, height = "h-2" }: { p: number; threshold: number; height?: string }) {
   return (
     <div className={`relative ${height} w-full rounded-full bg-slate-800`}>
-      <div className="absolute inset-y-0 left-0 rounded-full" style={{ width: `${p * 100}%`, background: riskColor(p) }} />
+      <div
+        className="absolute inset-y-0 left-0 rounded-full transition-[width,background-color] duration-500 ease-out"
+        style={{ width: `${p * 100}%`, background: riskColor(p) }}
+      />
       <div
         className="absolute -inset-y-1 w-0.5 rounded bg-slate-200"
         style={{ left: `calc(${threshold * 100}% - 1px)` }}
@@ -28,8 +33,9 @@ export function Delta({ now, before }: { now: number; before: number | undefined
   const d = Math.round((now - before) * 100);
   if (d === 0) return <span className="text-[11px] text-slate-500">±0 pts</span>;
   return (
-    <span className={`whitespace-nowrap text-[11px] font-medium ${d > 0 ? "text-red-300" : "text-sky-300"}`} title="Change vs baseline">
-      {d > 0 ? "▲ +" : "▼ −"}
+    <span className={`inline-flex items-center gap-0.5 whitespace-nowrap text-[11px] font-medium ${d > 0 ? "text-red-300" : "text-sky-300"}`} title="Change vs baseline">
+      {d > 0 ? <ArrowUp className="h-3 w-3" aria-hidden /> : <ArrowDown className="h-3 w-3" aria-hidden />}
+      {d > 0 ? "+" : "−"}
       {Math.abs(d)} pts
     </span>
   );
@@ -46,7 +52,9 @@ export function CadStatusCard({ cad, schema, baseline }: { cad: TargetPrediction
   return (
     <Panel title="Overall coronary artery disease" right={<RiskChip level={cad.risk_level} suffix=" risk" />}>
       <div className="flex items-end gap-3">
-        <span className="text-4xl font-bold tabular-nums text-white">{formatPct(cad.probability)}</span>
+        <span className="text-4xl font-bold tabular-nums text-white">
+          <AnimatedNumber value={cad.probability} format={formatPct} />
+        </span>
         <span className="pb-1 text-sm text-slate-300">
           <Delta now={cad.probability} before={baseline} />{" "}
           {cad.predicted_positive ? "CAD likely: above the decision threshold" : "CAD unlikely: below the decision threshold"}
@@ -104,7 +112,9 @@ export function VesselBars({
                   <span className="flex items-center gap-2">
                     <Delta now={v.probability} before={baseline?.vessels.find((b) => b.vessel_id === v.vessel_id)?.probability} />
                     {v.predicted_positive && <span className="text-[11px] text-slate-300">above threshold</span>}
-                    <span className="w-10 text-right text-sm font-semibold tabular-nums text-white">{formatPct(v.probability)}</span>
+                    <span className="w-10 text-right text-sm font-semibold tabular-nums text-white">
+                      <AnimatedNumber value={v.probability} format={formatPct} />
+                    </span>
                   </span>
                 </div>
                 <ProbabilityTrack p={v.probability} threshold={v.threshold} />

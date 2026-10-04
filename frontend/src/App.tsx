@@ -1,7 +1,9 @@
+import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { API_URL, api } from "./api/client";
 import type { PredictResponse, SamplePatient, Schema } from "./api/types";
 import { Disclaimer } from "./components/Disclaimer";
+import { Logo } from "./components/Logo";
 import { PatientForm } from "./components/PatientForm";
 import { PhysiologyPanel } from "./components/PhysiologyPanel";
 import { CadStatusCard, VesselBars } from "./components/Results";
@@ -13,11 +15,13 @@ import { WhatIfPanel } from "./components/WhatIfPanel";
 import { MOCK_PRESETS, MockPanel } from "./dev/MockPanel";
 import { toFormValues, validate, type FormValues } from "./lib/form";
 import { usePrediction } from "./lib/usePrediction";
+import { Link } from "./router";
 import { HeartViewer } from "./scene/HeartViewer";
 
 type Tab = "explanation" | "physiology" | "whatif";
 type Connection = "connecting" | "waking" | "online" | "offline";
-const headerBtn = "rounded-md border border-slate-700 px-2.5 py-1 hover:border-slate-500";
+const headerBtn =
+  "inline-flex min-h-9 items-center gap-1.5 rounded-md border border-slate-700 px-2.5 transition-colors duration-200 hover:border-slate-500 hover:text-white";
 // Free hosting may put the API to sleep; keep retrying for about a minute before giving up.
 const WAKE_ATTEMPTS = 12;
 const WAKE_DELAY_MS = 5000;
@@ -141,9 +145,11 @@ export default function App() {
   return (
     <div className="flex h-full flex-col bg-slate-950 text-slate-200">
       <header className="flex items-center justify-between gap-3 border-b border-slate-800 px-4 py-2.5">
-        <div className="flex items-baseline gap-3">
-          <h1 className="text-lg font-bold tracking-tight text-white">CardioScope</h1>
-          <span className="hidden text-xs text-slate-500 md:inline">Coronary risk prediction & 3D visualisation</span>
+        <div className="flex items-center gap-3">
+          <Link href="/" aria-label="CardioScope home" className="rounded-lg">
+            <Logo />
+          </Link>
+          <h1 className="hidden border-l border-slate-800 pl-3 text-xs text-slate-400 md:block">Clinical dashboard</h1>
         </div>
         <div className="flex items-center gap-2 text-xs">
           <span className="hidden items-center gap-1.5 text-slate-400 sm:flex" title={API_URL}>
@@ -154,7 +160,7 @@ export default function App() {
             />
             {connection === "online" ? "API connected" : connection === "offline" ? "API offline" : "Connecting…"}
           </span>
-          <label className="flex cursor-pointer items-center gap-1.5 rounded-md border border-slate-700 px-2.5 py-1 hover:border-slate-500">
+          <label className={headerBtn}>
             <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} className="accent-sky-400" />
             Live updates
           </label>
@@ -207,8 +213,16 @@ export default function App() {
           <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-3">
             <div className="flex items-start justify-between gap-3">
               <div className="pointer-events-auto">{offline && <MockPanel values={mockValues} onChange={setMockValues} />}</div>
+              <AnimatePresence>
               {vesselInfo && (
-                <div className="pointer-events-auto">
+                <motion.div
+                  key={vesselInfo.id}
+                  className="pointer-events-auto"
+                  initial={{ opacity: 0, x: 16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 16 }}
+                  transition={{ duration: 0.25 }}
+                >
                   <VesselInfo
                     vessel={vesselInfo}
                     prediction={prediction?.vessels.find((v) => v.vessel_id === vesselInfo.id) ?? null}
@@ -219,8 +233,9 @@ export default function App() {
                     }}
                     onClose={resetView}
                   />
-                </div>
+                </motion.div>
               )}
+              </AnimatePresence>
             </div>
             <div className="flex items-end justify-between gap-3">
               <RiskLegend />
@@ -273,12 +288,23 @@ export default function App() {
                     </select>
                   }
                 >
-                  {currentExplanation &&
-                    (tab === "explanation" ? (
-                      <ShapWaterfall explanation={currentExplanation} />
-                    ) : (
-                      <PhysiologyPanel schema={schema} explanation={currentExplanation} />
-                    ))}
+                  <AnimatePresence mode="wait" initial={false}>
+                    {currentExplanation && (
+                      <motion.div
+                        key={tab + target}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.18 }}
+                      >
+                        {tab === "explanation" ? (
+                          <ShapWaterfall explanation={currentExplanation} />
+                        ) : (
+                          <PhysiologyPanel schema={schema} explanation={currentExplanation} />
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </Panel>
               )}
             </>
