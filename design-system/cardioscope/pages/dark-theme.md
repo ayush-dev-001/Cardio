@@ -1,5 +1,12 @@
 # Override: dark theme (landing + dashboard)
 
+> **Update (product-owner decision):** the brand is now purple glassmorphism. Primary `#7B39FC`,
+> dark plum `#2B2344`, background ink `#0B0814`, frosted `.glass` / `.glass-strong` surfaces.
+> Fonts: Instrument Serif (headlines), Manrope (UI/nav), Cabin (buttons/tags), Inter (body).
+> This intentionally overrides MASTER's "avoid purple" anti-pattern. Semantic data colours
+> (risk scale, SHAP red/blue, low/high chips) are unchanged, and the accessibility rules
+> still apply. The table below records the previous blue/amber theme.
+
 Overrides MASTER.md for every CardioScope page. Reason: the product centres on a 3D anatomical
 viewer, and medical-imaging viewers conventionally use dark surroundings, so the semi-transparent
 "x-ray" torso and the risk colours keep maximum contrast. Accessibility rules from MASTER still

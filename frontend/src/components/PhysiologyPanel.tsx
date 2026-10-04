@@ -12,7 +12,7 @@ function RangeViz({ c, valid }: { c: Contribution; valid: [number, number] | nul
   const b = rangeBar(c.normal_range, c.value, valid);
   const markerColor = c.status === "normal" ? "#cbd5e1" : c.status === "high" ? "#fcd34d" : "#7dd3fc";
   return (
-    <div className="relative mt-1.5 h-1.5 rounded-full bg-slate-800" title={`Normal ${formatRange(c.normal_range, c.unit)}`}>
+    <div className="relative mt-1.5 h-1.5 rounded-full bg-white/10" title={`Normal ${formatRange(c.normal_range, c.unit)}`}>
       <div
         className="absolute inset-y-0 rounded-full bg-slate-500/70"
         style={{ left: `${b.normalFrom * 100}%`, width: `${(b.normalTo - b.normalFrom) * 100}%` }}
@@ -97,7 +97,7 @@ export function PhysiologyPanel({ schema, explanation }: { schema: Schema; expla
         })}
       </ul>
       {rows.length > 14 && (
-        <button onClick={() => setShowAll((s) => !s)} className="mt-2 text-xs text-sky-300 hover:text-sky-200">
+        <button onClick={() => setShowAll((s) => !s)} className="mt-2 min-h-9 text-xs font-medium text-brand-300 hover:text-white">
           {showAll ? "Show fewer" : `Show all ${rows.length} features`}
         </button>
       )}

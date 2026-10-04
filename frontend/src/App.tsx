@@ -21,7 +21,7 @@ import { HeartViewer } from "./scene/HeartViewer";
 type Tab = "explanation" | "physiology" | "whatif";
 type Connection = "connecting" | "waking" | "online" | "offline";
 const headerBtn =
-  "inline-flex min-h-9 items-center gap-1.5 rounded-md border border-slate-700 px-2.5 transition-colors duration-200 hover:border-slate-500 hover:text-white";
+  "inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-white/15 px-3 font-manrope text-xs font-medium text-white/80 transition-colors duration-200 hover:border-white/30 hover:text-white";
 // Free hosting may put the API to sleep; keep retrying for about a minute before giving up.
 const WAKE_ATTEMPTS = 12;
 const WAKE_DELAY_MS = 5000;
@@ -72,7 +72,9 @@ export default function App() {
         const [s, smp] = await Promise.all([api.schema(), api.samples()]);
         setSchema(s);
         setSamples(smp);
-        const initial = smp.find((x) => x.kind === "single_vessel") ?? null;
+        // "?sample=<kind>" (e.g. from the landing page's "Try a sample patient") picks the starting patient
+        const wanted = new URLSearchParams(window.location.search).get("sample") ?? "single_vessel";
+        const initial = smp.find((x) => x.kind === wanted) ?? smp.find((x) => x.kind === "single_vessel") ?? null;
         const v = toFormValues(s, initial?.patient);
         setValues(v);
         setBaselineValues(v);
@@ -143,13 +145,19 @@ export default function App() {
   const error = pred.error ?? (offline ? loadError : null);
 
   return (
-    <div className="flex h-full flex-col bg-slate-950 text-slate-200">
-      <header className="flex items-center justify-between gap-3 border-b border-slate-800 px-4 py-2.5">
+    <div className="relative isolate flex h-full flex-col bg-ink text-white/90">
+      {/* soft brand glows give the glass panels something to frost */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute -left-40 -top-40 h-[560px] w-[560px] rounded-full bg-primary/20 blur-[140px]" />
+        <div className="absolute -right-32 top-1/3 h-[480px] w-[480px] rounded-full bg-[#4c1d95]/25 blur-[140px]" />
+        <div className="absolute bottom-0 left-1/3 h-[360px] w-[520px] rounded-full bg-plum/40 blur-[120px]" />
+      </div>
+      <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-ink/60 px-4 py-2.5 backdrop-blur-xl">
         <div className="flex items-center gap-3">
           <Link href="/" aria-label="CardioScope home" className="rounded-lg">
             <Logo />
           </Link>
-          <h1 className="hidden border-l border-slate-800 pl-3 text-xs text-slate-400 md:block">Clinical dashboard</h1>
+          <h1 className="hidden border-l border-white/10 pl-3 font-manrope text-xs font-medium text-white/50 md:block">Clinical dashboard</h1>
         </div>
         <div className="flex items-center gap-2 text-xs">
           <span className="hidden items-center gap-1.5 text-slate-400 sm:flex" title={API_URL}>
@@ -161,7 +169,7 @@ export default function App() {
             {connection === "online" ? "API connected" : connection === "offline" ? "API offline" : "Connecting…"}
           </span>
           <label className={headerBtn}>
-            <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} className="accent-sky-400" />
+            <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} className="accent-violet-500" />
             Live updates
           </label>
           <button onClick={() => setShowLabels((s) => !s)} className={`${headerBtn} hidden sm:block`}>
@@ -175,7 +183,7 @@ export default function App() {
       <Disclaimer />
 
       {connection === "waking" && (
-        <div role="status" className="border-b border-amber-500/30 bg-amber-500/10 px-4 py-2 text-xs text-amber-100">
+        <div role="status" className="border-b border-primary/30 bg-primary/10 px-4 py-2 text-xs text-white/80">
           Waking up the model server (free hosting sleeps when idle; this can take up to a minute)… attempt {attempt} of {WAKE_ATTEMPTS}
         </div>
       )}
@@ -203,6 +211,7 @@ export default function App() {
               onSelect={selectVessel}
               showLabels={showLabels}
               resetToken={resetToken}
+              transparent
             />
           ) : (
             <div className="flex h-full items-center justify-center p-6 text-center text-sm text-slate-400">
@@ -244,10 +253,10 @@ export default function App() {
               </p>
             </div>
           </div>
-          {pred.busy && <div className="absolute right-3 top-3 rounded bg-slate-900/80 px-2 py-1 text-xs text-slate-300">Updating…</div>}
+          {pred.busy && <div className="glass absolute right-3 top-3 rounded-lg px-2.5 py-1 text-xs text-white/70">Updating…</div>}
         </main>
 
-        <aside className="space-y-3 p-3 lg:col-start-2 lg:row-start-2 xl:col-start-3 xl:row-start-1 xl:overflow-y-auto xl:border-l xl:border-slate-800">
+        <aside className="space-y-3 p-3 lg:col-start-2 lg:row-start-2 xl:col-start-3 xl:row-start-1 xl:overflow-y-auto xl:border-l xl:border-white/10">
           {schema && prediction ? (
             <>
               <CadStatusCard cad={prediction.cad} schema={schema} baseline={showBaseline?.cad.probability} />
@@ -317,7 +326,7 @@ export default function App() {
           )}
         </aside>
 
-        <aside className="border-t border-slate-800 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:border-r lg:border-t-0 xl:row-span-1 xl:overflow-y-auto">
+        <aside className="border-t border-white/10 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:border-r lg:border-t-0 xl:row-span-1 xl:overflow-y-auto">
           {schema ? (
             <PatientForm
               schema={schema}

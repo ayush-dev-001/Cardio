@@ -1,14 +1,15 @@
 /** Small shared UI primitives (dark theme). Status is always icon + label, never colour alone. */
 import { ArrowDown, ArrowUp, Check, CircleAlert, CircleCheck, TriangleAlert, type LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { motion } from "motion/react";
+import { useId, type ReactNode } from "react";
 import type { RangeStatus, RiskLevel } from "../api/types";
 
 export function Panel({ title, right, children, className = "" }: { title?: ReactNode; right?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={`rounded-xl border border-slate-800 bg-slate-900/70 p-4 ${className}`}>
+    <section className={`glass rounded-2xl p-5 ${className}`}>
       {(title || right) && (
         <div className="mb-3 flex items-center justify-between gap-2">
-          {title && <h2 className="text-sm font-semibold text-slate-100">{title}</h2>}
+          {title && <h2 className="font-manrope text-sm font-semibold text-white">{title}</h2>}
           {right}
         </div>
       )}
@@ -52,19 +53,21 @@ export function RangeChip({ status }: { status: RangeStatus }) {
 }
 
 export function Tabs<T extends string>({ value, onChange, items }: { value: T; onChange: (v: T) => void; items: { id: T; label: string }[] }) {
+  const uid = useId();
   return (
-    <div role="tablist" className="inline-flex rounded-lg border border-slate-700 bg-slate-950/60 p-0.5 text-xs">
+    <div role="tablist" className="inline-flex rounded-lg border border-white/10 bg-white/[0.04] p-1 font-manrope text-xs">
       {items.map((it) => (
         <button
           key={it.id}
           role="tab"
           aria-selected={value === it.id}
           onClick={() => onChange(it.id)}
-          className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
-            value === it.id ? "bg-slate-700 text-white" : "text-slate-400 hover:text-slate-200"
-          }`}
+          className={`relative rounded-md px-3 py-1.5 font-semibold transition-colors duration-150 ${value === it.id ? "text-white" : "text-white/50 hover:text-white/80"}`}
         >
-          {it.label}
+          {value === it.id && (
+            <motion.span layoutId={`tab-${uid}`} className="absolute inset-0 rounded-md bg-primary" transition={{ type: "spring", stiffness: 500, damping: 40 }} />
+          )}
+          <span className="relative">{it.label}</span>
         </button>
       ))}
     </div>

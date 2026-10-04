@@ -8,13 +8,13 @@ import { MODEL_NAMES, Panel, RiskChip } from "./ui";
 /** Probability track with the decision-threshold tick. Fill colour = the same risk scale as 3D. */
 function ProbabilityTrack({ p, threshold, height = "h-2" }: { p: number; threshold: number; height?: string }) {
   return (
-    <div className={`relative ${height} w-full rounded-full bg-slate-800`}>
+    <div className={`relative ${height} w-full rounded-full bg-white/10`}>
       <div
         className="absolute inset-y-0 left-0 rounded-full transition-[width,background-color] duration-500 ease-out"
         style={{ width: `${p * 100}%`, background: riskColor(p) }}
       />
       <div
-        className="absolute -inset-y-1 w-0.5 rounded bg-slate-200"
+        className="absolute -inset-y-1 w-0.5 rounded bg-white"
         style={{ left: `calc(${threshold * 100}% - 1px)` }}
         title={`Decision threshold ${formatPct(threshold)}`}
       />
@@ -52,7 +52,7 @@ export function CadStatusCard({ cad, schema, baseline }: { cad: TargetPrediction
   return (
     <Panel title="Overall coronary artery disease" right={<RiskChip level={cad.risk_level} suffix=" risk" />}>
       <div className="flex items-end gap-3">
-        <span className="text-4xl font-bold tabular-nums text-white">
+        <span className="font-manrope text-5xl font-bold tabular-nums text-white">
           <AnimatedNumber value={cad.probability} format={formatPct} />
         </span>
         <span className="pb-1 text-sm text-slate-300">
@@ -101,7 +101,7 @@ export function VesselBars({
                 onClick={() => onSelect(v.vessel_id)}
                 aria-pressed={selected}
                 className={`w-full rounded-lg border px-3 py-2 text-left transition-colors ${
-                  selected ? "border-sky-400/70 bg-sky-500/10" : "border-transparent hover:border-slate-700 hover:bg-slate-800/40"
+                  selected ? "border-primary/70 bg-primary/10" : "border-transparent hover:border-white/15 hover:bg-white/[0.03]"
                 }`}
               >
                 <div className="mb-1.5 flex items-center justify-between gap-2">

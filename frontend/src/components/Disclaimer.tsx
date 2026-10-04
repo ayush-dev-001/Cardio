@@ -3,7 +3,7 @@ import { ShieldAlert } from "lucide-react";
 /** Permanent clinical safety disclaimer (hackathon requirement). Never hide or make dismissible. */
 export function Disclaimer() {
   return (
-    <div role="note" className="flex items-center gap-2 border-b border-amber-500/40 bg-amber-500/15 px-4 py-2 text-xs text-amber-100 sm:text-sm">
+    <div role="note" className="flex items-center gap-2 border-b border-amber-400/20 bg-amber-400/[0.08] px-4 py-2 text-xs text-amber-100/90 backdrop-blur">
       <ShieldAlert className="h-4 w-4 shrink-0 text-amber-300" aria-hidden />
       <span>
         <strong>For decision support and education only.</strong> CardioScope predictions are not a diagnosis and are

@@ -1,15 +1,24 @@
 @import "tailwindcss";
 
-/* Design tokens: design-system/cardioscope/MASTER.md + pages/dark-theme.md */
+/* Design tokens: design-system/cardioscope/MASTER.md + pages/dark-theme.md (purple brand per product owner) */
 @theme {
-  --font-sans: "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --color-brand-300: #93c5fd;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #3b82f6;
-  --color-brand-700: #1e40af;
-  --color-cta: #f59e0b;
-  --color-cta-hover: #fbbf24;
-  --color-cta-ink: #0b1120;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-manrope: "Manrope", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-cabin: "Cabin", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --color-primary: #7b39fc;
+  --color-primary-hover: #8d55fd;
+  --color-primary-soft: #a484d7;
+  --color-plum: #2b2344;
+  --color-plum-hover: #3a3058;
+  --color-ink: #0b0814;
+  --color-cta: #7b39fc;
+  --color-cta-hover: #8d55fd;
+  --color-cta-ink: #fafafa;
+  --color-brand-300: #c4b5fd;
+  --color-brand-400: #a78bfa;
+  --color-brand-500: #7b39fc;
+  --color-brand-700: #5b21b6;
 }
 
 html, body, #root { height: 100%; }
@@ -19,11 +28,11 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
-input[type="range"] { accent-color: #38bdf8; }
+input[type="range"] { accent-color: #8d55fd; }
 
 /* Visible keyboard focus everywhere (MASTER: clear focus rings 3-4px) */
 :focus-visible {
-  outline: 3px solid #fbbf24;
+  outline: 3px solid #a78bfa;
   outline-offset: 2px;
   border-radius: 6px;
 }
@@ -32,7 +41,7 @@ button, a, summary, [role="tab"], [role="radio"], label:has(input) { cursor: poi
 button:disabled { cursor: not-allowed; }
 
 .text-gradient {
-  background: linear-gradient(100deg, #60a5fa 0%, #3b82f6 35%, #f59e0b 100%);
+  background: linear-gradient(100deg, #c4b5fd 0%, #a78bfa 40%, #7b39fc 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -45,4 +54,18 @@ button:disabled { cursor: not-allowed; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Frosted glass surface used across landing and dashboard */
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+.glass-strong {
+  background: rgba(20, 14, 38, 0.72);
+  border: 1px solid rgba(164, 132, 215, 0.22);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
 }

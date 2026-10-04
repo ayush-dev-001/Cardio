@@ -21,11 +21,11 @@ export function VesselInfo({ vessel, prediction, explanation, onShowExplanation,
   const lowering = sorted.filter((c) => c.shap < 0).reverse().slice(0, 2);
 
   return (
-    <div className="w-80 max-w-[calc(100vw-1.5rem)] rounded-xl border border-slate-700 bg-slate-900/95 p-4 text-sm text-slate-300 shadow-2xl backdrop-blur">
+    <div className="glass-strong w-80 max-w-[calc(100vw-1.5rem)] rounded-2xl p-5 text-sm text-white/80 shadow-2xl shadow-black/40">
       <div className="flex items-start justify-between gap-2">
         <div>
           <div className="text-[11px] uppercase tracking-wide text-slate-500">Selected vessel</div>
-          <div className="text-base font-semibold text-white">
+          <div className="font-serif text-2xl leading-tight text-white">
             {vessel.name} ({vessel.id})
           </div>
         </div>
@@ -38,7 +38,7 @@ export function VesselInfo({ vessel, prediction, explanation, onShowExplanation,
         <>
           <div className="mt-3 flex items-center gap-3">
             <span className="h-3 w-3 rounded-full" style={{ background: riskColor(p) }} aria-hidden />
-            <span className="text-3xl font-bold tabular-nums text-white">{formatPct(p)}</span>
+            <span className="font-manrope text-4xl font-bold tabular-nums text-white">{formatPct(p)}</span>
             <RiskChip level={prediction.risk_level} />
           </div>
           <p className="mt-1 text-xs text-slate-400">
@@ -82,7 +82,7 @@ export function VesselInfo({ vessel, prediction, explanation, onShowExplanation,
               ))}
             </ul>
           </div>
-          <button onClick={onShowExplanation} className="text-sky-300 hover:text-sky-200">
+          <button onClick={onShowExplanation} className="inline-flex min-h-9 items-center font-medium text-brand-300 hover:text-white">
             Full explanation <ArrowRight className="ml-0.5 inline h-3.5 w-3.5" aria-hidden />
           </button>
         </div>

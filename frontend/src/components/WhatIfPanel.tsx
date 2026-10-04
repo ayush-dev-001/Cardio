@@ -29,7 +29,7 @@ function SliderRow({ f, raw, base, onChange }: { f: FeatureSchema; raw: string; 
       <div className="mb-0.5 flex items-baseline justify-between text-xs">
         <span className="text-slate-300">{f.label}</span>
         <span className="tabular-nums">
-          <span className={changed ? "font-semibold text-sky-200" : "text-slate-200"}>
+          <span className={changed ? "font-semibold text-brand-300" : "text-white"}>
             {Number.isFinite(v) ? v : "–"}
           </span>
           <span className="text-slate-500"> {f.unit}</span>
@@ -63,8 +63,8 @@ function ToggleRow({ f, raw, base, onChange }: { f: FeatureSchema; raw: string; 
   const changed = base !== undefined && base !== raw;
   return (
     <div className="flex items-center justify-between gap-2 text-xs">
-      <span className={changed ? "font-semibold text-sky-200" : "text-slate-300"}>{f.label}</span>
-      <div className="inline-flex rounded-md border border-slate-700 p-0.5" role="radiogroup" aria-label={`What-if: ${f.label}`}>
+      <span className={changed ? "font-semibold text-brand-300" : "text-white/80"}>{f.label}</span>
+      <div className="inline-flex rounded-md border border-white/10 bg-white/[0.04] p-0.5" role="radiogroup" aria-label={`What-if: ${f.label}`}>
         {f.options?.map((o) => {
           const on = String(o.value) === raw;
           return (
@@ -74,7 +74,7 @@ function ToggleRow({ f, raw, base, onChange }: { f: FeatureSchema; raw: string; 
               role="radio"
               aria-checked={on}
               onClick={() => onChange(String(o.value))}
-              className={`rounded px-2 py-0.5 ${on ? "bg-slate-700 text-white" : "text-slate-400 hover:text-slate-200"}`}
+              className={`rounded px-2 py-0.5 ${on ? "bg-primary text-white" : "text-white/50 hover:text-white/80"}`}
             >
               {o.label}
             </button>
