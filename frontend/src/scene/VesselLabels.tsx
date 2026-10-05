@@ -44,8 +44,8 @@ export function LabelLayer({ refs, vessels, probabilities, onSelect }: LayerProp
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {vessels.map(({ info: { id } }) => {
-        const p = probabilities[id] ?? 0;
-        const color = riskColor(p);
+        const p = probabilities[id];
+        const color = p === undefined ? "#8b8698" : riskColor(p);
         return (
           <div
             key={id}
@@ -58,7 +58,7 @@ export function LabelLayer({ refs, vessels, probabilities, onSelect }: LayerProp
             className="pointer-events-auto absolute left-0 top-0 cursor-pointer whitespace-nowrap rounded-md border px-2 py-0.5 text-xs font-semibold text-white shadow-lg"
             style={{ background: "rgba(15,23,42,0.85)", borderColor: color, display: "none" }}
           >
-            {id} <span style={{ color }}>{Math.round(p * 100)}%</span>
+            {id} <span style={{ color }}>{p === undefined ? "—" : `${Math.round(p * 100)}%`}</span>
           </div>
         );
       })}

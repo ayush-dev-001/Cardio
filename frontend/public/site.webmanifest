@@ -1,0 +1,17 @@
+{
+  "name": "CardioScope",
+  "short_name": "CardioScope",
+  "description": "Coronary risk prediction with an interactive 3D heart and explanations.",
+  "start_url": "/app",
+  "display": "standalone",
+  "background_color": "#0b0814",
+  "theme_color": "#0b0814",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

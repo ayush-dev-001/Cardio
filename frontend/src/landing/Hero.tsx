@@ -253,7 +253,7 @@ export function Hero() {
         <motion.div {...rise(0.46)} className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
           <Link
             href="/app"
-            className="inline-flex min-h-12 items-center justify-center rounded-[10px] bg-primary px-6 font-cabin text-base font-medium text-white shadow-lg shadow-primary/30 transition-colors duration-200 hover:bg-primary-hover"
+            className="btn-shimmer inline-flex min-h-12 items-center justify-center rounded-[10px] bg-primary px-6 font-cabin text-base font-medium text-white shadow-lg shadow-primary/30 transition-colors duration-200 hover:bg-primary-hover"
           >
             Start a risk assessment
           </Link>

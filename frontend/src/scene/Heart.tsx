@@ -54,7 +54,7 @@ export function Heart({ probabilities, selectedId, hoveredId, onSelect, onHover 
         <Vessel
           key={v.info.id}
           vessel={v}
-          probability={probabilities[v.info.id] ?? 0}
+          probability={probabilities[v.info.id] ?? Number.NaN}
           selected={selectedId === v.info.id}
           hovered={hoveredId === v.info.id}
           onSelect={onSelect}

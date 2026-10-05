@@ -154,7 +154,7 @@ export function ModelHeart({
           key={v.info.id}
           vessel={v}
           meshes={(vesselMeshes[v.info.id] ?? []).map((n) => nodes[n])}
-          probability={probabilities[v.info.id] ?? 0}
+          probability={probabilities[v.info.id] ?? Number.NaN}
           selected={selectedId === v.info.id}
           hovered={hoveredId === v.info.id}
           onSelect={onSelect}

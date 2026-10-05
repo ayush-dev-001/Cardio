@@ -17,11 +17,7 @@
   ],
   "rewrites": [
     {
-      "source": "/app",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/app/(.*)",
+      "source": "/((?!assets/|models/|favicon.svg|site.webmanifest).*)",
       "destination": "/index.html"
     }
   ]

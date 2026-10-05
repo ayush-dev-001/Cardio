@@ -10,7 +10,8 @@ import { riskColor } from "../anatomy/riskColor";
  */
 export function useRiskMaterial(probability: number, glow: number, roughness = 0.35): MeshStandardMaterial {
   const material = useMemo(() => new MeshStandardMaterial({ roughness, metalness: 0.05 }), [roughness]);
-  const target = useMemo(() => new Color(riskColor(probability)), [probability]);
+  // no prediction yet (NaN): neutral grey, so an unknown risk never looks like "low risk"
+  const target = useMemo(() => new Color(Number.isFinite(probability) ? riskColor(probability) : "#8b8698"), [probability]);
   const current = useRef<Color | null>(null);
   const invalidate = useThree((s) => s.invalidate);
 

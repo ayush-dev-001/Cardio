@@ -1,3 +1,16 @@
+import {
+  BarChart3,
+  ClipboardList,
+  Crosshair,
+  ExternalLink,
+  HeartPulse,
+  Home,
+  Menu,
+  RefreshCw,
+  Tag,
+  TriangleAlert,
+  WifiOff,
+} from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { API_URL, api } from "./api/client";
@@ -6,22 +19,26 @@ import { Disclaimer } from "./components/Disclaimer";
 import { Logo } from "./components/Logo";
 import { PatientForm } from "./components/PatientForm";
 import { PhysiologyPanel } from "./components/PhysiologyPanel";
+import { Button, Card, EmptyState, Select, Sheet, Skeleton, Switch, Tip, TooltipProvider } from "./components/primitives";
 import { CadStatusCard, VesselBars } from "./components/Results";
 import { RiskLegend } from "./components/RiskLegend";
 import { ShapWaterfall } from "./components/ShapWaterfall";
-import { Panel, Tabs } from "./components/ui";
+import { Tabs } from "./components/ui";
 import { VesselInfo } from "./components/VesselInfo";
 import { WhatIfPanel } from "./components/WhatIfPanel";
 import { MOCK_PRESETS, MockPanel } from "./dev/MockPanel";
+import { cn } from "./lib/cn";
 import { toFormValues, validate, type FormValues } from "./lib/form";
+import { usePageMeta } from "./lib/meta";
 import { usePrediction } from "./lib/usePrediction";
+import { useMediaQuery } from "./lib/useMediaQuery";
+import { GITHUB_URL } from "./landing/Hero";
 import { Link } from "./router";
 import { HeartViewer } from "./scene/HeartViewer";
 
 type Tab = "explanation" | "physiology" | "whatif";
+type MobileView = "heart" | "results" | "patient";
 type Connection = "connecting" | "waking" | "online" | "offline";
-const headerBtn =
-  "inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-white/15 px-3 font-manrope text-xs font-medium text-white/80 transition-colors duration-200 hover:border-white/30 hover:text-white";
 // Free hosting may put the API to sleep; keep retrying for about a minute before giving up.
 const WAKE_ATTEMPTS = 12;
 const WAKE_DELAY_MS = 5000;
@@ -35,7 +52,22 @@ const hasWebGL = (() => {
   }
 })();
 
+const TAB_ITEMS: { id: Tab; label: string }[] = [
+  { id: "explanation", label: "Why?" },
+  { id: "physiology", label: "Physiology" },
+  { id: "whatif", label: "What-if" },
+];
+const MOBILE_TABS: { id: MobileView; label: string; icon: typeof HeartPulse }[] = [
+  { id: "heart", label: "3D heart", icon: HeartPulse },
+  { id: "results", label: "Results", icon: BarChart3 },
+  { id: "patient", label: "Patient", icon: ClipboardList },
+];
+
 export default function App() {
+  usePageMeta(
+    "Clinical dashboard · CardioScope",
+    "Enter or load patient data to predict coronary artery disease and LAD, LCX and RCA stenosis, see it on a 3D heart and understand why.",
+  );
   const [schema, setSchema] = useState<Schema | null>(null);
   const [samples, setSamples] = useState<SamplePatient[]>([]);
   const [values, setValues] = useState<FormValues>({});
@@ -52,15 +84,17 @@ export default function App() {
   const [selectedVessel, setSelectedVessel] = useState<string | null>(null);
   const [target, setTarget] = useState<string>("cad");
   const [tab, setTab] = useState<Tab>("explanation");
+  const [mobileView, setMobileView] = useState<MobileView>("heart");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [showLabels, setShowLabels] = useState(true);
   const [resetToken, setResetToken] = useState(0);
+  // render exactly one layout, so only one WebGL canvas ever exists
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
 
-  const { patient, errors } = useMemo(
-    () => (schema ? validate(schema, values) : { patient: null, errors: {} }),
-    [schema, values],
-  );
+  const { patient, errors } = useMemo(() => (schema ? validate(schema, values) : { patient: null, errors: {} }), [schema, values]);
   const pred = usePrediction(patient, live);
   const { prediction, explanation } = pred;
+  const nErrors = Object.keys(errors).length;
 
   // ------------------------------------------------------------------ loading / waking the API
   const loadSchema = useCallback(async () => {
@@ -72,7 +106,7 @@ export default function App() {
         const [s, smp] = await Promise.all([api.schema(), api.samples()]);
         setSchema(s);
         setSamples(smp);
-        // "?sample=<kind>" (e.g. from the landing page's "Try a sample patient") picks the starting patient
+        // "?sample=<kind>" (from the landing page's "Try a sample patient") picks the starting patient
         const wanted = new URLSearchParams(window.location.search).get("sample") ?? "single_vessel";
         const initial = smp.find((x) => x.kind === wanted) ?? smp.find((x) => x.kind === "single_vessel") ?? null;
         const v = toFormValues(s, initial?.patient);
@@ -126,10 +160,25 @@ export default function App() {
     setSelectedVessel(id);
     const t = schema?.vessels.find((v) => v.id === id)?.target_id;
     if (t) setTarget(t);
+    if (id) setMobileView("heart");
   };
 
   const editValue = (id: string, raw: string) => {
     setValues((v) => ({ ...v, [id]: raw }));
+    setActiveSample(null);
+  };
+  const loadSample = (s: SamplePatient) => {
+    if (!schema) return;
+    const v = toFormValues(schema, s.patient);
+    setValues(v);
+    setBaseline(v);
+    setActiveSample(s);
+  };
+  const resetForm = () => {
+    if (!schema) return;
+    const v = toFormValues(schema);
+    setValues(v);
+    setBaseline(v);
     setActiveSample(null);
   };
 
@@ -142,134 +191,119 @@ export default function App() {
   const currentExplanation = explanation?.explanations.find((e) => e.target_id === target) ?? null;
   const vesselInfo = schema?.vessels.find((v) => v.id === selectedVessel) ?? null;
   const showBaseline = baselinePrediction && pred.submittedKey !== baselineKey ? baselinePrediction : null;
-  const error = pred.error ?? (offline ? loadError : null);
+  const sexLabel = schema?.features.find((f) => f.id === "sex")?.options?.find((o) => String(o.value) === values.sex)?.label;
+  const patientChip = schema
+    ? `${activeSample ? `Example #${activeSample.patient_id}` : "Custom patient"} · ${values.age || "?"} y${sexLabel ? ` · ${sexLabel}` : ""}`
+    : null;
 
-  return (
-    <div className="relative isolate flex h-full flex-col bg-ink text-white/90">
-      {/* soft brand glows give the glass panels something to frost */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[560px] w-[560px] rounded-full bg-primary/20 blur-[140px]" />
-        <div className="absolute -right-32 top-1/3 h-[480px] w-[480px] rounded-full bg-[#4c1d95]/25 blur-[140px]" />
-        <div className="absolute bottom-0 left-1/3 h-[360px] w-[520px] rounded-full bg-plum/40 blur-[120px]" />
-      </div>
-      <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-ink/60 px-4 py-2.5 backdrop-blur-xl">
-        <div className="flex items-center gap-3">
-          <Link href="/" aria-label="CardioScope home" className="rounded-lg">
-            <Logo />
-          </Link>
-          <h1 className="hidden border-l border-white/10 pl-3 font-manrope text-xs font-medium text-white/50 md:block">Clinical dashboard</h1>
-        </div>
-        <div className="flex items-center gap-2 text-xs">
-          <span className="hidden items-center gap-1.5 text-slate-400 sm:flex" title={API_URL}>
-            <span
-              className={`h-2 w-2 rounded-full ${
-                connection === "online" ? "bg-emerald-500" : connection === "offline" ? "bg-red-500" : "animate-pulse bg-amber-400"
-              }`}
-            />
-            {connection === "online" ? "API connected" : connection === "offline" ? "API offline" : "Connecting…"}
-          </span>
-          <label className={headerBtn}>
-            <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} className="accent-violet-500" />
-            Live updates
-          </label>
-          <button onClick={() => setShowLabels((s) => !s)} className={`${headerBtn} hidden sm:block`}>
-            {showLabels ? "Hide" : "Show"} labels
-          </button>
-          <button onClick={resetView} className={headerBtn}>
-            Reset view
-          </button>
-        </div>
-      </header>
-      <Disclaimer />
+  // ------------------------------------------------------------------ panels
+  const statusDot = (
+    <span className="flex items-center gap-1.5 text-xs text-white/60" title={API_URL}>
+      <span className={cn("h-2 w-2 rounded-full", connection === "online" ? "bg-emerald-500" : offline ? "bg-red-500" : "animate-pulse bg-amber-400")} />
+      {connection === "online" ? "Model online" : offline ? "Server offline" : "Connecting…"}
+    </span>
+  );
 
-      {connection === "waking" && (
-        <div role="status" className="border-b border-primary/30 bg-primary/10 px-4 py-2 text-xs text-white/80">
-          Waking up the model server (free hosting sleeps when idle; this can take up to a minute)… attempt {attempt} of {WAKE_ATTEMPTS}
-        </div>
+  const viewer = (
+    <Card className="relative h-full min-h-[360px] overflow-hidden">
+      {hasWebGL ? (
+        <HeartViewer probabilities={probabilities} selectedId={selectedVessel} onSelect={selectVessel} showLabels={showLabels} resetToken={resetToken} transparent />
+      ) : (
+        <EmptyState icon={<HeartPulse className="h-7 w-7" />} title="3D view unavailable">
+          This browser has WebGL turned off or unsupported. All predictions and explanations are still available in Results.
+        </EmptyState>
       )}
-      {error && (
-        <div role="alert" className="flex items-center justify-between gap-3 border-b border-red-500/40 bg-red-500/10 px-4 py-2 text-xs text-red-200">
-          <span>
-            {error}
-            {offline && " Showing the 3D view with demo values."}
-          </span>
-          {offline && (
-            <button onClick={loadSchema} className="rounded border border-red-400/50 px-2 py-0.5 hover:bg-red-500/20">
-              Retry
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* phone: one column (3D, results, form) · lg: form | 3D over results · xl: form | 3D | results */}
-      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden lg:grid lg:grid-cols-[340px_1fr] lg:content-start xl:grid-cols-[minmax(320px,360px)_1fr_minmax(360px,420px)] xl:overflow-hidden">
-        <main className="relative h-[58vh] min-h-[380px] lg:col-start-2 lg:row-start-1 xl:h-auto">
-          {hasWebGL ? (
-            <HeartViewer
-              probabilities={probabilities}
-              selectedId={selectedVessel}
-              onSelect={selectVessel}
-              showLabels={showLabels}
-              resetToken={resetToken}
-              transparent
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center p-6 text-center text-sm text-slate-400">
-              3D view unavailable: this browser has WebGL turned off or unsupported. All predictions and explanations are still
-              shown in the panels.
-            </div>
-          )}
-          <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="pointer-events-auto">{offline && <MockPanel values={mockValues} onChange={setMockValues} />}</div>
-              <AnimatePresence>
-              {vesselInfo && (
-                <motion.div
-                  key={vesselInfo.id}
-                  className="pointer-events-auto"
-                  initial={{ opacity: 0, x: 16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 16 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <VesselInfo
-                    vessel={vesselInfo}
-                    prediction={prediction?.vessels.find((v) => v.vessel_id === vesselInfo.id) ?? null}
-                    explanation={explanation?.explanations.find((e) => e.target_id === vesselInfo.target_id) ?? null}
-                    onShowExplanation={() => {
-                      setTarget(vesselInfo.target_id);
-                      setTab("explanation");
-                    }}
-                    onClose={resetView}
-                  />
-                </motion.div>
-              )}
-              </AnimatePresence>
-            </div>
-            <div className="flex items-end justify-between gap-3">
-              <RiskLegend />
-              <p className="hidden max-w-[16rem] text-right text-[11px] text-slate-500 xl:block">
-                Drag to rotate · scroll to zoom · click an artery to inspect · Esc to reset
-              </p>
-            </div>
+      <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="pointer-events-auto flex flex-col gap-2">
+            <span className="rounded-lg bg-black/50 px-2.5 py-1 font-cabin text-[11px] uppercase tracking-wider text-white/60 backdrop-blur">3D anatomy</span>
+            {offline && <MockPanel values={mockValues} onChange={setMockValues} />}
           </div>
-          {pred.busy && <div className="glass absolute right-3 top-3 rounded-lg px-2.5 py-1 text-xs text-white/70">Updating…</div>}
-        </main>
-
-        <aside className="space-y-3 p-3 lg:col-start-2 lg:row-start-2 xl:col-start-3 xl:row-start-1 xl:overflow-y-auto xl:border-l xl:border-white/10">
-          {schema && prediction ? (
-            <>
-              <CadStatusCard cad={prediction.cad} schema={schema} baseline={showBaseline?.cad.probability} />
-              <VesselBars
-                prediction={prediction}
-                schema={schema}
-                selectedId={selectedVessel}
-                onSelect={selectVessel}
-                baseline={showBaseline}
+          <div className="pointer-events-auto flex gap-1.5">
+            <Tip content={showLabels ? "Hide vessel labels" : "Show vessel labels"}>
+              <Button size="icon" variant="secondary" aria-label={showLabels ? "Hide vessel labels" : "Show vessel labels"} aria-pressed={showLabels} onClick={() => setShowLabels((s) => !s)}>
+                <Tag className="h-4 w-4" aria-hidden />
+              </Button>
+            </Tip>
+            <Tip content="Reset view (Esc)">
+              <Button size="icon" variant="secondary" aria-label="Reset 3D view" onClick={resetView}>
+                <Crosshair className="h-4 w-4" aria-hidden />
+              </Button>
+            </Tip>
+          </div>
+        </div>
+        <AnimatePresence>
+          {vesselInfo && (
+            <motion.div
+              key={vesselInfo.id}
+              className="pointer-events-auto absolute right-3 top-16 max-sm:bottom-3 max-sm:left-3 max-sm:top-auto"
+              initial={{ opacity: 0, x: 16 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 16 }}
+              transition={{ duration: 0.25 }}
+            >
+              <VesselInfo
+                vessel={vesselInfo}
+                prediction={prediction?.vessels.find((v) => v.vessel_id === vesselInfo.id) ?? null}
+                explanation={explanation?.explanations.find((e) => e.target_id === vesselInfo.target_id) ?? null}
+                onShowExplanation={() => {
+                  setTarget(vesselInfo.target_id);
+                  setTab("explanation");
+                  setMobileView("results");
+                }}
+                onClose={resetView}
               />
-              {tab === "whatif" ? (
-                <div className="space-y-2">
-                  <Tabs<Tab> value={tab} onChange={setTab} items={TAB_ITEMS} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className={cn("flex items-end justify-between gap-3", vesselInfo && "max-sm:hidden")}>
+          <div className="pointer-events-auto">
+            <RiskLegend />
+          </div>
+          <p className="hidden max-w-[15rem] text-right text-[11px] text-white/40 xl:block">Drag to rotate · scroll to zoom · click an artery to inspect</p>
+        </div>
+      </div>
+      {pred.busy && (
+        <span className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1 text-xs text-white/70 backdrop-blur">
+          <RefreshCw className="h-3 w-3 animate-spin" aria-hidden /> Updating
+        </span>
+      )}
+    </Card>
+  );
+
+  const results =
+    schema && prediction ? (
+      <div className="space-y-3">
+        <AnimatePresence>
+          {nErrors > 0 && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
+              <div role="status" className="flex items-center gap-2 rounded-xl border border-amber-400/25 bg-amber-400/10 px-4 py-3 text-xs text-amber-100">
+                <TriangleAlert className="h-4 w-4 shrink-0" aria-hidden />
+                Results show the last valid inputs. Fix {nErrors === 1 ? "1 field" : `${nErrors} fields`} in Patient to update them.
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <CadStatusCard cad={prediction.cad} schema={schema} baseline={showBaseline?.cad.probability} />
+        <VesselBars prediction={prediction} schema={schema} selectedId={selectedVessel} onSelect={selectVessel} baseline={showBaseline} />
+        <Card>
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-4">
+            <Tabs<Tab> value={tab} onChange={setTab} items={TAB_ITEMS} />
+            {tab !== "whatif" && (
+              <div className="w-36">
+                <Select
+                  id="explain-target"
+                  value={target}
+                  onValueChange={setTarget}
+                  options={schema.targets.map((t) => ({ value: t.id, label: t.vessel_id ? `${t.vessel_id} stenosis` : "Overall CAD" }))}
+                />
+              </div>
+            )}
+          </div>
+          <div className="p-4">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div key={tab + target} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+                {tab === "whatif" ? (
                   <WhatIfPanel
                     schema={schema}
                     values={values}
@@ -278,93 +312,236 @@ export default function App() {
                     onResetToBaseline={() => baselineValues && setValues(baselineValues)}
                     onSetBaseline={() => setBaseline(values)}
                   />
-                </div>
-              ) : (
-                <Panel
-                  title={<Tabs<Tab> value={tab} onChange={setTab} items={TAB_ITEMS} />}
-                  right={
-                    <select
-                      value={target}
-                      onChange={(e) => setTarget(e.target.value)}
-                      aria-label="Target to explain"
-                      className="rounded-md border border-slate-700 bg-slate-950 px-2 py-1 text-xs text-slate-200"
-                    >
-                      {schema.targets.map((t) => (
-                        <option key={t.id} value={t.id}>
-                          {t.vessel_id ?? "Overall CAD"}
-                        </option>
-                      ))}
-                    </select>
-                  }
-                >
-                  <AnimatePresence mode="wait" initial={false}>
-                    {currentExplanation && (
-                      <motion.div
-                        key={tab + target}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -6 }}
-                        transition={{ duration: 0.18 }}
-                      >
-                        {tab === "explanation" ? (
-                          <ShapWaterfall explanation={currentExplanation} />
-                        ) : (
-                          <PhysiologyPanel schema={schema} explanation={currentExplanation} />
-                        )}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Panel>
-              )}
-            </>
-          ) : (
-            <Panel>
-              <p className="text-sm text-slate-400">
-                {offline ? "Results appear once the API is reachable." : connection === "waking" ? "Waiting for the model server…" : "Loading model results…"}
-              </p>
-            </Panel>
-          )}
-        </aside>
-
-        <aside className="border-t border-white/10 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:border-r lg:border-t-0 xl:row-span-1 xl:overflow-y-auto">
-          {schema ? (
-            <PatientForm
-              schema={schema}
-              values={values}
-              errors={errors}
-              derived={prediction?.derived_inputs ?? null}
-              samples={samples}
-              activeSample={activeSample}
-              busy={pred.busy}
-              dirty={pred.dirty}
-              live={live}
-              latencyMs={pred.latencyMs}
-              onChange={editValue}
-              onLoadSample={(s) => {
-                const v = toFormValues(schema, s.patient);
-                setValues(v);
-                setBaseline(v);
-                setActiveSample(s);
-              }}
-              onReset={() => {
-                const v = toFormValues(schema);
-                setValues(v);
-                setBaseline(v);
-                setActiveSample(null);
-              }}
-              onSubmit={() => patient && pred.run(patient)}
-            />
-          ) : (
-            <p className="p-4 text-sm text-slate-500">{offline ? "Patient form unavailable while the API is offline." : "Loading form…"}</p>
-          )}
-        </aside>
+                ) : currentExplanation ? (
+                  tab === "explanation" ? (
+                    <ShapWaterfall explanation={currentExplanation} />
+                  ) : (
+                    <PhysiologyPanel schema={schema} explanation={currentExplanation} />
+                  )
+                ) : null}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </Card>
       </div>
+    ) : offline ? (
+      <Card>
+        <EmptyState
+          icon={<WifiOff className="h-7 w-7" />}
+          title="Can't reach the prediction server"
+          action={
+            <Button variant="primary" onClick={loadSchema}>
+              <RefreshCw className="h-4 w-4" aria-hidden /> Try again
+            </Button>
+          }
+        >
+          {loadError} The 3D view still works with demo values. Start the API (see README) or try again in a moment.
+        </EmptyState>
+      </Card>
+    ) : (
+      <div className="space-y-3" aria-busy="true" aria-label="Loading results">
+        <Card className="p-5">
+          <Skeleton className="h-4 w-48" />
+          <Skeleton className="mx-auto mt-6 h-28 w-56 rounded-t-full" />
+          <Skeleton className="mx-auto mt-4 h-3 w-40" />
+        </Card>
+        <Card className="space-y-3 p-5">
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="h-14 w-full" />
+          ))}
+        </Card>
+        {connection === "waking" && (
+          <p className="text-center text-xs text-white/50">
+            Waking up the model server (free hosting sleeps when idle)… attempt {attempt} of {WAKE_ATTEMPTS}
+          </p>
+        )}
+      </div>
+    );
+
+  const form = schema ? (
+    <PatientForm
+      schema={schema}
+      values={values}
+      errors={errors}
+      derived={prediction?.derived_inputs ?? null}
+      samples={samples}
+      activeSample={activeSample}
+      busy={pred.busy}
+      dirty={pred.dirty}
+      live={live}
+      latencyMs={pred.latencyMs}
+      onChange={editValue}
+      onLoadSample={loadSample}
+      onReset={resetForm}
+      onSubmit={() => patient && pred.run(patient)}
+    />
+  ) : offline ? (
+    <EmptyState icon={<ClipboardList className="h-7 w-7" />} title="Patient form unavailable">
+      The form is built from the model server's schema, which can't be reached right now.
+    </EmptyState>
+  ) : (
+    <div className="space-y-3 p-4" aria-busy="true">
+      <Skeleton className="h-8 w-32" />
+      <div className="grid grid-cols-3 gap-2">
+        {[0, 1, 2].map((i) => (
+          <Skeleton key={i} className="h-[72px]" />
+        ))}
+      </div>
+      <Skeleton className="h-11" />
+      {[0, 1, 2, 3, 4].map((i) => (
+        <Skeleton key={i} className="h-14" />
+      ))}
     </div>
   );
-}
 
-const TAB_ITEMS: { id: Tab; label: string }[] = [
-  { id: "explanation", label: "Why? (SHAP)" },
-  { id: "physiology", label: "Physiology" },
-  { id: "whatif", label: "What-if" },
-];
+  const enter = (i: number) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.45, delay: 0.06 * i } });
+
+  return (
+    <TooltipProvider>
+      <div className="relative isolate flex h-[100dvh] flex-col overflow-hidden bg-page text-white/90">
+        <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+          <div className="absolute -left-48 -top-48 h-[520px] w-[520px] rounded-full bg-primary/12 blur-[150px]" />
+          <div className="absolute -right-40 bottom-0 h-[420px] w-[520px] rounded-full bg-plum/50 blur-[150px]" />
+        </div>
+
+        <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-white/[0.07] bg-surface/80 px-3 backdrop-blur-xl sm:px-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <Link href="/" aria-label="CardioScope home" className="inline-flex min-h-11 items-center rounded-lg">
+              <Logo />
+            </Link>
+            <span className="hidden rounded-md border border-white/10 px-2 py-0.5 font-cabin text-[11px] uppercase tracking-wider text-white/50 md:inline">Dashboard</span>
+          </div>
+          {patientChip && (
+            <motion.span
+              key={patientChip}
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="hidden truncate rounded-full border border-white/10 bg-surface-2 px-3 py-1 font-manrope text-xs text-white/75 lg:block"
+            >
+              {patientChip}
+            </motion.span>
+          )}
+          <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-4 md:flex">
+              {statusDot}
+              <Switch id="live-switch" checked={live} onCheckedChange={setLive} label="Live updates" />
+            </div>
+            <Button size="icon" variant="ghost" className="md:hidden" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
+              <Menu className="h-5 w-5" aria-hidden />
+            </Button>
+          </div>
+        </header>
+        <Disclaimer />
+        {pred.error && connection === "online" && (
+          <div role="alert" className="border-b border-red-500/30 bg-red-500/10 px-4 py-2 text-xs text-red-200">
+            {pred.error}
+          </div>
+        )}
+
+        {isDesktop ? (
+        <div className="grid min-h-0 flex-1 gap-3 p-3 lg:grid-cols-[340px_1fr] xl:grid-cols-[minmax(320px,370px)_1fr_minmax(360px,430px)]">
+          <motion.aside {...enter(0)} className="card-surface row-span-2 min-h-0 overflow-hidden rounded-2xl xl:row-span-1" aria-label="Patient data">
+            {form}
+          </motion.aside>
+          <motion.div {...enter(1)} className="min-h-0 lg:h-[52vh] xl:h-auto">
+            {viewer}
+          </motion.div>
+          <motion.aside {...enter(2)} className="min-h-0 overflow-y-auto pb-2 no-scrollbar lg:col-start-2 xl:col-start-3" aria-label="Results">
+            {results}
+          </motion.aside>
+        </div>
+        ) : (
+        <>
+        {/* phone / small tablet: one view at a time + bottom tab bar; the 3D view stays mounted */}
+        <div className="relative min-h-0 flex-1">
+          <div className={cn("absolute inset-0 p-3 transition-opacity duration-200", mobileView === "heart" ? "z-10 opacity-100" : "pointer-events-none opacity-0")} aria-hidden={mobileView !== "heart"}>
+            {viewer}
+          </div>
+          <AnimatePresence mode="wait" initial={false}>
+            {mobileView !== "heart" && (
+              <motion.div
+                key={mobileView}
+                initial={{ opacity: 0, x: 18 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -18 }}
+                transition={{ duration: 0.22 }}
+                className="absolute inset-0 z-20 overflow-y-auto p-3 no-scrollbar"
+              >
+                {mobileView === "results" ? results : <div className="card-surface h-full overflow-hidden rounded-2xl">{form}</div>}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        <nav aria-label="Dashboard sections" className="grid shrink-0 grid-cols-3 border-t border-white/[0.07] bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
+          {MOBILE_TABS.map(({ id, label, icon: Icon }) => {
+            const on = mobileView === id;
+            return (
+              <button
+                key={id}
+                onClick={() => setMobileView(id)}
+                aria-current={on ? "page" : undefined}
+                className={cn("relative flex min-h-14 flex-col items-center justify-center gap-0.5 font-manrope text-[11px] font-semibold transition-colors", on ? "text-white" : "text-white/45")}
+              >
+                {on && <motion.span layoutId="mobile-tab" className="absolute inset-x-6 top-0 h-0.5 rounded-full bg-primary" />}
+                <Icon className="h-5 w-5" aria-hidden />
+                {label}
+              </button>
+            );
+          })}
+        </nav>
+        </>
+        )}
+
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen} title="Menu">
+          <div className="space-y-5">
+            <div className="rounded-xl border border-white/10 bg-surface-2 p-3">{statusDot}</div>
+            <div className="space-y-3 rounded-xl border border-white/10 bg-surface-2 p-3">
+              <Switch id="live-switch-mobile" checked={live} onCheckedChange={setLive} label="Live updates" />
+              <Switch id="labels-switch-mobile" checked={showLabels} onCheckedChange={setShowLabels} label="Vessel labels" />
+            </div>
+            {samples.length > 0 && (
+              <div>
+                <p className="mb-2 font-cabin text-xs uppercase tracking-wider text-white/45">Example patients</p>
+                <div className="space-y-2">
+                  {samples.map((s) => (
+                    <Button
+                      key={s.kind}
+                      variant={activeSample?.kind === s.kind ? "primary" : "secondary"}
+                      className="w-full justify-start"
+                      onClick={() => {
+                        loadSample(s);
+                        setMenuOpen(false);
+                        setMobileView("results");
+                      }}
+                    >
+                      {s.title}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="space-y-1 border-t border-white/10 pt-4">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                onClick={() => {
+                  resetView();
+                  setMenuOpen(false);
+                  setMobileView("heart");
+                }}
+              >
+                <Crosshair className="h-4 w-4" aria-hidden /> Reset 3D view
+              </Button>
+              <Link href="/" onClick={() => setMenuOpen(false)} className="flex h-11 items-center gap-2 rounded-lg px-4 font-manrope text-sm font-semibold text-white/70 hover:bg-white/[0.06] hover:text-white">
+                <Home className="h-4 w-4" aria-hidden /> Home
+              </Link>
+              <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="flex h-11 items-center gap-2 rounded-lg px-4 font-manrope text-sm font-semibold text-white/70 hover:bg-white/[0.06] hover:text-white">
+                <ExternalLink className="h-4 w-4" aria-hidden /> Source code
+              </a>
+            </div>
+          </div>
+        </Sheet>
+      </div>
+    </TooltipProvider>
+  );
+}

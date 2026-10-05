@@ -19,7 +19,26 @@
   --color-brand-400: #a78bfa;
   --color-brand-500: #7b39fc;
   --color-brand-700: #5b21b6;
+  /* dashboard surfaces: near-black cards on a slightly lifted plum-black page */
+  --color-page: #0e0c16;
+  --color-surface: #060509;
+  --color-surface-2: #110f19;
+  --color-surface-3: #1a1724;
+  --animate-accordion-down: accordion-down 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-accordion-up: accordion-up 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-marquee: marquee 38s linear infinite;
 }
+
+@keyframes accordion-down { from { height: 0; opacity: 0.4; } to { height: var(--radix-accordion-content-height); opacity: 1; } }
+@keyframes accordion-up { from { height: var(--radix-accordion-content-height); opacity: 1; } to { height: 0; opacity: 0.4; } }
+@keyframes shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes sheet-in-right { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes sheet-out-right { from { transform: translateX(0); } to { transform: translateX(100%); } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(4px) scale(0.98); } to { opacity: 1; transform: none; } }
 
 html, body, #root { height: 100%; }
 body {
@@ -69,3 +88,23 @@ button:disabled { cursor: not-allowed; }
   backdrop-filter: blur(22px) saturate(150%);
   -webkit-backdrop-filter: blur(22px) saturate(150%);
 }
+
+.card-surface {
+  background: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 24px 48px -28px rgba(0, 0, 0, 0.9);
+}
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+/* subtle sweep used on primary CTAs */
+.btn-shimmer { position: relative; overflow: hidden; isolation: isolate; }
+.btn-shimmer::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.28) 50%, transparent 70%);
+  background-size: 250% 100%; animation: shimmer 3.2s ease-in-out infinite;
+}
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }

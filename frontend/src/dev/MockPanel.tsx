@@ -3,7 +3,7 @@ import { useState } from "react";
 import { VESSELS } from "../anatomy/anatomy";
 import { riskColor } from "../anatomy/riskColor";
 
-/** Mock probability presets for Phase 3 (replaced by real /predict output in Phase 6). */
+/** Illustrative probability presets, used only when the prediction server cannot be reached. */
 export const MOCK_PRESETS: Record<string, { label: string; values: Record<string, number> }> = {
   normal: { label: "Normal", values: { LAD: 0.08, LCX: 0.12, RCA: 0.1 } },
   single: { label: "Single-vessel (LAD)", values: { LAD: 0.86, LCX: 0.22, RCA: 0.18 } },
@@ -23,18 +23,18 @@ export function MockPanel({ values, onChange }: Props) {
   const randomize = () => onChange(Object.fromEntries(VESSELS.map((v) => [v.id, Math.round(Math.random() * 100) / 100])));
 
   return (
-    <div className="w-72 max-w-[calc(100vw-1.5rem)] rounded-lg border border-slate-700 bg-slate-900/90 p-4 text-sm text-slate-300 backdrop-blur">
+    <div className="card-surface w-72 max-w-[calc(100vw-1.5rem)] rounded-xl p-4 text-sm text-white/80">
       <button
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         className="flex w-full items-center justify-between font-semibold text-white"
       >
-        Mock probabilities
+        Demo values
         <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`} aria-hidden />
       </button>
       {open && (
         <>
-          <p className="mb-3 mt-1 text-xs text-slate-500">Demo data until the model API is connected.</p>
+          <p className="mb-3 mt-1 text-xs text-white/50">Server offline: explore the 3D view with illustrative values. These are not predictions.</p>
           <div className="mb-4 flex flex-wrap gap-1.5">
             {Object.entries(MOCK_PRESETS).map(([key, p]) => (
               <button key={key} onClick={() => onChange({ ...p.values })} className={btn}>

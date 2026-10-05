@@ -10,14 +10,15 @@ import {
   SlidersHorizontal,
   Users,
 } from "lucide-react";
-import { AnimatePresence, motion, useInView } from "motion/react";
+import { AnimatePresence, motion, useInView, useScroll, useTransform } from "motion/react";
 import { Suspense, lazy, useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { riskColor } from "../anatomy/riskColor";
 import { AnimatedNumber } from "../components/AnimatedNumber";
 import { Logo } from "../components/Logo";
+import { usePageMeta } from "../lib/meta";
 import { Link } from "../router";
 import { GITHUB_URL, Hero } from "./Hero";
-import { CountUp, Reveal } from "./motion";
+import { CountUp, Marquee, Reveal, ScrollProgress, TiltCard, WordReveal } from "./motion";
 import { METRICS } from "./metrics";
 
 const HeroHeart = lazy(() => import("./HeroHeart"));
@@ -30,7 +31,7 @@ function SectionHeading({ eyebrow, title, accent, children }: { eyebrow: string;
     <Reveal className="mx-auto mb-14 max-w-2xl text-center">
       <p className="font-cabin text-sm font-medium uppercase tracking-[0.18em] text-primary-soft">{eyebrow}</p>
       <h2 className="mt-3 font-serif text-4xl leading-[1.1] text-white sm:text-5xl">
-        {title} {accent && <em className="italic text-brand-300">{accent}</em>}
+        <WordReveal text={title} /> {accent && <em className="italic text-brand-300"><WordReveal text={accent} /></em>}
       </h2>
       {children && <p className="mt-5 text-base leading-relaxed text-white/60">{children}</p>}
     </Reveal>
@@ -206,6 +207,9 @@ function Stats() {
 
 // ------------------------------------------------------------------------------- how it works
 function HowItWorks() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 85%", "end 55%"] });
+  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const steps = [
     {
       title: "Enter clinical data",
@@ -224,8 +228,12 @@ function HowItWorks() {
     <section id="how" className="relative scroll-mt-8 py-24">
       <div className={container}>
         <SectionHeading eyebrow="How it works" title="From bedside data to a" accent="vessel-level picture" />
-        <div role="list" className="relative grid gap-5 md:grid-cols-3">
-          <div aria-hidden className="pointer-events-none absolute left-0 right-0 top-[52px] hidden h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent md:block" />
+        <div ref={ref} role="list" className="relative grid gap-5 md:grid-cols-3">
+          <motion.div
+            aria-hidden
+            style={{ scaleX: lineScale }}
+            className="pointer-events-none absolute left-[8%] right-[8%] top-[52px] z-0 hidden h-[2px] origin-left rounded-full bg-gradient-to-r from-primary via-brand-400 to-primary md:block"
+          />
           {steps.map(({ title, text }, k) => (
             <Reveal key={title} delay={k * 0.1}>
               <div role="listitem" className="glass relative h-full rounded-2xl p-6">
@@ -263,11 +271,13 @@ function Features() {
         <div className="grid gap-5 md:grid-cols-3">
           {items.map(({ icon, title, text, wide }, k) => (
             <Reveal key={title} delay={(k % 3) * 0.06} className={wide ? "md:col-span-2" : ""}>
+              <TiltCard className="h-full">
               <GlassCard>
                 <IconBadge icon={icon} />
                 <h3 className="mt-5 font-manrope text-lg font-semibold text-white">{title}</h3>
                 <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/60">{text}</p>
               </GlassCard>
+              </TiltCard>
             </Reveal>
           ))}
         </div>
@@ -377,7 +387,7 @@ function FinalCta() {
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/app"
-              className="inline-flex min-h-12 items-center rounded-[10px] bg-primary px-6 font-cabin text-base font-medium text-white shadow-lg shadow-primary/30 transition-colors duration-200 hover:bg-primary-hover"
+              className="btn-shimmer inline-flex min-h-12 items-center rounded-[10px] bg-primary px-6 font-cabin text-base font-medium text-white shadow-lg shadow-primary/30 transition-colors duration-200 hover:bg-primary-hover"
             >
               Start a risk assessment
             </Link>
@@ -416,15 +426,40 @@ function Footer() {
 }
 
 export function Landing() {
+  usePageMeta(
+    "CardioScope · See coronary risk in 3D and understand why",
+    "CardioScope predicts coronary artery disease and LAD, LCX and RCA stenosis from routine clinical, ECG and echo data, colours each artery on an interactive 3D heart and explains every prediction.",
+  );
   return (
     <div className="min-h-full overflow-x-hidden bg-ink text-white [scroll-behavior:smooth]">
       <a href="#main" className="sr-only z-[60] rounded bg-primary px-3 py-2 text-white focus:not-sr-only focus:fixed focus:left-3 focus:top-3">
         Skip to content
       </a>
+      <ScrollProgress />
       <Hero />
       <main id="main">
         <Showcase />
         <Stats />
+        <section aria-label="Methods and tools" className="py-4">
+          <div className={container}>
+            <Marquee
+              items={[
+                "Nested cross-validation",
+                "Bootstrap 95% CIs",
+                "Platt calibration",
+                "Logistic regression",
+                "Random forest",
+                "XGBoost",
+                "CatBoost",
+                "Exact SHAP",
+                "FastAPI",
+                "React Three Fiber",
+                "Meshopt-compressed anatomy",
+                "Live what-if",
+              ]}
+            />
+          </div>
+        </section>
         <HowItWorks />
         <Features />
         <Results />

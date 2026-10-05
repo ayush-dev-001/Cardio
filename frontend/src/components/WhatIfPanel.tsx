@@ -1,6 +1,8 @@
+import { RotateCcw, Pin } from "lucide-react";
 import type { FeatureSchema, Schema } from "../api/types";
+import { cn } from "../lib/cn";
 import type { FormValues } from "../lib/form";
-import { Panel } from "./ui";
+import { Button, Slider } from "./primitives";
 
 interface Props {
   schema: Schema;
@@ -11,60 +13,50 @@ interface Props {
   onSetBaseline: () => void;
 }
 
-/** Slider step that gives ~100 positions over the observed range, rounded to a tidy value. */
+/** Slider step giving ~100 positions over the observed range, rounded to a tidy value. */
 function niceStep([lo, hi]: [number, number]): number {
   const raw = (hi - lo) / 100;
   const pow = 10 ** Math.floor(Math.log10(raw));
   return [1, 2, 5, 10].map((m) => m * pow).find((s) => s >= raw) ?? raw;
 }
+const decimalsOf = (step: number) => Math.max(0, -Math.floor(Math.log10(step)));
 
 function SliderRow({ f, raw, base, onChange }: { f: FeatureSchema; raw: string; base: string | undefined; onChange: (v: string) => void }) {
   const range = f.observed_range ?? f.valid_range ?? [0, 100];
   const step = niceStep(range);
+  const dp = decimalsOf(step);
   const v = Number(raw);
   const changed = base !== undefined && base !== raw;
-  const basePos = base !== undefined ? ((Number(base) - range[0]) / (range[1] - range[0])) * 100 : null;
+  const fmt = (x: number) => (Number.isFinite(x) ? x.toFixed(dp) : "–");
   return (
-    <label className="block">
-      <div className="mb-0.5 flex items-baseline justify-between text-xs">
-        <span className="text-slate-300">{f.label}</span>
+    <div>
+      <div className="flex items-baseline justify-between gap-2 text-xs">
+        <span className={cn("font-manrope font-medium", changed ? "text-brand-300" : "text-white/80")}>{f.label}</span>
         <span className="tabular-nums">
-          <span className={changed ? "font-semibold text-brand-300" : "text-white"}>
-            {Number.isFinite(v) ? v : "–"}
-          </span>
-          <span className="text-slate-500"> {f.unit}</span>
-          {changed && <span className="text-slate-500"> (was {base})</span>}
+          <span className={cn("font-manrope font-semibold", changed ? "text-brand-300" : "text-white")}>{fmt(v)}</span>
+          <span className="text-white/40"> {f.unit}</span>
+          {changed && <span className="text-white/40"> · was {fmt(Number(base))}</span>}
         </span>
       </div>
-      <div className="relative">
-        {basePos !== null && changed && (
-          <span
-            className="pointer-events-none absolute top-1/2 h-3 w-0.5 -translate-y-1/2 rounded bg-slate-400"
-            style={{ left: `${Math.min(100, Math.max(0, basePos))}%` }}
-            title="baseline"
-          />
-        )}
-        <input
-          type="range"
-          min={range[0]}
-          max={range[1]}
-          step={step}
-          value={Number.isFinite(v) ? Math.min(range[1], Math.max(range[0], v)) : range[0]}
-          onChange={(e) => onChange(e.target.value)}
-          aria-label={`What-if: ${f.label}`}
-          className="w-full"
-        />
-      </div>
-    </label>
+      <Slider
+        value={Number.isFinite(v) ? v : range[0]}
+        min={range[0]}
+        max={range[1]}
+        step={step}
+        label={`What-if: ${f.label}`}
+        marker={changed && base !== undefined ? Number(base) : null}
+        onValueChange={(x) => onChange(x.toFixed(dp))}
+      />
+    </div>
   );
 }
 
 function ToggleRow({ f, raw, base, onChange }: { f: FeatureSchema; raw: string; base: string | undefined; onChange: (v: string) => void }) {
   const changed = base !== undefined && base !== raw;
   return (
-    <div className="flex items-center justify-between gap-2 text-xs">
-      <span className={changed ? "font-semibold text-brand-300" : "text-white/80"}>{f.label}</span>
-      <div className="inline-flex rounded-md border border-white/10 bg-white/[0.04] p-0.5" role="radiogroup" aria-label={`What-if: ${f.label}`}>
+    <div className="flex min-h-11 items-center justify-between gap-2 text-xs">
+      <span className={cn("font-manrope font-medium", changed ? "text-brand-300" : "text-white/80")}>{f.label}</span>
+      <div className="inline-flex rounded-lg border border-white/10 bg-surface-2 p-1" role="radiogroup" aria-label={`What-if: ${f.label}`}>
         {f.options?.map((o) => {
           const on = String(o.value) === raw;
           return (
@@ -74,7 +66,7 @@ function ToggleRow({ f, raw, base, onChange }: { f: FeatureSchema; raw: string; 
               role="radio"
               aria-checked={on}
               onClick={() => onChange(String(o.value))}
-              className={`rounded px-2 py-0.5 ${on ? "bg-primary text-white" : "text-white/50 hover:text-white/80"}`}
+              className={cn("min-h-8 rounded-md px-3 font-manrope font-semibold transition-colors", on ? "bg-primary text-white" : "text-white/50 hover:text-white/80")}
             >
               {o.label}
             </button>
@@ -93,37 +85,32 @@ export function WhatIfPanel({ schema, values, baseline, onChange, onResetToBasel
   const nChanged = baseline ? feats.filter((f) => baseline[f.id] !== values[f.id]).length : 0;
 
   return (
-    <Panel
-      title="What-if: modifiable risk factors"
-      right={
-        <div className="flex gap-1.5 text-[11px]">
-          <button
-            onClick={onResetToBaseline}
-            disabled={!nChanged}
-            className="rounded border border-slate-700 px-2 py-0.5 text-slate-300 hover:border-slate-500 disabled:opacity-40"
-          >
-            Reset{nChanged ? ` (${nChanged})` : ""}
-          </button>
-          <button onClick={onSetBaseline} className="rounded border border-slate-700 px-2 py-0.5 text-slate-300 hover:border-slate-500">
-            Set as baseline
-          </button>
+    <div>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs text-white/55">Move a risk factor and watch every probability and the heart update.</p>
+        <div className="flex gap-1.5">
+          <Button size="sm" variant="outline" onClick={onResetToBaseline} disabled={!nChanged}>
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Reset{nChanged ? ` (${nChanged})` : ""}
+          </Button>
+          <Button size="sm" variant="outline" onClick={onSetBaseline}>
+            <Pin className="h-3.5 w-3.5" aria-hidden /> Set baseline
+          </Button>
         </div>
-      }
-    >
-      <div className="space-y-2.5">
+      </div>
+      <div className="space-y-3">
         {numeric.map((f) => (
           <SliderRow key={f.id} f={f} raw={values[f.id] ?? ""} base={baseline?.[f.id]} onChange={(v) => onChange(f.id, v)} />
         ))}
       </div>
-      <div className="mt-3 space-y-1.5 border-t border-slate-800 pt-3">
+      <div className="mt-4 space-y-1 border-t border-white/[0.07] pt-3">
         {toggles.map((f) => (
           <ToggleRow key={f.id} f={f} raw={values[f.id] ?? ""} base={baseline?.[f.id]} onChange={(v) => onChange(f.id, v)} />
         ))}
       </div>
-      <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
-        Explores how the model's output responds; it does not predict the effect of treating a risk factor. Slider limits =
+      <p className="mt-4 text-[11px] leading-relaxed text-white/45">
+        Shows how the model's output responds; it does not predict the effect of treating a risk factor. Slider limits are the
         range seen in the training data.
       </p>
-    </Panel>
+    </div>
   );
 }
