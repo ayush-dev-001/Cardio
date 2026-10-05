@@ -6,6 +6,11 @@
 > This intentionally overrides MASTER's "avoid purple" anti-pattern. Semantic data colours
 > (risk scale, SHAP red/blue, low/high chips) are unchanged, and the accessibility rules
 > still apply. The table below records the previous blue/amber theme.
+>
+> **Dashboard (/app) override:** neutral graphite glass (`.card-surface`: rgba(34,37,46,.66)->rgba(22,24,31,.72),
+> hairline white/8% border, 20px blur) on #0b0c10-#101217. Purple is limited to accents (primary buttons,
+> active tab/segment, switch, slider, focus, selected vessel). Reason: calm surfaces make the anatomy and the
+> risk colours the most saturated elements, which is what a clinical tool should emphasise.
 
 Overrides MASTER.md for every CardioScope page. Reason: the product centres on a 3D anatomical
 viewer, and medical-imaging viewers conventionally use dark surroundings, so the semi-transparent

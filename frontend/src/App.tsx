@@ -398,14 +398,14 @@ export default function App() {
 
   return (
     <TooltipProvider>
-      <div className="relative isolate flex h-[100dvh] flex-col overflow-hidden bg-page bg-[linear-gradient(160deg,#1a1233_0%,#0e0b1c_45%,#150e2a_100%)] text-white/90">
+      <div className="relative isolate flex h-[100dvh] flex-col overflow-hidden bg-page bg-[linear-gradient(180deg,#101217_0%,#0b0c10_100%)] text-white/90">
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-          <div className="absolute -left-40 -top-40 h-[560px] w-[560px] rounded-full bg-primary/25 blur-[150px]" />
-          <div className="absolute left-1/2 top-1/3 h-[420px] w-[620px] -translate-x-1/2 rounded-full bg-[#4c1d95]/25 blur-[160px]" />
-          <div className="absolute -right-32 bottom-0 h-[460px] w-[560px] rounded-full bg-[#7c3aed]/20 blur-[150px]" />
+          <div className="absolute -left-40 -top-40 h-[560px] w-[560px] rounded-full bg-slate-400/[0.07] blur-[150px]" />
+          <div className="absolute left-1/2 top-1/3 h-[420px] w-[620px] -translate-x-1/2 rounded-full bg-primary/[0.06] blur-[160px]" />
+          <div className="absolute -right-32 bottom-0 h-[460px] w-[560px] rounded-full bg-sky-300/[0.04] blur-[150px]" />
         </div>
 
-        <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-[rgba(164,132,215,0.15)] bg-surface/60 px-3 backdrop-blur-xl sm:px-4">
+        <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-white/[0.07] bg-surface/70 px-3 backdrop-blur-xl sm:px-4">
           <div className="flex min-w-0 items-center gap-3">
             <Link href="/" aria-label="CardioScope home" className="inline-flex min-h-11 items-center rounded-lg">
               <Logo />
@@ -473,7 +473,7 @@ export default function App() {
             )}
           </AnimatePresence>
         </div>
-        <nav aria-label="Dashboard sections" className="grid shrink-0 grid-cols-3 border-t border-[rgba(164,132,215,0.15)] bg-surface/75 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
+        <nav aria-label="Dashboard sections" className="grid shrink-0 grid-cols-3 border-t border-white/[0.07] bg-surface/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
           {MOBILE_TABS.map(({ id, label, icon: Icon }) => {
             const on = mobileView === id;
             return (

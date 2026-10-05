@@ -21,7 +21,7 @@ export function VesselInfo({ vessel, prediction, explanation, onShowExplanation,
   const lowering = sorted.filter((c) => c.shap < 0).reverse().slice(0, 2);
 
   return (
-    <div className="glass-strong w-80 max-w-[calc(100vw-1.5rem)] rounded-2xl p-5 text-sm text-white/80 shadow-2xl shadow-black/40">
+    <div className="card-surface-strong w-80 max-w-[calc(100vw-1.5rem)] rounded-2xl p-5 text-sm text-white/80 shadow-2xl shadow-black/40">
       <div className="flex items-start justify-between gap-2">
         <div>
           <div className="text-[11px] uppercase tracking-wide text-slate-500">Selected vessel</div>

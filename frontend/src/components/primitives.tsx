@@ -17,7 +17,7 @@ export function CardHeader({ title, subtitle, action, icon }: { title: ReactNode
   return (
     <div className="flex items-start justify-between gap-3 px-5 pt-4">
       <div className="flex min-w-0 items-center gap-2.5">
-        {icon && <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary/15 text-brand-300">{icon}</span>}
+        {icon && <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/[0.06] text-white/70">{icon}</span>}
         <div className="min-w-0">
           <h2 className="truncate font-manrope text-sm font-semibold text-white">{title}</h2>
           {subtitle && <p className="truncate text-xs text-white/50">{subtitle}</p>}
@@ -75,7 +75,7 @@ export function Tip({ content, children, side = "top" }: { content: ReactNode; c
           side={side}
           sideOffset={6}
           collisionPadding={12}
-          className="z-[70] max-w-64 rounded-lg border border-[rgba(164,132,215,0.25)] bg-[#1c1530] px-3 py-2 text-xs leading-relaxed text-white/85 shadow-xl shadow-black/50 data-[state=delayed-open]:animate-[pop-in_160ms_ease-out]"
+          className="z-[70] max-w-64 rounded-lg border border-white/10 bg-[#1d2027] px-3 py-2 text-xs leading-relaxed text-white/85 shadow-xl shadow-black/50 data-[state=delayed-open]:animate-[pop-in_160ms_ease-out]"
         >
           {content}
           <T.Arrow className="fill-[#16131f]" />
@@ -109,7 +109,7 @@ export function InfoTip({ text, label }: { text: string; label: string }) {
           sideOffset={6}
           collisionPadding={12}
           onPointerDownOutside={() => setOpen(false)}
-          className="z-[70] max-w-64 rounded-lg border border-[rgba(164,132,215,0.25)] bg-[#1c1530] px-3 py-2 text-xs leading-relaxed text-white/85 shadow-xl shadow-black/50 data-[state=delayed-open]:animate-[pop-in_160ms_ease-out] data-[state=instant-open]:animate-[pop-in_160ms_ease-out]"
+          className="z-[70] max-w-64 rounded-lg border border-white/10 bg-[#1d2027] px-3 py-2 text-xs leading-relaxed text-white/85 shadow-xl shadow-black/50 data-[state=delayed-open]:animate-[pop-in_160ms_ease-out] data-[state=instant-open]:animate-[pop-in_160ms_ease-out]"
         >
           {text}
           <T.Arrow className="fill-[#16131f]" />
@@ -211,7 +211,7 @@ export function Select({ value, onValueChange, options, id, invalid }: {
         <S.Content
           position="popper"
           sideOffset={6}
-          className="z-[70] max-h-72 min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-xl border border-white/10 bg-[#14111d] p-1 shadow-2xl shadow-black/60 data-[state=open]:animate-[pop-in_140ms_ease-out]"
+          className="z-[70] max-h-72 min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-xl border border-white/10 bg-[#1a1c23] p-1 shadow-2xl shadow-black/60 data-[state=open]:animate-[pop-in_140ms_ease-out]"
         >
           <S.Viewport>
             {options.map((o) => (
@@ -239,7 +239,7 @@ export function Sheet({ open, onOpenChange, title, children }: { open: boolean; 
     <D.Root open={open} onOpenChange={onOpenChange}>
       <D.Portal>
         <D.Overlay className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm data-[state=closed]:animate-[fade-out_160ms] data-[state=open]:animate-[fade-in_200ms]" />
-        <D.Content className="glass-strong fixed inset-y-0 right-0 z-[61] flex w-[min(86vw,360px)] flex-col p-5 shadow-2xl data-[state=closed]:animate-[sheet-out-right_200ms_ease-in] data-[state=open]:animate-[sheet-in-right_260ms_cubic-bezier(0.22,1,0.36,1)]">
+        <D.Content className="card-surface-strong fixed inset-y-0 right-0 z-[61] flex w-[min(86vw,360px)] flex-col p-5 shadow-2xl data-[state=closed]:animate-[sheet-out-right_200ms_ease-in] data-[state=open]:animate-[sheet-in-right_260ms_cubic-bezier(0.22,1,0.36,1)]">
           <div className="flex items-center justify-between">
             <D.Title className="font-serif text-2xl text-white">{title}</D.Title>
             <D.Close className="grid h-11 w-11 place-items-center rounded-lg text-white/70 hover:bg-white/[0.06] hover:text-white" aria-label="Close menu">
@@ -267,8 +267,8 @@ export function EmptyState({ icon, title, children, action }: { icon: ReactNode;
       transition={{ duration: 0.35 }}
       className="flex flex-col items-center justify-center px-6 py-10 text-center"
     >
-      <div className="relative mb-5 grid h-16 w-16 place-items-center rounded-2xl border border-white/10 bg-surface-2 text-brand-300">
-        <span aria-hidden className="absolute inset-0 -z-10 rounded-2xl bg-primary/25 blur-xl" />
+      <div className="relative mb-5 grid h-16 w-16 place-items-center rounded-2xl border border-white/10 bg-surface-2 text-white/75">
+        <span aria-hidden className="absolute inset-0 -z-10 rounded-2xl bg-white/[0.06] blur-xl" />
         {icon}
       </div>
       <h3 className="font-serif text-2xl text-white">{title}</h3>

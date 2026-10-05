@@ -167,8 +167,8 @@ export function ModelHeart({
 
 export function ModelTorso() {
   const nodes = useNodes(MODEL.torso);
-  const shell = useMemo(() => makeShellMaterial("#a5b4fc", 0.012, 0.5), []);
-  const lungMat = useMemo(() => makeShellMaterial("#f9a8d4", 0.008, 0.2), []);
+  const shell = useMemo(() => makeShellMaterial("#b9c3d3", 0.01, 0.42), []);
+  const lungMat = useMemo(() => makeShellMaterial("#cbd3df", 0.006, 0.14), []);
   const torso = nodes.torso ?? Object.values(nodes)[0];
   const lungs = MODEL.lungs;
   return (
