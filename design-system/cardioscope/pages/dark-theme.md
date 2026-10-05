@@ -7,8 +7,8 @@
 > (risk scale, SHAP red/blue, low/high chips) are unchanged, and the accessibility rules
 > still apply. The table below records the previous blue/amber theme.
 >
-> **Dashboard (/app) override:** midnight-navy glass (`.card-surface`: rgba(28,40,70,.62)->rgba(13,19,36,.76),
-> cool blue hairline border, 20px blur) on #0d1426-#080c18 (replaced graphite, which read as flat grey). Purple
+> **Dashboard (/app) override:** the landing CTA recipe (`.card-surface`: purple radial glow from the top -> plum -> ink,
+> thin primary/26% border, 20px blur) on ink #0b0814 (replaced graphite, then navy, at the product owner's request). Purple
 > is limited to accents (primary buttons, active tab/segment, switch, slider, focus, selected vessel). Reason:
 > calm surfaces make the anatomy and the risk colours the most saturated elements, which is what a clinical
 > tool should emphasise.

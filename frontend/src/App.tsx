@@ -413,9 +413,9 @@ export default function App() {
     <TooltipProvider>
       <div className="relative isolate flex h-[100dvh] flex-col overflow-hidden bg-page bg-[linear-gradient(180deg,var(--color-page-top)_0%,var(--color-page)_100%)] text-white/90">
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-          <div className="absolute -left-40 -top-40 h-[560px] w-[560px] rounded-full bg-sky-500/[0.09] blur-[150px]" />
-          <div className="absolute left-1/2 top-1/3 h-[420px] w-[620px] -translate-x-1/2 rounded-full bg-primary/[0.07] blur-[160px]" />
-          <div className="absolute -right-32 bottom-0 h-[460px] w-[560px] rounded-full bg-indigo-500/[0.08] blur-[150px]" />
+          <div className="absolute left-1/2 -top-56 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-primary/[0.14] blur-[160px]" />
+          <div className="absolute -left-40 bottom-0 h-[420px] w-[520px] rounded-full bg-plum/40 blur-[150px]" />
+          <div className="absolute -right-32 bottom-0 h-[460px] w-[560px] rounded-full bg-primary/[0.06] blur-[150px]" />
         </div>
 
         <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-white/[0.07] bg-surface/70 px-3 backdrop-blur-xl sm:px-4">
