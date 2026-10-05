@@ -414,6 +414,17 @@ function Footer() {
             Data: Extension of Z-Alizadeh Sani dataset, UCI Machine Learning Repository. Built for the Multimodal AI Hackathon
             2026, Track A. For decision support and educational purposes only.
           </p>
+          <p className="text-xs leading-relaxed text-white/40">
+            3D torso adapted (cropped, rescaled, compressed) from{" "}
+            <a href="https://sketchfab.com/search?q=Low+Poly+Male+Body+Base+Mesh-Base&type=models" target="_blank" rel="noreferrer" className="underline decoration-white/30 underline-offset-2 hover:text-white/70">
+              "Low Poly Male Body Base"
+            </a>{" "}
+            by Mesh-Base,{" "}
+            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer" className="underline decoration-white/30 underline-offset-2 hover:text-white/70">
+              CC BY 4.0
+            </a>
+            .
+          </p>
         </div>
         <nav aria-label="Footer" className="flex gap-8 font-manrope text-sm text-white/70">
           <Link href="/app" className="transition-colors duration-200 hover:text-white">Open the app</Link>

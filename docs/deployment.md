@@ -26,7 +26,7 @@ git push origin main
    **Settings → Variables and secrets**.
 
 ## 3. Frontend on Vercel (you, ~3 min)
-1. Go to https://vercel.com/new and import the GitHub repo `ayush-dev-001/cardioscope`.
+1. Go to https://vercel.com/new and import the GitHub repo `ayush-dev-001/Cardio`.
 2. Set **Root Directory** to `frontend`. The framework is detected as Vite, and `vercel.json`
    sets the build commands.
 3. Keep **"Include files outside the Root Directory"** enabled (the default). The app imports the

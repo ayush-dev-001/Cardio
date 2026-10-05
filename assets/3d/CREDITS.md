@@ -5,7 +5,7 @@
 | Runtime file | Source | Author | License |
 |---|---|---|---|
 | `frontend/public/models/heart.glb` | Sketchfab: "Cardiac anatomy: coronary arteries of the heart" (ZBrush OBJ export) | **TODO: confirm author** | **TODO: confirm license** (must allow redistribution, e.g. CC BY / CC0) |
-| `frontend/public/models/torso.glb` | Sketchfab: "Low poly male body base" | **TODO: confirm author** | **TODO: confirm license** |
+| `frontend/public/models/torso.glb` | Sketchfab: "Low Poly Male Body Base" | Mesh-Base | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 
 Both runtime files are derived works: the heart is segmented, its coronary tree split into
 LAD / LCX / RCA, and it is decimated from 1.4M to about 125k triangles. The torso is cropped,

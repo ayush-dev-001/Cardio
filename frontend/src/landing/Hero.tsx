@@ -6,7 +6,7 @@ import { Link } from "../router";
 
 const VIDEO_URL =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260210_031346_d87182fb-b0af-4273-84d1-c6fd17d6bf0f.mp4";
-export const GITHUB_URL = "https://github.com/ayush-dev-001/cardioscope";
+export const GITHUB_URL = "https://github.com/ayush-dev-001/Cardio";
 
 const FEATURE_LINKS = [
   { label: "Interactive 3D heart", href: "#showcase", text: "Each artery coloured by its stenosis probability" },
