@@ -1,0 +1,18 @@
+# Render Blueprint: the CardioScope API as a free Docker web service.
+# Render dashboard -> New -> Blueprint -> pick this repo. Docs: docs/deployment.md
+services:
+  - type: web
+    name: cardioscope-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./deploy/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # the Vercel URL of the frontend, e.g. https://cardio.vercel.app (asked for on first deploy)
+      - key: CARDIOSCOPE_CORS_ORIGINS
+        sync: false
+      # optional: also allow Vercel preview deployments
+      - key: CARDIOSCOPE_CORS_ORIGIN_REGEX
+        value: https://cardio[a-z0-9-]*\.vercel\.app

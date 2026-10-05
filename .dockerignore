@@ -1,0 +1,14 @@
+# The API image only needs: requirements-api.txt, ml/, backend/app, shared/, models/, data/processed
+.git
+.venv
+**/__pycache__
+**/.pytest_cache
+frontend
+notebooks
+reports
+assets
+docs
+design-system
+data/raw
+models/_fast
+deploy/hf-space

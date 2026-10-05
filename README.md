@@ -15,7 +15,7 @@ Phases 1–5 complete: data findings in `docs/phase1_data_findings.md`, model re
 `docs/phase4_backend_api.md`, dashboard in `docs/phase5_dashboard.md`.
 
 ## Deployment
-Run locally with the commands below, or deploy the API to a Hugging Face Space and the frontend to
+Run locally with the commands below, or deploy the API to Render and the frontend to
 Vercel by following `docs/deployment.md`.
 
 ## Setup (Windows, PowerShell)

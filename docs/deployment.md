@@ -1,59 +1,43 @@
-# Deployment: Hugging Face Space (API) + Vercel (frontend)
+# Deployment: Render (API) + Vercel (frontend)
 
-The steps marked **(you)** need your accounts. Everything else is prepared in the repo.
+Both are free and deploy straight from the GitHub repo `ayush-dev-001/Cardio`.
+The API cannot run on Vercel: its Python functions are limited to ~250 MB, and the model stack
+(XGBoost, CatBoost, scikit-learn, SciPy, pandas) is well above that. Hugging Face Docker Spaces
+now need a paid plan.
 
-## 1. Push the latest code to GitHub (you)
-```powershell
-git push origin main
-```
+## 1. API on Render (~10 min, first build)
+1. Sign in at https://render.com with GitHub.
+2. **New → Blueprint**, pick the `Cardio` repo. Render reads `render.yaml`: one free Docker web
+   service, `cardioscope-api`, built from `deploy/Dockerfile`.
+3. It asks for `CARDIOSCOPE_CORS_ORIGINS`. Leave it empty for now (filled in step 3) and click
+   **Apply**.
+4. The first build takes ~5–10 min. When the service shows **Live**, open
+   `https://cardioscope-api.onrender.com/health` (use the URL shown on the service page). It should
+   return `{"status":"ok", ...}`.
 
-## 2. API on Hugging Face Spaces (you, ~5 min)
-1. Build the Space folder (from the repo root, venv active or using `.venv\Scripts\python`):
-   ```powershell
-   python deploy/build_hf_space.py
-   ```
-   This creates `deploy/hf-space/`: Dockerfile, README (Space config), code, configs, models and
-   cleaned data, about 0.4 MB in total.
-2. Go to https://huggingface.co/new-space:
-   - **Owner:** your account. **Space name:** `cardioscope-api`.
-   - **SDK:** Docker → *Blank*. **Hardware:** CPU basic (free). **Visibility:** Public.
-3. In the new Space open **Files → Add file → Upload files**, then drag in **everything inside**
-   `deploy/hf-space/`, keeping the folder structure. Commit.
-4. The Space builds the container, which takes ~3–6 min the first time. When it says *Running*,
-   open `https://<your-username>-cardioscope-api.hf.space/health`. It should return
-   `{"status":"ok", ...}`.
-5. Leave the Space page open. After step 3 you will add the frontend URL under
-   **Settings → Variables and secrets**.
+## 2. Frontend on Vercel (~3 min)
+1. https://vercel.com/new → sign in with GitHub → import `Cardio`.
+2. **Root Directory:** `frontend`. The framework is detected as Vite; `vercel.json` sets the build.
+   Keep "Include files outside the Root Directory" enabled (the default): the app imports
+   `shared/vessels.json` and `models/metrics.json`.
+3. **Environment Variables:** `VITE_API_URL` = the Render URL, e.g.
+   `https://cardioscope-api.onrender.com` (no trailing slash).
+4. **Deploy**, then copy the site URL, e.g. `https://cardio.vercel.app`.
 
-## 3. Frontend on Vercel (you, ~3 min)
-1. Go to https://vercel.com/new and import the GitHub repo `ayush-dev-001/Cardio`.
-2. Set **Root Directory** to `frontend`. The framework is detected as Vite, and `vercel.json`
-   sets the build commands.
-3. Keep **"Include files outside the Root Directory"** enabled (the default). The app imports the
-   shared vessel IDs from `shared/vessels.json`.
-4. Under **Environment Variables** add
-   `VITE_API_URL` = `https://<your-username>-cardioscope-api.hf.space` (no trailing slash).
-5. Click **Deploy**. Note the URL, e.g. `https://cardioscope.vercel.app`.
+## 3. Connect them
+Render → `cardioscope-api` → **Environment** → set `CARDIOSCOPE_CORS_ORIGINS` to the Vercel URL
+(no trailing slash) → **Save, rebuild and deploy**. `render.yaml` already allows Vercel preview
+URLs (`https://cardio*.vercel.app`) through `CARDIOSCOPE_CORS_ORIGIN_REGEX`.
 
-## 4. Connect them (you)
-In the Hugging Face Space go to **Settings → Variables**:
-- `CARDIOSCOPE_CORS_ORIGINS` = your Vercel URL, e.g. `https://cardioscope.vercel.app`
-- Optional, to also allow Vercel preview deployments:
-  `CARDIOSCOPE_CORS_ORIGIN_REGEX` = `https://cardioscope(-[a-z0-9-]+)?\.vercel\.app`
-
-The Space restarts automatically. Open the Vercel URL: the header should show **API connected**.
+Open the Vercel URL → `/app`: the header shows a green dot and **Model online**.
 
 ## Updating later
-- **Frontend:** every `git push` redeploys on Vercel automatically.
-- **API:** after retraining or backend changes, re-run `python deploy/build_hf_space.py` and
-  upload the changed files to the Space.
+- Every `git push` to `main` redeploys both the frontend (Vercel) and the API (Render).
 
 ## Notes
-- **The Space can sleep.** A free Space sleeps after ~48 h without visits. The dashboard then
-  shows "Waking up the model server…" and keeps retrying for about a minute.
-- **The container matches local:** Python 3.14, and package versions pinned in
-  `requirements-api.txt` (the same as training), so the saved models load identically.
-- **What was tested locally:** the bundle was run from a copy outside the repo, in a fresh
-  virtual environment with only `requirements-api.txt` installed. All endpoints, identical
-  predictions and CORS were verified. Docker itself is not installed on the dev machine, so the
-  first real container build happens on Hugging Face.
+- **The free API sleeps after 15 min without requests.** The next visit wakes it in ~30–60 s;
+  the dashboard shows "Waking up the model server…" and retries for up to two minutes. Open the
+  site once before a demo.
+- **The container matches local:** Python 3.14 and the versions pinned in `requirements-api.txt`
+  (the same as training), so the saved models load identically.
+- `deploy/build_hf_space.py` still builds a Hugging Face Space bundle, for use with a paid plan.

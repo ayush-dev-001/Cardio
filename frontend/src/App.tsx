@@ -39,8 +39,8 @@ import { HeartViewer } from "./scene/HeartViewer";
 type Tab = "explanation" | "physiology" | "whatif";
 type MobileView = "heart" | "results" | "patient";
 type Connection = "connecting" | "waking" | "online" | "offline";
-// Free hosting may put the API to sleep; keep retrying for about a minute before giving up.
-const WAKE_ATTEMPTS = 12;
+// Free hosting (Render) puts the API to sleep when idle and waking takes ~30-60 s; keep retrying for two minutes.
+const WAKE_ATTEMPTS = 24;
 const WAKE_DELAY_MS = 5000;
 
 const hasWebGL = (() => {
