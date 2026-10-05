@@ -9,14 +9,21 @@ interactive 3D heart, and explains each prediction with SHAP.
 > ⚠️ **Clinical disclaimer:** predictions are for decision support / educational purposes only and
 > are not a substitute for formal diagnostic imaging (e.g. coronary angiography).
 
+## Live demo
+- **App:** https://frontend-psi-one-41.vercel.app (dashboard at `/app`)
+- **API:** https://cardioscope-api.onrender.com (`/health`, `/docs` for the interactive API reference)
+
+The API runs on Render's free plan and sleeps after 15 minutes without requests; the first visit
+after that takes ~30–60 s while the dashboard shows "Waking up the model server…".
+
 ## Status
-Phases 1–5 complete: data findings in `docs/phase1_data_findings.md`, model results in
+Phases 1–6 complete (Phase 6: live what-if updates, one-click sample patients, deployed online): data findings in `docs/phase1_data_findings.md`, model results in
 `docs/phase2_model_results.md`, 3D viewer in `docs/phase3_3d_anatomy.md`, API in
 `docs/phase4_backend_api.md`, dashboard in `docs/phase5_dashboard.md`.
 
 ## Deployment
-Run locally with the commands below, or deploy the API to Render and the frontend to
-Vercel by following `docs/deployment.md`.
+Run locally with the commands below. The live demo runs the API on Render and the frontend on
+Vercel; `docs/deployment.md` shows how to deploy your own copy.
 
 ## Setup (Windows, PowerShell)
 Requires Python 3.10+ (developed on 3.14).
