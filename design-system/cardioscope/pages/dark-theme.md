@@ -7,10 +7,13 @@
 > (risk scale, SHAP red/blue, low/high chips) are unchanged, and the accessibility rules
 > still apply. The table below records the previous blue/amber theme.
 >
-> **Dashboard (/app) override:** neutral graphite glass (`.card-surface`: rgba(34,37,46,.66)->rgba(22,24,31,.72),
-> hairline white/8% border, 20px blur) on #0b0c10-#101217. Purple is limited to accents (primary buttons,
-> active tab/segment, switch, slider, focus, selected vessel). Reason: calm surfaces make the anatomy and the
-> risk colours the most saturated elements, which is what a clinical tool should emphasise.
+> **Dashboard (/app) override:** midnight-navy glass (`.card-surface`: rgba(28,40,70,.62)->rgba(13,19,36,.76),
+> cool blue hairline border, 20px blur) on #0d1426-#080c18 (replaced graphite, which read as flat grey). Purple
+> is limited to accents (primary buttons, active tab/segment, switch, slider, focus, selected vessel). Reason:
+> calm surfaces make the anatomy and the risk colours the most saturated elements, which is what a clinical
+> tool should emphasise.
+> **Layout 1024-1279px:** the 3D view and every result card share one vertically scrolling column (visible
+> thin scrollbar); CAD and vessel cards sit side by side.
 
 Overrides MASTER.md for every CardioScope page. Reason: the product centres on a 3D anatomical
 viewer, and medical-imaging viewers conventionally use dark surroundings, so the semi-transparent

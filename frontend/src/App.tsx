@@ -90,6 +90,8 @@ export default function App() {
   const [resetToken, setResetToken] = useState(0);
   // render exactly one layout, so only one WebGL canvas ever exists
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+  // 1024-1279px: no room for a third column, so the 3D view and results share one vertically scrolling column
+  const isWide = useMediaQuery("(min-width: 1280px)");
 
   const { patient, errors } = useMemo(() => (schema ? validate(schema, values) : { patient: null, errors: {} }), [schema, values]);
   const pred = usePrediction(patient, live);
@@ -205,7 +207,7 @@ export default function App() {
   );
 
   const viewer = (
-    <Card className="relative h-full min-h-[360px] overflow-hidden">
+    <Card className="relative h-full overflow-hidden max-lg:min-h-[360px]">
       {hasWebGL ? (
         <HeartViewer probabilities={probabilities} selectedId={selectedVessel} onSelect={selectVessel} showLabels={showLabels} resetToken={resetToken} transparent />
       ) : (
@@ -271,54 +273,65 @@ export default function App() {
     </Card>
   );
 
+  const errorBanner = (
+    <AnimatePresence>
+      {nErrors > 0 && (
+        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
+          <div role="status" className="flex items-center gap-2 rounded-xl border border-amber-400/25 bg-amber-400/10 px-4 py-3 text-xs text-amber-100">
+            <TriangleAlert className="h-4 w-4 shrink-0" aria-hidden />
+            Results show the last valid inputs. Fix {nErrors === 1 ? "1 field" : `${nErrors} fields`} in Patient to update them.
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+  const targetSelect = (idSuffix = "") =>
+    schema && (
+      <div className="w-36 shrink-0">
+        <Select
+          id={`explain-target${idSuffix}`}
+          value={target}
+          onValueChange={setTarget}
+          options={schema.targets.map((t) => ({ value: t.id, label: t.vessel_id ? `${t.vessel_id} stenosis` : "Overall CAD" }))}
+        />
+      </div>
+    );
+  const tabBody = (t: Tab) =>
+    !schema ? null : t === "whatif" ? (
+      <WhatIfPanel
+        schema={schema}
+        values={values}
+        baseline={baselineValues}
+        onChange={editValue}
+        onResetToBaseline={() => baselineValues && setValues(baselineValues)}
+        onSetBaseline={() => setBaseline(values)}
+      />
+    ) : currentExplanation ? (
+      t === "explanation" ? (
+        <ShapWaterfall explanation={currentExplanation} />
+      ) : (
+        <PhysiologyPanel schema={schema} explanation={currentExplanation} />
+      )
+    ) : null;
+
   const results =
     schema && prediction ? (
       <div className="space-y-3">
-        <AnimatePresence>
-          {nErrors > 0 && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
-              <div role="status" className="flex items-center gap-2 rounded-xl border border-amber-400/25 bg-amber-400/10 px-4 py-3 text-xs text-amber-100">
-                <TriangleAlert className="h-4 w-4 shrink-0" aria-hidden />
-                Results show the last valid inputs. Fix {nErrors === 1 ? "1 field" : `${nErrors} fields`} in Patient to update them.
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <CadStatusCard cad={prediction.cad} schema={schema} baseline={showBaseline?.cad.probability} />
-        <VesselBars prediction={prediction} schema={schema} selectedId={selectedVessel} onSelect={selectVessel} baseline={showBaseline} />
+        {errorBanner}
+        {/* side by side when they share the scrolling column with the 3D view, so more fits at a glance */}
+        <div className={cn(isDesktop && !isWide ? "grid grid-cols-2 items-start gap-3" : "space-y-3")}>
+          <CadStatusCard cad={prediction.cad} schema={schema} baseline={showBaseline?.cad.probability} />
+          <VesselBars prediction={prediction} schema={schema} selectedId={selectedVessel} onSelect={selectVessel} baseline={showBaseline} />
+        </div>
         <Card>
           <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-4">
             <Tabs<Tab> value={tab} onChange={setTab} items={TAB_ITEMS} />
-            {tab !== "whatif" && (
-              <div className="w-36">
-                <Select
-                  id="explain-target"
-                  value={target}
-                  onValueChange={setTarget}
-                  options={schema.targets.map((t) => ({ value: t.id, label: t.vessel_id ? `${t.vessel_id} stenosis` : "Overall CAD" }))}
-                />
-              </div>
-            )}
+            {tab !== "whatif" && targetSelect()}
           </div>
           <div className="p-4">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div key={tab + target} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
-                {tab === "whatif" ? (
-                  <WhatIfPanel
-                    schema={schema}
-                    values={values}
-                    baseline={baselineValues}
-                    onChange={editValue}
-                    onResetToBaseline={() => baselineValues && setValues(baselineValues)}
-                    onSetBaseline={() => setBaseline(values)}
-                  />
-                ) : currentExplanation ? (
-                  tab === "explanation" ? (
-                    <ShapWaterfall explanation={currentExplanation} />
-                  ) : (
-                    <PhysiologyPanel schema={schema} explanation={currentExplanation} />
-                  )
-                ) : null}
+                {tabBody(tab)}
               </motion.div>
             </AnimatePresence>
           </div>
@@ -398,11 +411,11 @@ export default function App() {
 
   return (
     <TooltipProvider>
-      <div className="relative isolate flex h-[100dvh] flex-col overflow-hidden bg-page bg-[linear-gradient(180deg,#101217_0%,#0b0c10_100%)] text-white/90">
+      <div className="relative isolate flex h-[100dvh] flex-col overflow-hidden bg-page bg-[linear-gradient(180deg,var(--color-page-top)_0%,var(--color-page)_100%)] text-white/90">
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-          <div className="absolute -left-40 -top-40 h-[560px] w-[560px] rounded-full bg-slate-400/[0.07] blur-[150px]" />
-          <div className="absolute left-1/2 top-1/3 h-[420px] w-[620px] -translate-x-1/2 rounded-full bg-primary/[0.06] blur-[160px]" />
-          <div className="absolute -right-32 bottom-0 h-[460px] w-[560px] rounded-full bg-sky-300/[0.04] blur-[150px]" />
+          <div className="absolute -left-40 -top-40 h-[560px] w-[560px] rounded-full bg-sky-500/[0.09] blur-[150px]" />
+          <div className="absolute left-1/2 top-1/3 h-[420px] w-[620px] -translate-x-1/2 rounded-full bg-primary/[0.07] blur-[160px]" />
+          <div className="absolute -right-32 bottom-0 h-[460px] w-[560px] rounded-full bg-indigo-500/[0.08] blur-[150px]" />
         </div>
 
         <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-white/[0.07] bg-surface/70 px-3 backdrop-blur-xl sm:px-4">
@@ -440,16 +453,31 @@ export default function App() {
         )}
 
         {isDesktop ? (
-        <div className="grid min-h-0 flex-1 gap-3 p-3 lg:grid-cols-[340px_1fr] lg:grid-rows-[minmax(0,52vh)_minmax(0,1fr)] xl:grid-cols-[minmax(320px,370px)_1fr_minmax(360px,430px)] xl:grid-rows-[minmax(0,1fr)]">
-          <motion.aside {...enter(0)} className="card-surface row-span-2 min-h-0 overflow-hidden rounded-2xl xl:row-span-1" aria-label="Patient data">
+        <div
+          className={cn(
+            "grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)] gap-3 p-3",
+            isWide ? "grid-cols-[minmax(320px,370px)_1fr_minmax(360px,430px)]" : "grid-cols-[320px_minmax(0,1fr)]",
+          )}
+        >
+          <motion.aside {...enter(0)} className="card-surface min-h-0 overflow-hidden rounded-2xl" aria-label="Patient data">
             {form}
           </motion.aside>
-          <motion.div {...enter(1)} className="min-h-0">
-            {viewer}
-          </motion.div>
-          <motion.aside {...enter(2)} className="min-h-0 overflow-y-auto pb-2 no-scrollbar lg:col-start-2 xl:col-start-3" aria-label="Results">
-            {results}
-          </motion.aside>
+          {isWide ? (
+            <>
+              <motion.div {...enter(1)} className="min-h-0">
+                {viewer}
+              </motion.div>
+              <motion.aside {...enter(2)} className="min-h-0 overflow-y-auto pb-2 pr-1 strip-scrollbar" aria-label="Results">
+                {results}
+              </motion.aside>
+            </>
+          ) : (
+            // one column scrolls vertically: 3D view on top, every result card below it
+            <motion.div {...enter(1)} className="min-h-0 min-w-0 space-y-3 overflow-y-auto overscroll-contain pb-2 pr-1 strip-scrollbar">
+              <div className="h-[60vh] min-h-[320px]">{viewer}</div>
+              <section aria-label="Results">{results}</section>
+            </motion.div>
+          )}
         </div>
         ) : (
         <>
