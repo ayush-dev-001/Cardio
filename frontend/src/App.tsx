@@ -165,6 +165,36 @@ export default function App() {
     if (id) setMobileView("heart");
   };
 
+  // "Full explanation" in the vessel card: switch to the Why? tab for that vessel, then bring the
+  // explanation card into view (it may be below the fold or behind the mobile Results tab) and flash it
+  const [flashExplanation, setFlashExplanation] = useState(false);
+  const showExplanation = (targetId: string) => {
+    setTarget(targetId);
+    setTab("explanation");
+    setMobileView("results");
+    // wait for the tab content swap (and, on mobile, the Results view's slide-in) so the scroll is not
+    // cancelled mid-way; the card may not be mounted yet, so retry for a short while
+    let tries = 0;
+    const reveal = () => {
+      const card = document.getElementById("explanation-card");
+      if (!card) {
+        if (++tries < 15) window.setTimeout(reveal, 100);
+        return;
+      }
+      card.scrollIntoView({ behavior: "smooth", block: "start" });
+      // smooth scrolling can be cancelled by layout changes or skipped when the page is not painting;
+      // if the card still isn't near the top of its scroll area, jump there
+      window.setTimeout(() => {
+        let el = card.parentElement;
+        while (el && !(el.scrollHeight > el.clientHeight + 1 && /(auto|scroll)/.test(getComputedStyle(el).overflowY))) el = el.parentElement;
+        if (el && Math.abs(card.getBoundingClientRect().top - el.getBoundingClientRect().top) > 40) card.scrollIntoView({ block: "start" });
+      }, 700);
+      setFlashExplanation(true);
+      window.setTimeout(() => setFlashExplanation(false), 1400);
+    };
+    window.setTimeout(reveal, isDesktop ? 320 : 600);
+  };
+
   const editValue = (id: string, raw: string) => {
     setValues((v) => ({ ...v, [id]: raw }));
     setActiveSample(null);
@@ -248,11 +278,7 @@ export default function App() {
                 vessel={vesselInfo}
                 prediction={prediction?.vessels.find((v) => v.vessel_id === vesselInfo.id) ?? null}
                 explanation={explanation?.explanations.find((e) => e.target_id === vesselInfo.target_id) ?? null}
-                onShowExplanation={() => {
-                  setTarget(vesselInfo.target_id);
-                  setTab("explanation");
-                  setMobileView("results");
-                }}
+                onShowExplanation={() => showExplanation(vesselInfo.target_id)}
                 onClose={resetView}
               />
             </motion.div>
@@ -323,7 +349,7 @@ export default function App() {
           <CadStatusCard cad={prediction.cad} schema={schema} baseline={showBaseline?.cad.probability} />
           <VesselBars prediction={prediction} schema={schema} selectedId={selectedVessel} onSelect={selectVessel} baseline={showBaseline} />
         </div>
-        <Card>
+        <Card id="explanation-card" className={cn("scroll-mt-3 transition-shadow duration-500", flashExplanation && "ring-2 ring-primary/70 shadow-[0_0_40px_-8px_rgba(123,57,252,0.6)]")}>
           <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-4">
             <Tabs<Tab> value={tab} onChange={setTab} items={TAB_ITEMS} />
             {tab !== "whatif" && targetSelect()}
