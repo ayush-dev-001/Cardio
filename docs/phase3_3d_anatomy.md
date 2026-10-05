@@ -76,3 +76,33 @@ handling, and few such models have separable coronary artery meshes. The procedu
 exact control over vessel courses and correspondence, ships no assets, and is light on low-end
 laptops. A `.glb` heart can still be dropped into `assets/3d/` later. The vessel paths would then
 be refitted to its surface.
+
+## Update: realistic anatomy (glTF)
+The viewer now renders a realistic sculpted heart inside a glass torso. The procedural heart
+remains as an automatic fallback if the model cannot load.
+
+**Heart model**
+- Includes the aorta, venae cavae, pulmonary trunk and atria.
+- The coronary tree was split into **separate LAD, LCX and RCA meshes**, along the vessels' own
+  geometry. This uses the "separate artery meshes" path of the brief.
+- Each artery mesh and its risk nodes take the vessel's predicted probability colour. Clicking a
+  vessel (or its label) flies the camera to it.
+- Vessel ids → glTF node names are mapped in `frontend/src/config/anatomy.json` (`model.vesselMeshes`),
+  driven by the same `shared/vessels.json` ids.
+
+**Performance**
+- Decimated from 1.4M to ~125k triangles, Meshopt-compressed: `heart.glb` is 438 KB (336 KB
+  gzipped) and `torso.glb` is 9 KB.
+- Rendering is on demand; smooth normals are computed once on load.
+
+**Torso**
+- A body base mesh cropped to the torso and drawn with the x-ray shader.
+- Fitted so the heart has a normal cardiothoracic ratio (0.48).
+
+**Tests** (`model.test.ts`) check that:
+- every vessel maps to meshes that exist in `heart.glb`;
+- every vessel has landmarks, and the anatomical sides are right;
+- the labels are separated and the focus cameras sit outside the heart;
+- the fallback exposes the same vessel ids.
+
+Sources, licenses and the rebuild pipeline are documented in `assets/3d/CREDITS.md`.

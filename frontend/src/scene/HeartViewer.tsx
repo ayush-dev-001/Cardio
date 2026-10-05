@@ -1,9 +1,10 @@
 import { AdaptiveDpr, PerformanceMonitor } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { useMemo, useRef, useState } from "react";
-import { VESSEL_GEOMETRY, vesselCameraPose } from "../anatomy/anatomy";
-import { CameraRig, DEFAULT_VIEW } from "./CameraRig";
+import { Suspense, useMemo, useRef, useState } from "react";
+import { CONFIGURED_RENDERER, SCENE_ANATOMY, cameraPoseFor, type Renderer } from "../anatomy/sceneAnatomy";
+import { CameraRig } from "./CameraRig";
 import { Heart } from "./Heart";
+import { ModelBoundary, ModelHeart, ModelTorso } from "./ModelScene";
 import { Torso } from "./Torso";
 import { LabelLayer, LabelTracker, type LabelRefs } from "./VesselLabels";
 
@@ -23,8 +24,9 @@ export interface HeartViewerProps {
 }
 
 /**
- * Interactive torso + heart. GPU-friendly: renders on demand (only while something changes),
- * adapts pixel ratio under load, no shadows or post-processing.
+ * Interactive torso + heart. Uses the realistic glTF anatomy (config: anatomy.json "renderer"),
+ * falling back to the procedural heart if the model cannot load. GPU-friendly: renders on
+ * demand, adapts pixel ratio under load, no shadows or post-processing.
  */
 export function HeartViewer({
   probabilities,
@@ -35,6 +37,8 @@ export function HeartViewer({
   transparent = false,
   zoom = true,
 }: HeartViewerProps) {
+  const [renderer, setRenderer] = useState<Renderer>(CONFIGURED_RENDERER);
+  const anatomy = SCENE_ANATOMY[renderer];
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [dprMax, setDprMax] = useState(1.75);
   const labelRefs = useRef<LabelRefs>({}).current;
@@ -42,45 +46,59 @@ export function HeartViewer({
     // while a vessel is focused only its own (and the hovered) label is shown, to avoid clutter
     () =>
       new Set(
-        VESSEL_GEOMETRY.map((g) => g.info.id).filter(
-          (id) => id === hoveredId || id === selectedId || (showLabels && selectedId === null),
-        ),
+        anatomy.vessels
+          .map((v) => v.info.id)
+          .filter((id) => id === hoveredId || id === selectedId || (showLabels && selectedId === null)),
       ),
-    [showLabels, hoveredId, selectedId],
+    [anatomy, showLabels, hoveredId, selectedId],
   );
 
   const goal = useMemo(() => {
-    const v = VESSEL_GEOMETRY.find((g) => g.info.id === selectedId);
-    return v ? vesselCameraPose(v) : { position: DEFAULT_VIEW.position.clone(), target: DEFAULT_VIEW.target.clone() };
+    const v = anatomy.vessels.find((g) => g.info.id === selectedId);
+    return v ? cameraPoseFor(v) : { position: anatomy.home.position.clone(), target: anatomy.home.target.clone() };
     // resetToken forces a new goal object even if the selection is unchanged
-  }, [selectedId, resetToken]);
+  }, [anatomy, selectedId, resetToken]);
+
+  const select = (id: string) => onSelect(id);
 
   return (
     <div className="relative h-full w-full">
-    <Canvas
-      frameloop="demand"
-      dpr={[1, dprMax]}
-      camera={{ position: DEFAULT_VIEW.position.toArray(), fov: 38, near: 0.05, far: 100 }}
-      gl={{ antialias: true, powerPreference: "default", alpha: transparent }}
-      onCreated={({ gl }) => (transparent ? gl.setClearAlpha(0) : gl.setClearColor("#020617"))}
-    >
-      <PerformanceMonitor onDecline={() => setDprMax(1)} />
-      <AdaptiveDpr pixelated />
-      <hemisphereLight args={["#dbeafe", "#1e293b", 0.9]} />
-      <directionalLight position={[3, 5, 6]} intensity={1.6} />
-      <directionalLight position={[-4, 2, -3]} intensity={0.7} color="#93c5fd" />
-      <Heart
-        probabilities={probabilities}
-        selectedId={selectedId}
-        hoveredId={hoveredId}
-        onSelect={(id) => onSelect(id)}
-        onHover={setHoveredId}
-      />
-      <Torso />
-      <CameraRig goal={goal} zoom={zoom} />
-      <LabelTracker refs={labelRefs} visibleIds={visibleLabels} />
-    </Canvas>
-    <LabelLayer refs={labelRefs} probabilities={probabilities} onSelect={onSelect} />
+      <Canvas
+        frameloop="demand"
+        dpr={[1, dprMax]}
+        camera={{ position: anatomy.home.position.toArray(), fov: 38, near: 0.05, far: 100 }}
+        gl={{ antialias: true, powerPreference: "default", alpha: transparent }}
+        onCreated={({ gl }) => (transparent ? gl.setClearAlpha(0) : gl.setClearColor("#020617"))}
+      >
+        <PerformanceMonitor onDecline={() => setDprMax(1)} />
+        <AdaptiveDpr pixelated />
+        <hemisphereLight args={["#e0e7ff", "#1e1b2e", 0.95]} />
+        <directionalLight position={[3, 5, 6]} intensity={1.7} />
+        <directionalLight position={[-4, 2, -3]} intensity={0.75} color="#c4b5fd" />
+        {renderer === "model" ? (
+          <ModelBoundary onError={() => setRenderer("procedural")}>
+            <Suspense fallback={null}>
+              <ModelHeart
+                vessels={anatomy.vessels}
+                probabilities={probabilities}
+                selectedId={selectedId}
+                hoveredId={hoveredId}
+                onSelect={select}
+                onHover={setHoveredId}
+              />
+              <ModelTorso />
+            </Suspense>
+          </ModelBoundary>
+        ) : (
+          <>
+            <Heart probabilities={probabilities} selectedId={selectedId} hoveredId={hoveredId} onSelect={select} onHover={setHoveredId} />
+            <Torso />
+          </>
+        )}
+        <CameraRig goal={goal} zoom={zoom} />
+        <LabelTracker refs={labelRefs} visibleIds={visibleLabels} vessels={anatomy.vessels} />
+      </Canvas>
+      <LabelLayer refs={labelRefs} vessels={anatomy.vessels} probabilities={probabilities} onSelect={onSelect} />
     </div>
   );
 }

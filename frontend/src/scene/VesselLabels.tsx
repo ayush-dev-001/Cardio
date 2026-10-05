@@ -1,7 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
 import { Vector3 } from "three";
-import { VESSEL_GEOMETRY, heartMatrix } from "../anatomy/anatomy";
+import type { SceneVessel } from "../anatomy/sceneAnatomy";
 import { riskColor } from "../anatomy/riskColor";
 
 /**
@@ -13,18 +13,14 @@ import { riskColor } from "../anatomy/riskColor";
  */
 export type LabelRefs = Record<string, HTMLDivElement | null>;
 
-const ANCHORS = (() => {
-  const m = heartMatrix();
-  return VESSEL_GEOMETRY.map((v) => ({ id: v.info.id, world: new Vector3(...v.labelAt).applyMatrix4(m) }));
-})();
-
-export function LabelTracker({ refs, visibleIds }: { refs: LabelRefs; visibleIds: Set<string> }) {
+export function LabelTracker({ refs, visibleIds, vessels }: { refs: LabelRefs; visibleIds: Set<string>; vessels: SceneVessel[] }) {
+  const anchors = useMemo(() => vessels.map((v) => ({ id: v.info.id, world: v.labelAt })), [vessels]);
   const tmp = useMemo(() => new Vector3(), []);
   const invalidate = useThree((s) => s.invalidate);
-  useEffect(() => invalidate(), [visibleIds, invalidate]);
+  useEffect(() => invalidate(), [visibleIds, anchors, invalidate]);
 
   useFrame(({ camera, size }) => {
-    for (const a of ANCHORS) {
+    for (const a of anchors) {
       const el = refs[a.id];
       if (!el) continue;
       tmp.copy(a.world).project(camera);
@@ -39,14 +35,15 @@ export function LabelTracker({ refs, visibleIds }: { refs: LabelRefs; visibleIds
 
 interface LayerProps {
   refs: LabelRefs;
+  vessels: SceneVessel[];
   probabilities: Record<string, number>;
   onSelect: (id: string) => void;
 }
 
-export function LabelLayer({ refs, probabilities, onSelect }: LayerProps) {
+export function LabelLayer({ refs, vessels, probabilities, onSelect }: LayerProps) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {ANCHORS.map(({ id }) => {
+      {vessels.map(({ info: { id } }) => {
         const p = probabilities[id] ?? 0;
         const color = riskColor(p);
         return (

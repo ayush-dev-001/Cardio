@@ -31,3 +31,6 @@ reports/figures/_fast/
 
 # generated deployment bundle
 deploy/hf-space/
+
+# 3D asset build intermediates
+assets/3d/build/

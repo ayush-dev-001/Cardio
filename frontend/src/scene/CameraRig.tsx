@@ -1,10 +1,8 @@
 import { OrbitControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { type DirectionalLight, Vector3 } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-
-export const DEFAULT_VIEW = { position: new Vector3(0.55, 0.95, 4.9), target: new Vector3(0.25, 0.4, 0.1) };
 
 interface Props {
   /** Where the camera should fly to. A new object (even with equal values) re-triggers the move. */
@@ -18,6 +16,8 @@ interface Props {
  */
 export function CameraRig({ goal, zoom = true }: Props) {
   const controls = useRef<OrbitControlsImpl>(null);
+  // orbit target starts at the first goal (the anatomy's home view); later goals are animated to
+  const [initialTarget] = useState(() => goal.target.clone());
   const animating = useRef(false);
   const invalidate = useThree((s) => s.invalidate);
   const aspect = useThree((s) => s.size.width / Math.max(1, s.size.height));
@@ -75,7 +75,7 @@ export function CameraRig({ goal, zoom = true }: Props) {
       dampingFactor={0.12}
       minDistance={1.2}
       maxDistance={16}
-      target={DEFAULT_VIEW.target}
+      target={initialTarget}
     />
     </>
   );

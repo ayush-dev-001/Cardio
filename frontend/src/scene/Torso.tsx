@@ -17,7 +17,7 @@ const torsoRadiusAt = (y: number) => {
 };
 
 /** Fresnel "x-ray" shell: transparent face-on, glowing at grazing angles. Very cheap. */
-function makeShellMaterial(color: string, base: number, rim: number) {
+export function makeShellMaterial(color: string, base: number, rim: number) {
   return new ShaderMaterial({
     uniforms: { uColor: { value: new Color(color) }, uBase: { value: base }, uRim: { value: rim } },
     vertexShader: /* glsl */ `

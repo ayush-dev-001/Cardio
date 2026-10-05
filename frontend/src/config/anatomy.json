@@ -12,6 +12,25 @@
     "scale": 0.62
   },
   "nodesPerVessel": 6,
+  "renderer": "model",
+  "model": {
+    "_comment": "Realistic anatomy built by assets/3d/pipeline (see assets/3d/CREDITS.md). Units: dm, heart-centred, +x patient's left, +y up, +z anterior. 'vesselMeshes' maps shared/vessels.json ids to glTF node names; falls back to the procedural heart below if the model cannot load.",
+    "heart": "/models/heart.glb",
+    "torso": "/models/torso.glb",
+    "vesselMeshes": { "LAD": ["LAD"], "LCX": ["LCX"], "RCA": ["RCA"] },
+    "parts": {
+      "heart": { "color": "#a06a63", "roughness": 0.5, "clearcoat": 0.45, "sheen": 0.5 },
+      "right_atrium": { "color": "#94605a", "roughness": 0.55, "clearcoat": 0.35, "sheen": 0.4 },
+      "aorta": { "color": "#c48d84", "roughness": 0.45, "clearcoat": 0.3, "sheen": 0.2 },
+      "pulmonary_trunk": { "color": "#8a90c4", "roughness": 0.45, "clearcoat": 0.3, "sheen": 0.2 },
+      "venae_cavae": { "color": "#7383b8", "roughness": 0.5, "clearcoat": 0.25, "sheen": 0.2 },
+      "left_main": { "color": "#d8cfe6", "roughness": 0.35, "clearcoat": 0.3, "sheen": 0 }
+    },
+    "nodeRadius": 0.045,
+    "labelAlong": { "LAD": 0.55, "LCX": 0.85, "RCA": 0.35 },
+    "camera": { "position": [0.3, 0.3, 4.1], "target": [0.05, -0.1, 0] },
+    "lungs": { "position": [0.56, 0.3, -0.18], "scale": [0.4, 0.82, 0.48] }
+  },
   "vessels": {
     "LAD": {
       "segments": [
