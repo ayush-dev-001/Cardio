@@ -404,6 +404,11 @@ function FinalCta() {
   );
 }
 
+// 3D asset attribution (licences require it); details in assets/3d/CREDITS.md
+const HEART_URL = "https://sketchfab.com/3d-models/cardiac-anatomy-coronary-arteries-of-the-heart-00b5f4ec0b984325b453f8df07cd0cb5";
+const TORSO_URL = "https://sketchfab.com/3d-models/c6c3dd15792c4b768f087f0831ad249d";
+const creditLink = "underline decoration-white/30 underline-offset-2 hover:text-white/70";
+
 function Footer() {
   return (
     <footer className="border-t border-white/10 py-12">
@@ -415,12 +420,20 @@ function Footer() {
             2026, Track A. For decision support and educational purposes only.
           </p>
           <p className="text-xs leading-relaxed text-white/40">
-            3D torso adapted (cropped, rescaled, compressed) from{" "}
-            <a href="https://sketchfab.com/search?q=Low+Poly+Male+Body+Base+Mesh-Base&type=models" target="_blank" rel="noreferrer" className="underline decoration-white/30 underline-offset-2 hover:text-white/70">
+            3D heart adapted (segmented into LAD / LCX / RCA, simplified) from{" "}
+            <a href={HEART_URL} target="_blank" rel="noreferrer" className={creditLink}>
+              "Cardiac Anatomy: Coronary arteries of the heart"
+            </a>{" "}
+            by Hannah Newey,{" "}
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noreferrer" className={creditLink}>
+              CC BY-NC-SA 4.0
+            </a>
+            ; the adapted heart is shared under the same licence. 3D torso adapted (cropped, rescaled) from{" "}
+            <a href={TORSO_URL} target="_blank" rel="noreferrer" className={creditLink}>
               "Low Poly Male Body Base"
             </a>{" "}
             by Mesh-Base,{" "}
-            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer" className="underline decoration-white/30 underline-offset-2 hover:text-white/70">
+            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer" className={creditLink}>
               CC BY 4.0
             </a>
             .

@@ -91,7 +91,7 @@ remains as an automatic fallback if the model cannot load.
   driven by the same `shared/vessels.json` ids.
 
 **Performance**
-- Decimated from 1.4M to ~125k triangles, Meshopt-compressed: `heart.glb` is 438 KB (336 KB
+- Decimated from 2.7M to ~125k triangles, Meshopt-compressed: `heart.glb` is 438 KB (336 KB
   gzipped) and `torso.glb` is 9 KB.
 - Rendering is on demand; smooth normals are computed once on load.
 

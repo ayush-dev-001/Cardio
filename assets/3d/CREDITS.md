@@ -4,12 +4,18 @@
 
 | Runtime file | Source | Author | License |
 |---|---|---|---|
-| `frontend/public/models/heart.glb` | Sketchfab: "Cardiac anatomy: coronary arteries of the heart" (ZBrush OBJ export) | **TODO: confirm author** | **TODO: confirm license** (must allow redistribution, e.g. CC BY / CC0) |
-| `frontend/public/models/torso.glb` | Sketchfab: "Low Poly Male Body Base" | Mesh-Base | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| `frontend/public/models/heart.glb` | Sketchfab: ["Cardiac Anatomy: Coronary arteries of the heart"](https://sketchfab.com/3d-models/cardiac-anatomy-coronary-arteries-of-the-heart-00b5f4ec0b984325b453f8df07cd0cb5) | Hannah Newey ([@HannahNewey](https://sketchfab.com/HannahNewey)) | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) |
+| `frontend/public/models/torso.glb` | Sketchfab: ["Low Poly Male Body Base"](https://sketchfab.com/3d-models/c6c3dd15792c4b768f087f0831ad249d) | Mesh-Base | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 
 Both runtime files are derived works: the heart is segmented, its coronary tree split into
-LAD / LCX / RCA, and it is decimated from 1.4M to about 125k triangles. The torso is cropped,
+LAD / LCX / RCA, and it is decimated from 2.7M to about 125k triangles. The torso is cropped,
 re-scaled and compressed.
+
+**Licence of the derived files.** Because the heart source is ShareAlike, the modified
+`heart.glb` (and `frontend/src/config/anatomy.landmarks.json`, derived from it) is distributed
+under the same licence, **CC BY-NC-SA 4.0**: non-commercial use only, with attribution to Hannah
+Newey. The modified `torso.glb` remains CC BY 4.0 (attribution to Mesh-Base). These licences
+cover only the 3D assets, not the project's source code.
 
 Also downloaded but **not used** in the runtime models:
 - BodyParts3D coronary vessel segments (Database Center for Life Science, CC BY-SA 2.1 JP).

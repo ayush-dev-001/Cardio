@@ -75,3 +75,12 @@ docs/                problem statement and documentation
 
 ## Data
 Extension of Z-Alizadeh Sani dataset, UCI Machine Learning Repository (303 patients).
+
+## 3D asset credits
+- Heart: adapted from ["Cardiac Anatomy: Coronary arteries of the heart"](https://sketchfab.com/3d-models/cardiac-anatomy-coronary-arteries-of-the-heart-00b5f4ec0b984325b453f8df07cd0cb5)
+  by Hannah Newey, [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). The adapted
+  `heart.glb` is shared under the same licence (non-commercial).
+- Torso: adapted from ["Low Poly Male Body Base"](https://sketchfab.com/3d-models/c6c3dd15792c4b768f087f0831ad249d)
+  by Mesh-Base, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+Details and rebuild steps: `assets/3d/CREDITS.md`.
