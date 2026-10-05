@@ -275,7 +275,7 @@ export function PatientForm(p: Props) {
         </Accordion>
       </div>
 
-      <div className="border-t border-white/[0.07] bg-surface/90 p-4 backdrop-blur-xl">
+      <div className="border-t border-[rgba(164,132,215,0.15)] bg-white/[0.02] p-4">
         <div className="flex gap-2">
           {p.live ? (
             <div className="flex h-11 flex-1 items-center gap-2.5 rounded-lg border border-white/[0.08] bg-surface-2 px-3 text-xs text-white/70">

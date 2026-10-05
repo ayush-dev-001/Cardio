@@ -75,7 +75,7 @@ export function Tip({ content, children, side = "top" }: { content: ReactNode; c
           side={side}
           sideOffset={6}
           collisionPadding={12}
-          className="z-[70] max-w-64 rounded-lg border border-white/10 bg-[#16131f] px-3 py-2 text-xs leading-relaxed text-white/85 shadow-xl shadow-black/50 data-[state=delayed-open]:animate-[pop-in_160ms_ease-out]"
+          className="z-[70] max-w-64 rounded-lg border border-[rgba(164,132,215,0.25)] bg-[#1c1530] px-3 py-2 text-xs leading-relaxed text-white/85 shadow-xl shadow-black/50 data-[state=delayed-open]:animate-[pop-in_160ms_ease-out]"
         >
           {content}
           <T.Arrow className="fill-[#16131f]" />
@@ -109,7 +109,7 @@ export function InfoTip({ text, label }: { text: string; label: string }) {
           sideOffset={6}
           collisionPadding={12}
           onPointerDownOutside={() => setOpen(false)}
-          className="z-[70] max-w-64 rounded-lg border border-white/10 bg-[#16131f] px-3 py-2 text-xs leading-relaxed text-white/85 shadow-xl shadow-black/50 data-[state=delayed-open]:animate-[pop-in_160ms_ease-out] data-[state=instant-open]:animate-[pop-in_160ms_ease-out]"
+          className="z-[70] max-w-64 rounded-lg border border-[rgba(164,132,215,0.25)] bg-[#1c1530] px-3 py-2 text-xs leading-relaxed text-white/85 shadow-xl shadow-black/50 data-[state=delayed-open]:animate-[pop-in_160ms_ease-out] data-[state=instant-open]:animate-[pop-in_160ms_ease-out]"
         >
           {text}
           <T.Arrow className="fill-[#16131f]" />
@@ -124,7 +124,7 @@ export const Accordion = A.Root;
 
 export function AccordionItem({ value, header, children, className }: { value: string; header: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <A.Item value={value} className={cn("card-surface overflow-hidden rounded-xl", className)}>
+    <A.Item value={value} className={cn("overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03]", className)}>
       <A.Header>
         <A.Trigger className="group flex min-h-14 w-full items-center justify-between gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.02]">
           {header}
@@ -239,7 +239,7 @@ export function Sheet({ open, onOpenChange, title, children }: { open: boolean; 
     <D.Root open={open} onOpenChange={onOpenChange}>
       <D.Portal>
         <D.Overlay className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm data-[state=closed]:animate-[fade-out_160ms] data-[state=open]:animate-[fade-in_200ms]" />
-        <D.Content className="fixed inset-y-0 right-0 z-[61] flex w-[min(86vw,360px)] flex-col border-l border-white/10 bg-surface p-5 shadow-2xl data-[state=closed]:animate-[sheet-out-right_200ms_ease-in] data-[state=open]:animate-[sheet-in-right_260ms_cubic-bezier(0.22,1,0.36,1)]">
+        <D.Content className="glass-strong fixed inset-y-0 right-0 z-[61] flex w-[min(86vw,360px)] flex-col p-5 shadow-2xl data-[state=closed]:animate-[sheet-out-right_200ms_ease-in] data-[state=open]:animate-[sheet-in-right_260ms_cubic-bezier(0.22,1,0.36,1)]">
           <div className="flex items-center justify-between">
             <D.Title className="font-serif text-2xl text-white">{title}</D.Title>
             <D.Close className="grid h-11 w-11 place-items-center rounded-lg text-white/70 hover:bg-white/[0.06] hover:text-white" aria-label="Close menu">

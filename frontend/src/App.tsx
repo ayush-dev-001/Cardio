@@ -236,7 +236,7 @@ export default function App() {
           {vesselInfo && (
             <motion.div
               key={vesselInfo.id}
-              className="pointer-events-auto absolute right-3 top-16 max-sm:bottom-3 max-sm:left-3 max-sm:top-auto"
+              className="pointer-events-auto absolute right-3 top-16 max-h-[calc(100%-5rem)] overflow-y-auto overscroll-contain rounded-2xl no-scrollbar max-sm:bottom-3 max-sm:left-3 max-sm:top-auto max-sm:max-h-[62%]"
               initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 16 }}
@@ -398,13 +398,14 @@ export default function App() {
 
   return (
     <TooltipProvider>
-      <div className="relative isolate flex h-[100dvh] flex-col overflow-hidden bg-page text-white/90">
+      <div className="relative isolate flex h-[100dvh] flex-col overflow-hidden bg-page bg-[linear-gradient(160deg,#1a1233_0%,#0e0b1c_45%,#150e2a_100%)] text-white/90">
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-          <div className="absolute -left-48 -top-48 h-[520px] w-[520px] rounded-full bg-primary/12 blur-[150px]" />
-          <div className="absolute -right-40 bottom-0 h-[420px] w-[520px] rounded-full bg-plum/50 blur-[150px]" />
+          <div className="absolute -left-40 -top-40 h-[560px] w-[560px] rounded-full bg-primary/25 blur-[150px]" />
+          <div className="absolute left-1/2 top-1/3 h-[420px] w-[620px] -translate-x-1/2 rounded-full bg-[#4c1d95]/25 blur-[160px]" />
+          <div className="absolute -right-32 bottom-0 h-[460px] w-[560px] rounded-full bg-[#7c3aed]/20 blur-[150px]" />
         </div>
 
-        <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-white/[0.07] bg-surface/80 px-3 backdrop-blur-xl sm:px-4">
+        <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-[rgba(164,132,215,0.15)] bg-surface/60 px-3 backdrop-blur-xl sm:px-4">
           <div className="flex min-w-0 items-center gap-3">
             <Link href="/" aria-label="CardioScope home" className="inline-flex min-h-11 items-center rounded-lg">
               <Logo />
@@ -439,11 +440,11 @@ export default function App() {
         )}
 
         {isDesktop ? (
-        <div className="grid min-h-0 flex-1 gap-3 p-3 lg:grid-cols-[340px_1fr] xl:grid-cols-[minmax(320px,370px)_1fr_minmax(360px,430px)]">
+        <div className="grid min-h-0 flex-1 gap-3 p-3 lg:grid-cols-[340px_1fr] lg:grid-rows-[minmax(0,52vh)_minmax(0,1fr)] xl:grid-cols-[minmax(320px,370px)_1fr_minmax(360px,430px)] xl:grid-rows-[minmax(0,1fr)]">
           <motion.aside {...enter(0)} className="card-surface row-span-2 min-h-0 overflow-hidden rounded-2xl xl:row-span-1" aria-label="Patient data">
             {form}
           </motion.aside>
-          <motion.div {...enter(1)} className="min-h-0 lg:h-[52vh] xl:h-auto">
+          <motion.div {...enter(1)} className="min-h-0">
             {viewer}
           </motion.div>
           <motion.aside {...enter(2)} className="min-h-0 overflow-y-auto pb-2 no-scrollbar lg:col-start-2 xl:col-start-3" aria-label="Results">
@@ -472,7 +473,7 @@ export default function App() {
             )}
           </AnimatePresence>
         </div>
-        <nav aria-label="Dashboard sections" className="grid shrink-0 grid-cols-3 border-t border-white/[0.07] bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
+        <nav aria-label="Dashboard sections" className="grid shrink-0 grid-cols-3 border-t border-[rgba(164,132,215,0.15)] bg-surface/75 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
           {MOBILE_TABS.map(({ id, label, icon: Icon }) => {
             const on = mobileView === id;
             return (
