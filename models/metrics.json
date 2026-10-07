@@ -74,7 +74,7 @@
       "selected_model": "logreg",
       "final": {
         "family": "logreg",
-        "model_file": "models\\cad.joblib",
+        "model_file": "models/cad.joblib",
         "calibration": "platt",
         "platt": {
           "a": 0.844,
@@ -138,86 +138,86 @@
         },
         "random_forest": {
           "roc_auc": {
-            "mean": 0.9157,
-            "ci_low": 0.8794,
-            "ci_high": 0.9477
+            "mean": 0.9158,
+            "ci_low": 0.8799,
+            "ci_high": 0.9471
           },
           "accuracy": {
-            "mean": 0.8713,
-            "ci_low": 0.8339,
-            "ci_high": 0.9043
+            "mean": 0.8647,
+            "ci_low": 0.8262,
+            "ci_high": 0.8999
           },
           "precision": {
-            "mean": 0.9116,
-            "ci_low": 0.8716,
-            "ci_high": 0.9453
+            "mean": 0.9108,
+            "ci_low": 0.8705,
+            "ci_high": 0.9452
           },
           "recall": {
-            "mean": 0.9074,
-            "ci_low": 0.8704,
-            "ci_high": 0.9423
+            "mean": 0.8981,
+            "ci_low": 0.8604,
+            "ci_high": 0.9361
           },
           "specificity": {
             "mean": 0.7816,
-            "ci_low": 0.6923,
-            "ci_high": 0.8588
+            "ci_low": 0.6932,
+            "ci_high": 0.8611
           },
           "f1": {
-            "mean": 0.9095,
-            "ci_low": 0.8796,
-            "ci_high": 0.9346
+            "mean": 0.9044,
+            "ci_low": 0.8747,
+            "ci_high": 0.9315
           },
           "brier": {
-            "mean": 0.101,
-            "ci_low": 0.0789,
-            "ci_high": 0.1249
+            "mean": 0.1024,
+            "ci_low": 0.0795,
+            "ci_high": 0.1273
           },
           "brier_raw": {
-            "mean": 0.1203,
-            "ci_low": 0.1043,
-            "ci_high": 0.1376
+            "mean": 0.1194,
+            "ci_low": 0.103,
+            "ci_high": 0.1371
           }
         },
         "xgboost": {
           "roc_auc": {
             "mean": 0.9148,
-            "ci_low": 0.8787,
-            "ci_high": 0.9467
+            "ci_low": 0.8781,
+            "ci_high": 0.9466
           },
           "accuracy": {
-            "mean": 0.868,
-            "ci_low": 0.8328,
+            "mean": 0.8669,
+            "ci_low": 0.8317,
             "ci_high": 0.901
           },
           "precision": {
-            "mean": 0.9166,
-            "ci_low": 0.8786,
-            "ci_high": 0.9503
+            "mean": 0.9122,
+            "ci_low": 0.8731,
+            "ci_high": 0.9454
           },
           "recall": {
-            "mean": 0.8966,
-            "ci_low": 0.8601,
-            "ci_high": 0.9319
+            "mean": 0.8997,
+            "ci_low": 0.8642,
+            "ci_high": 0.9346
           },
           "specificity": {
-            "mean": 0.7969,
-            "ci_low": 0.7159,
-            "ci_high": 0.8726
+            "mean": 0.7854,
+            "ci_low": 0.701,
+            "ci_high": 0.8588
           },
           "f1": {
-            "mean": 0.9063,
-            "ci_low": 0.8793,
-            "ci_high": 0.9311
+            "mean": 0.9058,
+            "ci_low": 0.877,
+            "ci_high": 0.9314
           },
           "brier": {
-            "mean": 0.1005,
-            "ci_low": 0.0788,
-            "ci_high": 0.1225
+            "mean": 0.0996,
+            "ci_low": 0.0787,
+            "ci_high": 0.1221
           },
           "brier_raw": {
-            "mean": 0.1035,
-            "ci_low": 0.0818,
-            "ci_high": 0.1254
+            "mean": 0.1031,
+            "ci_low": 0.0823,
+            "ci_high": 0.1259
           }
         },
         "catboost": {
@@ -262,29 +262,192 @@
             "ci_high": 0.124
           }
         }
+      },
+      "comparisons": {
+        "ensemble": {
+          "label": "Ensemble (mean log-odds of all four families)",
+          "members": [
+            "logreg",
+            "random_forest",
+            "xgboost",
+            "catboost"
+          ],
+          "metrics": {
+            "roc_auc": {
+              "mean": 0.9287,
+              "ci_low": 0.8971,
+              "ci_high": 0.9557
+            },
+            "accuracy": {
+              "mean": 0.8735,
+              "ci_low": 0.8394,
+              "ci_high": 0.9087
+            },
+            "precision": {
+              "mean": 0.9223,
+              "ci_low": 0.8852,
+              "ci_high": 0.9541
+            },
+            "recall": {
+              "mean": 0.8981,
+              "ci_low": 0.8593,
+              "ci_high": 0.936
+            },
+            "specificity": {
+              "mean": 0.8123,
+              "ci_low": 0.7273,
+              "ci_high": 0.8852
+            },
+            "f1": {
+              "mean": 0.9101,
+              "ci_low": 0.8828,
+              "ci_high": 0.9361
+            },
+            "brier": {
+              "mean": 0.0932,
+              "ci_low": 0.0723,
+              "ci_high": 0.1153
+            },
+            "brier_raw": {
+              "mean": 0.0934,
+              "ci_low": 0.0725,
+              "ci_high": 0.1151
+            }
+          },
+          "auc_difference_vs_selected": {
+            "mean": -0.0001,
+            "ci_low": -0.0114,
+            "ci_high": 0.0117
+          }
+        },
+        "clinical_baseline": {
+          "label": "Clinical baseline (age, sex, chest-pain type, classic risk factors)",
+          "features": [
+            "age",
+            "sex",
+            "typical_chest_pain",
+            "atypical",
+            "nonanginal",
+            "dm",
+            "htn",
+            "current_smoker",
+            "fh",
+            "dlp"
+          ],
+          "metrics": {
+            "roc_auc": {
+              "mean": 0.9088,
+              "ci_low": 0.8674,
+              "ci_high": 0.9442
+            },
+            "accuracy": {
+              "mean": 0.8757,
+              "ci_low": 0.8405,
+              "ci_high": 0.9076
+            },
+            "precision": {
+              "mean": 0.9267,
+              "ci_low": 0.8887,
+              "ci_high": 0.959
+            },
+            "recall": {
+              "mean": 0.8966,
+              "ci_low": 0.8574,
+              "ci_high": 0.9333
+            },
+            "specificity": {
+              "mean": 0.8238,
+              "ci_low": 0.7433,
+              "ci_high": 0.8954
+            },
+            "f1": {
+              "mean": 0.9113,
+              "ci_low": 0.883,
+              "ci_high": 0.9349
+            },
+            "brier": {
+              "mean": 0.0989,
+              "ci_low": 0.0776,
+              "ci_high": 0.1238
+            },
+            "brier_raw": {
+              "mean": 0.1097,
+              "ci_low": 0.0901,
+              "ci_high": 0.133
+            }
+          },
+          "auc_gain_of_selected": {
+            "mean": 0.02,
+            "ci_low": -0.0013,
+            "ci_high": 0.0427
+          }
+        }
+      },
+      "decision_curve": {
+        "net_benefit": {
+          "0.1": {
+            "selected": 0.6818,
+            "ensemble": 0.6838,
+            "baseline": 0.6753,
+            "treat_all": 0.681,
+            "treat_none": 0.0
+          },
+          "0.2": {
+            "selected": 0.6518,
+            "ensemble": 0.6551,
+            "baseline": 0.651,
+            "treat_all": 0.6411,
+            "treat_none": 0.0
+          },
+          "0.3": {
+            "selected": 0.6274,
+            "ensemble": 0.6338,
+            "baseline": 0.6285,
+            "treat_all": 0.5898,
+            "treat_none": 0.0
+          },
+          "0.4": {
+            "selected": 0.6098,
+            "ensemble": 0.6128,
+            "baseline": 0.6062,
+            "treat_all": 0.5215,
+            "treat_none": 0.0
+          },
+          "0.5": {
+            "selected": 0.5864,
+            "ensemble": 0.5831,
+            "baseline": 0.5919,
+            "treat_all": 0.4257,
+            "treat_none": 0.0
+          }
+        },
+        "selected_beats_treat_all_and_none": [
+          0.05,
+          0.7
+        ]
       }
     },
     "lad": {
       "selected_model": "random_forest",
       "final": {
         "family": "random_forest",
-        "model_file": "models\\lad.joblib",
+        "model_file": "models/lad.joblib",
         "calibration": "platt",
         "platt": {
-          "a": 2.6713,
-          "b": -0.4739
+          "a": 2.0435,
+          "b": -0.264
         },
-        "threshold": 0.6215,
+        "threshold": 0.6153,
         "min_recall": 0.8,
-        "cv_threshold_mean": 0.5849,
+        "cv_threshold_mean": 0.5891,
         "cv_threshold_range": [
-          0.5253,
-          0.6259
+          0.5388,
+          0.619
         ],
         "best_params": {
-          "subsample": 0.6,
+          "subsample": 0.8,
           "min_child_weight": 1,
-          "max_depth": 3,
+          "max_depth": 5,
           "colsample_bynode": 0.15
         }
       },
@@ -333,108 +496,108 @@
         },
         "random_forest": {
           "roc_auc": {
-            "mean": 0.8479,
-            "ci_low": 0.8018,
-            "ci_high": 0.8899
+            "mean": 0.8416,
+            "ci_low": 0.7962,
+            "ci_high": 0.8841
           },
           "accuracy": {
-            "mean": 0.7921,
-            "ci_low": 0.7502,
-            "ci_high": 0.8328
+            "mean": 0.769,
+            "ci_low": 0.7249,
+            "ci_high": 0.8097
           },
           "precision": {
-            "mean": 0.8242,
-            "ci_low": 0.7666,
-            "ci_high": 0.876
+            "mean": 0.8047,
+            "ci_low": 0.7453,
+            "ci_high": 0.8596
           },
           "recall": {
-            "mean": 0.8192,
-            "ci_low": 0.7712,
-            "ci_high": 0.867
+            "mean": 0.7985,
+            "ci_low": 0.7464,
+            "ci_high": 0.8508
           },
           "specificity": {
-            "mean": 0.754,
-            "ci_low": 0.6815,
-            "ci_high": 0.8251
+            "mean": 0.7275,
+            "ci_low": 0.6543,
+            "ci_high": 0.7989
           },
           "f1": {
-            "mean": 0.8216,
-            "ci_low": 0.781,
-            "ci_high": 0.859
+            "mean": 0.8015,
+            "ci_low": 0.7559,
+            "ci_high": 0.84
           },
           "brier": {
-            "mean": 0.1549,
-            "ci_low": 0.1324,
-            "ci_high": 0.1802
+            "mean": 0.1573,
+            "ci_low": 0.135,
+            "ci_high": 0.1828
           },
           "brier_raw": {
-            "mean": 0.1732,
-            "ci_low": 0.1597,
-            "ci_high": 0.1897
+            "mean": 0.1725,
+            "ci_low": 0.1579,
+            "ci_high": 0.1895
           }
         },
         "xgboost": {
           "roc_auc": {
-            "mean": 0.8389,
-            "ci_low": 0.7922,
-            "ci_high": 0.8815
-          },
-          "accuracy": {
-            "mean": 0.7778,
-            "ci_low": 0.7338,
-            "ci_high": 0.8196
-          },
-          "precision": {
-            "mean": 0.8076,
-            "ci_low": 0.7489,
-            "ci_high": 0.8617
-          },
-          "recall": {
-            "mean": 0.8136,
-            "ci_low": 0.7636,
-            "ci_high": 0.8629
-          },
-          "specificity": {
-            "mean": 0.7275,
-            "ci_low": 0.65,
-            "ci_high": 0.8011
-          },
-          "f1": {
-            "mean": 0.8105,
-            "ci_low": 0.7669,
-            "ci_high": 0.8499
-          },
-          "brier": {
-            "mean": 0.1589,
-            "ci_low": 0.1363,
-            "ci_high": 0.1835
-          },
-          "brier_raw": {
-            "mean": 0.1635,
-            "ci_low": 0.142,
-            "ci_high": 0.188
-          }
-        },
-        "catboost": {
-          "roc_auc": {
-            "mean": 0.8358,
-            "ci_low": 0.7897,
+            "mean": 0.8362,
+            "ci_low": 0.7884,
             "ci_high": 0.8792
           },
           "accuracy": {
             "mean": 0.7789,
-            "ci_low": 0.7371,
-            "ci_high": 0.8207
+            "ci_low": 0.7348,
+            "ci_high": 0.8196
           },
           "precision": {
-            "mean": 0.8078,
-            "ci_low": 0.7493,
-            "ci_high": 0.8577
+            "mean": 0.8114,
+            "ci_low": 0.7527,
+            "ci_high": 0.8648
           },
           "recall": {
-            "mean": 0.8154,
-            "ci_low": 0.7672,
-            "ci_high": 0.8667
+            "mean": 0.8098,
+            "ci_low": 0.759,
+            "ci_high": 0.8616
+          },
+          "specificity": {
+            "mean": 0.7354,
+            "ci_low": 0.6613,
+            "ci_high": 0.8049
+          },
+          "f1": {
+            "mean": 0.8105,
+            "ci_low": 0.7639,
+            "ci_high": 0.8506
+          },
+          "brier": {
+            "mean": 0.1601,
+            "ci_low": 0.1377,
+            "ci_high": 0.1849
+          },
+          "brier_raw": {
+            "mean": 0.1632,
+            "ci_low": 0.1418,
+            "ci_high": 0.1875
+          }
+        },
+        "catboost": {
+          "roc_auc": {
+            "mean": 0.8412,
+            "ci_low": 0.7941,
+            "ci_high": 0.8827
+          },
+          "accuracy": {
+            "mean": 0.7778,
+            "ci_low": 0.737,
+            "ci_high": 0.8196
+          },
+          "precision": {
+            "mean": 0.8075,
+            "ci_low": 0.7484,
+            "ci_high": 0.8573
+          },
+          "recall": {
+            "mean": 0.8136,
+            "ci_low": 0.7656,
+            "ci_high": 0.8656
           },
           "specificity": {
             "mean": 0.7275,
@@ -442,14 +605,14 @@
             "ci_high": 0.7957
           },
           "f1": {
-            "mean": 0.8116,
-            "ci_low": 0.7685,
-            "ci_high": 0.8521
+            "mean": 0.8105,
+            "ci_low": 0.7673,
+            "ci_high": 0.851
           },
           "brier": {
-            "mean": 0.1605,
-            "ci_low": 0.1375,
-            "ci_high": 0.1864
+            "mean": 0.1578,
+            "ci_low": 0.1366,
+            "ci_high": 0.1819
           },
           "brier_raw": {
             "mean": 0.16,
@@ -457,24 +620,187 @@
             "ci_high": 0.1876
           }
         }
+      },
+      "comparisons": {
+        "ensemble": {
+          "label": "Ensemble (mean log-odds of all four families)",
+          "members": [
+            "logreg",
+            "random_forest",
+            "xgboost",
+            "catboost"
+          ],
+          "metrics": {
+            "roc_auc": {
+              "mean": 0.8491,
+              "ci_low": 0.8038,
+              "ci_high": 0.8901
+            },
+            "accuracy": {
+              "mean": 0.769,
+              "ci_low": 0.7249,
+              "ci_high": 0.8141
+            },
+            "precision": {
+              "mean": 0.8072,
+              "ci_low": 0.7472,
+              "ci_high": 0.8612
+            },
+            "recall": {
+              "mean": 0.7947,
+              "ci_low": 0.7397,
+              "ci_high": 0.8485
+            },
+            "specificity": {
+              "mean": 0.7328,
+              "ci_low": 0.6568,
+              "ci_high": 0.806
+            },
+            "f1": {
+              "mean": 0.8008,
+              "ci_low": 0.7533,
+              "ci_high": 0.8439
+            },
+            "brier": {
+              "mean": 0.1538,
+              "ci_low": 0.1313,
+              "ci_high": 0.1797
+            },
+            "brier_raw": {
+              "mean": 0.1539,
+              "ci_low": 0.1328,
+              "ci_high": 0.1791
+            }
+          },
+          "auc_difference_vs_selected": {
+            "mean": 0.0075,
+            "ci_low": -0.0011,
+            "ci_high": 0.0165
+          }
+        },
+        "clinical_baseline": {
+          "label": "Clinical baseline (age, sex, chest-pain type, classic risk factors)",
+          "features": [
+            "age",
+            "sex",
+            "typical_chest_pain",
+            "atypical",
+            "nonanginal",
+            "dm",
+            "htn",
+            "current_smoker",
+            "fh",
+            "dlp"
+          ],
+          "metrics": {
+            "roc_auc": {
+              "mean": 0.7772,
+              "ci_low": 0.7228,
+              "ci_high": 0.8298
+            },
+            "accuracy": {
+              "mean": 0.7481,
+              "ci_low": 0.7029,
+              "ci_high": 0.7943
+            },
+            "precision": {
+              "mean": 0.7787,
+              "ci_low": 0.718,
+              "ci_high": 0.8332
+            },
+            "recall": {
+              "mean": 0.7947,
+              "ci_low": 0.7399,
+              "ci_high": 0.8485
+            },
+            "specificity": {
+              "mean": 0.6825,
+              "ci_low": 0.6026,
+              "ci_high": 0.759
+            },
+            "f1": {
+              "mean": 0.7865,
+              "ci_low": 0.7409,
+              "ci_high": 0.8282
+            },
+            "brier": {
+              "mean": 0.1812,
+              "ci_low": 0.1577,
+              "ci_high": 0.2071
+            },
+            "brier_raw": {
+              "mean": 0.1829,
+              "ci_low": 0.1644,
+              "ci_high": 0.202
+            }
+          },
+          "auc_gain_of_selected": {
+            "mean": 0.0644,
+            "ci_low": 0.0313,
+            "ci_high": 0.1017
+          }
+        }
+      },
+      "decision_curve": {
+        "net_benefit": {
+          "0.1": {
+            "selected": 0.5391,
+            "ensemble": 0.537,
+            "baseline": 0.5338,
+            "treat_all": 0.538,
+            "treat_none": 0.0
+          },
+          "0.2": {
+            "selected": 0.4931,
+            "ensemble": 0.4983,
+            "baseline": 0.4871,
+            "treat_all": 0.4802,
+            "treat_none": 0.0
+          },
+          "0.3": {
+            "selected": 0.4583,
+            "ensemble": 0.4624,
+            "baseline": 0.4463,
+            "treat_all": 0.4059,
+            "treat_none": 0.0
+          },
+          "0.4": {
+            "selected": 0.4085,
+            "ensemble": 0.4169,
+            "baseline": 0.4045,
+            "treat_all": 0.3069,
+            "treat_none": 0.0
+          },
+          "0.5": {
+            "selected": 0.3685,
+            "ensemble": 0.3718,
+            "baseline": 0.3388,
+            "treat_all": 0.1683,
+            "treat_none": 0.0
+          }
+        },
+        "selected_beats_treat_all_and_none": [
+          0.08,
+          0.7
+        ]
       }
     },
     "lcx": {
       "selected_model": "random_forest",
       "final": {
         "family": "random_forest",
-        "model_file": "models\\lcx.joblib",
+        "model_file": "models/lcx.joblib",
         "calibration": "platt",
         "platt": {
-          "a": 1.536,
-          "b": 0.1025
+          "a": 1.4779,
+          "b": 0.0879
         },
-        "threshold": 0.3377,
+        "threshold": 0.3521,
         "min_recall": 0.8,
-        "cv_threshold_mean": 0.3277,
+        "cv_threshold_mean": 0.3273,
         "cv_threshold_range": [
-          0.3062,
-          0.3787
+          0.3029,
+          0.3623
         ],
         "best_params": {
           "subsample": 0.6,
@@ -528,123 +854,123 @@
         },
         "random_forest": {
           "roc_auc": {
-            "mean": 0.7286,
-            "ci_low": 0.6718,
-            "ci_high": 0.7804
+            "mean": 0.7289,
+            "ci_low": 0.6736,
+            "ci_high": 0.7821
           },
           "accuracy": {
-            "mean": 0.6392,
-            "ci_low": 0.5941,
-            "ci_high": 0.6887
+            "mean": 0.6436,
+            "ci_low": 0.5974,
+            "ci_high": 0.6909
           },
           "precision": {
-            "mean": 0.5272,
-            "ci_low": 0.4526,
-            "ci_high": 0.5981
+            "mean": 0.5319,
+            "ci_low": 0.46,
+            "ci_high": 0.6036
           },
           "recall": {
-            "mean": 0.7871,
-            "ci_low": 0.7231,
-            "ci_high": 0.8468
+            "mean": 0.7731,
+            "ci_low": 0.702,
+            "ci_high": 0.8363
           },
           "specificity": {
-            "mean": 0.5435,
-            "ci_low": 0.4785,
-            "ci_high": 0.6084
+            "mean": 0.5598,
+            "ci_low": 0.4962,
+            "ci_high": 0.622
           },
           "f1": {
-            "mean": 0.6315,
-            "ci_low": 0.5697,
-            "ci_high": 0.6894
+            "mean": 0.6302,
+            "ci_low": 0.5653,
+            "ci_high": 0.6898
           },
           "brier": {
-            "mean": 0.2048,
-            "ci_low": 0.187,
-            "ci_high": 0.2264
+            "mean": 0.2044,
+            "ci_low": 0.1861,
+            "ci_high": 0.2254
           },
           "brier_raw": {
-            "mean": 0.2075,
-            "ci_low": 0.1933,
-            "ci_high": 0.2235
+            "mean": 0.2073,
+            "ci_low": 0.1931,
+            "ci_high": 0.2229
           }
         },
         "xgboost": {
           "roc_auc": {
-            "mean": 0.7172,
-            "ci_low": 0.667,
-            "ci_high": 0.7673
+            "mean": 0.7282,
+            "ci_low": 0.6777,
+            "ci_high": 0.7771
           },
           "accuracy": {
-            "mean": 0.6084,
-            "ci_low": 0.5633,
-            "ci_high": 0.6546
+            "mean": 0.6469,
+            "ci_low": 0.604,
+            "ci_high": 0.6942
           },
           "precision": {
-            "mean": 0.5019,
-            "ci_low": 0.4336,
-            "ci_high": 0.5687
+            "mean": 0.5337,
+            "ci_low": 0.4631,
+            "ci_high": 0.6054
           },
           "recall": {
-            "mean": 0.8207,
-            "ci_low": 0.7627,
-            "ci_high": 0.873
+            "mean": 0.7983,
+            "ci_low": 0.7381,
+            "ci_high": 0.8572
           },
           "specificity": {
-            "mean": 0.471,
-            "ci_low": 0.4117,
-            "ci_high": 0.5334
+            "mean": 0.5489,
+            "ci_low": 0.4882,
+            "ci_high": 0.6103
           },
           "f1": {
-            "mean": 0.6223,
-            "ci_low": 0.5584,
-            "ci_high": 0.6789
+            "mean": 0.6397,
+            "ci_low": 0.5794,
+            "ci_high": 0.6946
           },
           "brier": {
-            "mean": 0.2202,
-            "ci_low": 0.1981,
-            "ci_high": 0.244
+            "mean": 0.2052,
+            "ci_low": 0.1874,
+            "ci_high": 0.2241
           },
           "brier_raw": {
-            "mean": 0.2173,
-            "ci_low": 0.1906,
-            "ci_high": 0.2446
+            "mean": 0.2175,
+            "ci_low": 0.1918,
+            "ci_high": 0.2439
           }
         },
         "catboost": {
           "roc_auc": {
-            "mean": 0.713,
-            "ci_low": 0.6605,
-            "ci_high": 0.7605
+            "mean": 0.7262,
+            "ci_low": 0.674,
+            "ci_high": 0.7769
           },
           "accuracy": {
-            "mean": 0.5996,
-            "ci_low": 0.5533,
-            "ci_high": 0.648
+            "mean": 0.615,
+            "ci_low": 0.5677,
+            "ci_high": 0.6623
           },
           "precision": {
-            "mean": 0.4944,
-            "ci_low": 0.4241,
-            "ci_high": 0.5652
+            "mean": 0.5063,
+            "ci_low": 0.4355,
+            "ci_high": 0.5776
           },
           "recall": {
-            "mean": 0.8151,
-            "ci_low": 0.7573,
-            "ci_high": 0.8701
+            "mean": 0.8039,
+            "ci_low": 0.7438,
+            "ci_high": 0.8631
           },
           "specificity": {
-            "mean": 0.4601,
-            "ci_low": 0.4011,
-            "ci_high": 0.5183
+            "mean": 0.4928,
+            "ci_low": 0.4278,
+            "ci_high": 0.5556
           },
           "f1": {
-            "mean": 0.6151,
-            "ci_low": 0.5538,
-            "ci_high": 0.6715
+            "mean": 0.6212,
+            "ci_low": 0.5596,
+            "ci_high": 0.6792
           },
           "brier": {
-            "mean": 0.2144,
-            "ci_low": 0.1941,
-            "ci_high": 0.2358
+            "mean": 0.2058,
+            "ci_low": 0.1884,
+            "ci_high": 0.2243
           },
           "brier_raw": {
             "mean": 0.2146,
@@ -652,13 +978,176 @@
             "ci_high": 0.2399
           }
         }
+      },
+      "comparisons": {
+        "ensemble": {
+          "label": "Ensemble (mean log-odds of all four families)",
+          "members": [
+            "logreg",
+            "random_forest",
+            "xgboost",
+            "catboost"
+          ],
+          "metrics": {
+            "roc_auc": {
+              "mean": 0.7388,
+              "ci_low": 0.6852,
+              "ci_high": 0.7908
+            },
+            "accuracy": {
+              "mean": 0.6656,
+              "ci_low": 0.6194,
+              "ci_high": 0.7118
+            },
+            "precision": {
+              "mean": 0.5512,
+              "ci_low": 0.4767,
+              "ci_high": 0.6238
+            },
+            "recall": {
+              "mean": 0.8011,
+              "ci_low": 0.7346,
+              "ci_high": 0.8624
+            },
+            "specificity": {
+              "mean": 0.5779,
+              "ci_low": 0.5108,
+              "ci_high": 0.6431
+            },
+            "f1": {
+              "mean": 0.653,
+              "ci_low": 0.5913,
+              "ci_high": 0.7123
+            },
+            "brier": {
+              "mean": 0.2018,
+              "ci_low": 0.1828,
+              "ci_high": 0.2227
+            },
+            "brier_raw": {
+              "mean": 0.2022,
+              "ci_low": 0.1847,
+              "ci_high": 0.2215
+            }
+          },
+          "auc_difference_vs_selected": {
+            "mean": 0.0099,
+            "ci_low": -0.0027,
+            "ci_high": 0.0228
+          }
+        },
+        "clinical_baseline": {
+          "label": "Clinical baseline (age, sex, chest-pain type, classic risk factors)",
+          "features": [
+            "age",
+            "sex",
+            "typical_chest_pain",
+            "atypical",
+            "nonanginal",
+            "dm",
+            "htn",
+            "current_smoker",
+            "fh",
+            "dlp"
+          ],
+          "metrics": {
+            "roc_auc": {
+              "mean": 0.7384,
+              "ci_low": 0.6794,
+              "ci_high": 0.7885
+            },
+            "accuracy": {
+              "mean": 0.6425,
+              "ci_low": 0.5952,
+              "ci_high": 0.6909
+            },
+            "precision": {
+              "mean": 0.5311,
+              "ci_low": 0.4597,
+              "ci_high": 0.6021
+            },
+            "recall": {
+              "mean": 0.7647,
+              "ci_low": 0.6923,
+              "ci_high": 0.8333
+            },
+            "specificity": {
+              "mean": 0.5634,
+              "ci_low": 0.4933,
+              "ci_high": 0.6313
+            },
+            "f1": {
+              "mean": 0.6268,
+              "ci_low": 0.5633,
+              "ci_high": 0.6845
+            },
+            "brier": {
+              "mean": 0.2006,
+              "ci_low": 0.1815,
+              "ci_high": 0.2219
+            },
+            "brier_raw": {
+              "mean": 0.203,
+              "ci_low": 0.182,
+              "ci_high": 0.2273
+            }
+          },
+          "auc_gain_of_selected": {
+            "mean": -0.0095,
+            "ci_low": -0.0521,
+            "ci_high": 0.0327
+          }
+        }
+      },
+      "decision_curve": {
+        "net_benefit": {
+          "0.1": {
+            "selected": 0.3288,
+            "ensemble": 0.3284,
+            "baseline": 0.3215,
+            "treat_all": 0.3253,
+            "treat_none": 0.0
+          },
+          "0.2": {
+            "selected": 0.2618,
+            "ensemble": 0.2665,
+            "baseline": 0.2671,
+            "treat_all": 0.2409,
+            "treat_none": 0.0
+          },
+          "0.3": {
+            "selected": 0.1935,
+            "ensemble": 0.1952,
+            "baseline": 0.2018,
+            "treat_all": 0.1325,
+            "treat_none": 0.0
+          },
+          "0.4": {
+            "selected": 0.1265,
+            "ensemble": 0.1507,
+            "baseline": 0.1382,
+            "treat_all": -0.0121,
+            "treat_none": 0.0
+          },
+          "0.5": {
+            "selected": 0.0825,
+            "ensemble": 0.0847,
+            "baseline": 0.0781,
+            "treat_all": -0.2145,
+            "treat_none": 0.0
+          }
+        },
+        "selected_beats_treat_all_and_none": [
+          0.05,
+          0.61
+        ]
       }
     },
     "rca": {
       "selected_model": "logreg",
       "final": {
         "family": "logreg",
-        "model_file": "models\\rca.joblib",
+        "model_file": "models/rca.joblib",
         "calibration": "platt",
         "platt": {
           "a": 1.1953,
@@ -722,123 +1211,123 @@
         },
         "random_forest": {
           "roc_auc": {
-            "mean": 0.7187,
-            "ci_low": 0.6645,
-            "ci_high": 0.7722
+            "mean": 0.7203,
+            "ci_low": 0.6665,
+            "ci_high": 0.7736
           },
           "accuracy": {
-            "mean": 0.6315,
-            "ci_low": 0.5841,
-            "ci_high": 0.6799
+            "mean": 0.6348,
+            "ci_low": 0.5864,
+            "ci_high": 0.6854
           },
           "precision": {
-            "mean": 0.5067,
-            "ci_low": 0.4374,
-            "ci_high": 0.5799
+            "mean": 0.5097,
+            "ci_low": 0.4391,
+            "ci_high": 0.5861
           },
           "recall": {
-            "mean": 0.7807,
-            "ci_low": 0.7109,
-            "ci_high": 0.8449
+            "mean": 0.7778,
+            "ci_low": 0.7068,
+            "ci_high": 0.8459
           },
           "specificity": {
-            "mean": 0.5414,
-            "ci_low": 0.4767,
-            "ci_high": 0.6026
+            "mean": 0.5485,
+            "ci_low": 0.4833,
+            "ci_high": 0.6121
           },
           "f1": {
-            "mean": 0.6145,
-            "ci_low": 0.554,
-            "ci_high": 0.673
+            "mean": 0.6158,
+            "ci_low": 0.5527,
+            "ci_high": 0.6762
           },
           "brier": {
-            "mean": 0.2032,
-            "ci_low": 0.1821,
-            "ci_high": 0.2245
+            "mean": 0.2034,
+            "ci_low": 0.1825,
+            "ci_high": 0.2244
           },
           "brier_raw": {
-            "mean": 0.2076,
-            "ci_low": 0.1918,
-            "ci_high": 0.2241
+            "mean": 0.2068,
+            "ci_low": 0.1909,
+            "ci_high": 0.2232
           }
         },
         "xgboost": {
           "roc_auc": {
-            "mean": 0.6968,
-            "ci_low": 0.6433,
-            "ci_high": 0.7469
+            "mean": 0.7114,
+            "ci_low": 0.6561,
+            "ci_high": 0.7634
           },
           "accuracy": {
-            "mean": 0.6139,
-            "ci_low": 0.5655,
-            "ci_high": 0.659
+            "mean": 0.6293,
+            "ci_low": 0.5798,
+            "ci_high": 0.6777
           },
           "precision": {
-            "mean": 0.4921,
-            "ci_low": 0.4221,
-            "ci_high": 0.5657
+            "mean": 0.5046,
+            "ci_low": 0.4336,
+            "ci_high": 0.5767
           },
           "recall": {
-            "mean": 0.7544,
-            "ci_low": 0.6837,
-            "ci_high": 0.8184
+            "mean": 0.7719,
+            "ci_low": 0.7063,
+            "ci_high": 0.8364
           },
           "specificity": {
-            "mean": 0.5291,
-            "ci_low": 0.462,
-            "ci_high": 0.5869
+            "mean": 0.5432,
+            "ci_low": 0.4791,
+            "ci_high": 0.6067
           },
           "f1": {
-            "mean": 0.5954,
-            "ci_low": 0.5295,
-            "ci_high": 0.6561
+            "mean": 0.61,
+            "ci_low": 0.5446,
+            "ci_high": 0.6667
           },
           "brier": {
-            "mean": 0.2187,
-            "ci_low": 0.1963,
-            "ci_high": 0.2413
+            "mean": 0.2071,
+            "ci_low": 0.1872,
+            "ci_high": 0.2275
           },
           "brier_raw": {
-            "mean": 0.2118,
-            "ci_low": 0.1886,
-            "ci_high": 0.2355
+            "mean": 0.2129,
+            "ci_low": 0.1903,
+            "ci_high": 0.2364
           }
         },
         "catboost": {
           "roc_auc": {
-            "mean": 0.6555,
-            "ci_low": 0.6063,
-            "ci_high": 0.7025
+            "mean": 0.683,
+            "ci_low": 0.6283,
+            "ci_high": 0.7365
           },
           "accuracy": {
-            "mean": 0.5435,
-            "ci_low": 0.4994,
-            "ci_high": 0.5897
+            "mean": 0.6018,
+            "ci_low": 0.5556,
+            "ci_high": 0.6502
           },
           "precision": {
-            "mean": 0.4492,
-            "ci_low": 0.3838,
-            "ci_high": 0.5176
+            "mean": 0.4821,
+            "ci_low": 0.4141,
+            "ci_high": 0.5567
           },
           "recall": {
-            "mean": 0.8421,
-            "ci_low": 0.7876,
-            "ci_high": 0.888
+            "mean": 0.7865,
+            "ci_low": 0.7227,
+            "ci_high": 0.8427
           },
           "specificity": {
-            "mean": 0.3633,
-            "ci_low": 0.3095,
-            "ci_high": 0.4154
+            "mean": 0.4903,
+            "ci_low": 0.4305,
+            "ci_high": 0.552
           },
           "f1": {
-            "mean": 0.5832,
-            "ci_low": 0.5213,
-            "ci_high": 0.6425
+            "mean": 0.5976,
+            "ci_low": 0.5374,
+            "ci_high": 0.6559
           },
           "brier": {
-            "mean": 0.2475,
-            "ci_low": 0.2193,
-            "ci_high": 0.2749
+            "mean": 0.2141,
+            "ci_low": 0.1948,
+            "ci_high": 0.2334
           },
           "brier_raw": {
             "mean": 0.2285,
@@ -846,6 +1335,169 @@
             "ci_high": 0.2558
           }
         }
+      },
+      "comparisons": {
+        "ensemble": {
+          "label": "Ensemble (mean log-odds of all four families)",
+          "members": [
+            "logreg",
+            "random_forest",
+            "xgboost",
+            "catboost"
+          ],
+          "metrics": {
+            "roc_auc": {
+              "mean": 0.7277,
+              "ci_low": 0.6728,
+              "ci_high": 0.7798
+            },
+            "accuracy": {
+              "mean": 0.6359,
+              "ci_low": 0.5831,
+              "ci_high": 0.6854
+            },
+            "precision": {
+              "mean": 0.511,
+              "ci_low": 0.4351,
+              "ci_high": 0.5902
+            },
+            "recall": {
+              "mean": 0.7515,
+              "ci_low": 0.6756,
+              "ci_high": 0.8232
+            },
+            "specificity": {
+              "mean": 0.5661,
+              "ci_low": 0.4981,
+              "ci_high": 0.6298
+            },
+            "f1": {
+              "mean": 0.6081,
+              "ci_low": 0.5399,
+              "ci_high": 0.6721
+            },
+            "brier": {
+              "mean": 0.2021,
+              "ci_low": 0.1805,
+              "ci_high": 0.224
+            },
+            "brier_raw": {
+              "mean": 0.2018,
+              "ci_low": 0.1822,
+              "ci_high": 0.222
+            }
+          },
+          "auc_difference_vs_selected": {
+            "mean": -0.0036,
+            "ci_low": -0.0247,
+            "ci_high": 0.0188
+          }
+        },
+        "clinical_baseline": {
+          "label": "Clinical baseline (age, sex, chest-pain type, classic risk factors)",
+          "features": [
+            "age",
+            "sex",
+            "typical_chest_pain",
+            "atypical",
+            "nonanginal",
+            "dm",
+            "htn",
+            "current_smoker",
+            "fh",
+            "dlp"
+          ],
+          "metrics": {
+            "roc_auc": {
+              "mean": 0.7375,
+              "ci_low": 0.6799,
+              "ci_high": 0.793
+            },
+            "accuracy": {
+              "mean": 0.6458,
+              "ci_low": 0.5963,
+              "ci_high": 0.6953
+            },
+            "precision": {
+              "mean": 0.5191,
+              "ci_low": 0.4458,
+              "ci_high": 0.5956
+            },
+            "recall": {
+              "mean": 0.7924,
+              "ci_low": 0.7276,
+              "ci_high": 0.8576
+            },
+            "specificity": {
+              "mean": 0.5573,
+              "ci_low": 0.4832,
+              "ci_high": 0.6235
+            },
+            "f1": {
+              "mean": 0.6272,
+              "ci_low": 0.5654,
+              "ci_high": 0.6881
+            },
+            "brier": {
+              "mean": 0.1984,
+              "ci_low": 0.1777,
+              "ci_high": 0.219
+            },
+            "brier_raw": {
+              "mean": 0.2048,
+              "ci_low": 0.1862,
+              "ci_high": 0.224
+            }
+          },
+          "auc_gain_of_selected": {
+            "mean": -0.0062,
+            "ci_low": -0.0454,
+            "ci_high": 0.028
+          }
+        }
+      },
+      "decision_curve": {
+        "net_benefit": {
+          "0.1": {
+            "selected": 0.3071,
+            "ensemble": 0.3069,
+            "baseline": 0.3107,
+            "treat_all": 0.3069,
+            "treat_none": 0.0
+          },
+          "0.2": {
+            "selected": 0.2494,
+            "ensemble": 0.2448,
+            "baseline": 0.2585,
+            "treat_all": 0.2203,
+            "treat_none": 0.0
+          },
+          "0.3": {
+            "selected": 0.1733,
+            "ensemble": 0.1732,
+            "baseline": 0.1942,
+            "treat_all": 0.1089,
+            "treat_none": 0.0
+          },
+          "0.4": {
+            "selected": 0.0975,
+            "ensemble": 0.1085,
+            "baseline": 0.1056,
+            "treat_all": -0.0396,
+            "treat_none": 0.0
+          },
+          "0.5": {
+            "selected": 0.066,
+            "ensemble": 0.055,
+            "baseline": 0.0418,
+            "treat_all": -0.2475,
+            "treat_none": 0.0
+          }
+        },
+        "selected_beats_treat_all_and_none": [
+          0.05,
+          0.7
+        ]
       }
     }
   },
@@ -909,45 +1561,45 @@
         },
         "rca": {
           "auc_difference": {
-            "mean": -0.0408,
-            "ci_low": -0.0693,
-            "ci_high": -0.0135
+            "mean": -0.01,
+            "ci_low": -0.0259,
+            "ci_high": 0.0042
           },
           "chain_metrics": {
             "roc_auc": {
-              "mean": 0.6906,
-              "ci_low": 0.6406,
-              "ci_high": 0.7373
+              "mean": 0.7214,
+              "ci_low": 0.6665,
+              "ci_high": 0.7703
             },
             "accuracy": {
-              "mean": 0.6326,
-              "ci_low": 0.5864,
-              "ci_high": 0.6788
+              "mean": 0.6458,
+              "ci_low": 0.5984,
+              "ci_high": 0.6909
             },
             "precision": {
-              "mean": 0.5082,
-              "ci_low": 0.4348,
-              "ci_high": 0.582
+              "mean": 0.5197,
+              "ci_low": 0.4451,
+              "ci_high": 0.597
             },
             "recall": {
-              "mean": 0.7836,
-              "ci_low": 0.7173,
-              "ci_high": 0.845
+              "mean": 0.769,
+              "ci_low": 0.7,
+              "ci_high": 0.8333
             },
             "specificity": {
-              "mean": 0.5414,
-              "ci_low": 0.4757,
-              "ci_high": 0.5983
+              "mean": 0.5714,
+              "ci_low": 0.5044,
+              "ci_high": 0.631
             },
             "f1": {
-              "mean": 0.6159,
-              "ci_low": 0.5516,
-              "ci_high": 0.6742
+              "mean": 0.6202,
+              "ci_low": 0.5558,
+              "ci_high": 0.6791
             },
             "brier": {
-              "mean": 0.2284,
-              "ci_low": 0.2085,
-              "ci_high": 0.2501
+              "mean": 0.2024,
+              "ci_low": 0.1822,
+              "ci_high": 0.2237
             },
             "brier_raw": {
               "mean": 0.2082,
@@ -960,99 +1612,99 @@
       "random_forest": {
         "lcx": {
           "auc_difference": {
-            "mean": 0.0026,
-            "ci_low": -0.015,
-            "ci_high": 0.0205
+            "mean": -0.0031,
+            "ci_low": -0.0228,
+            "ci_high": 0.0151
           },
           "chain_metrics": {
             "roc_auc": {
-              "mean": 0.7312,
-              "ci_low": 0.6744,
-              "ci_high": 0.778
+              "mean": 0.7258,
+              "ci_low": 0.6669,
+              "ci_high": 0.7715
             },
             "accuracy": {
-              "mean": 0.6645,
-              "ci_low": 0.6172,
-              "ci_high": 0.7074
+              "mean": 0.6513,
+              "ci_low": 0.6062,
+              "ci_high": 0.6942
             },
             "precision": {
-              "mean": 0.5504,
-              "ci_low": 0.4764,
-              "ci_high": 0.6208
+              "mean": 0.5379,
+              "ci_low": 0.4647,
+              "ci_high": 0.6079
             },
             "recall": {
-              "mean": 0.7983,
-              "ci_low": 0.7362,
-              "ci_high": 0.8519
+              "mean": 0.7927,
+              "ci_low": 0.7333,
+              "ci_high": 0.8506
             },
             "specificity": {
-              "mean": 0.5779,
-              "ci_low": 0.5108,
-              "ci_high": 0.639
+              "mean": 0.5598,
+              "ci_low": 0.4943,
+              "ci_high": 0.6196
             },
             "f1": {
-              "mean": 0.6515,
-              "ci_low": 0.5915,
-              "ci_high": 0.7065
+              "mean": 0.6408,
+              "ci_low": 0.5795,
+              "ci_high": 0.6953
             },
             "brier": {
-              "mean": 0.2033,
-              "ci_low": 0.1854,
-              "ci_high": 0.2253
+              "mean": 0.2054,
+              "ci_low": 0.188,
+              "ci_high": 0.2258
             },
             "brier_raw": {
-              "mean": 0.2052,
+              "mean": 0.2051,
               "ci_low": 0.1907,
-              "ci_high": 0.2218
+              "ci_high": 0.2226
             }
           }
         },
         "rca": {
           "auc_difference": {
-            "mean": 0.0182,
-            "ci_low": -0.0022,
-            "ci_high": 0.0392
+            "mean": 0.0101,
+            "ci_low": -0.0098,
+            "ci_high": 0.0311
           },
           "chain_metrics": {
             "roc_auc": {
-              "mean": 0.7368,
-              "ci_low": 0.6838,
-              "ci_high": 0.7875
+              "mean": 0.7304,
+              "ci_low": 0.6783,
+              "ci_high": 0.783
             },
             "accuracy": {
-              "mean": 0.6491,
+              "mean": 0.6469,
               "ci_low": 0.5985,
-              "ci_high": 0.6964
+              "ci_high": 0.6942
             },
             "precision": {
-              "mean": 0.5221,
-              "ci_low": 0.4475,
-              "ci_high": 0.5945
+              "mean": 0.5201,
+              "ci_low": 0.4443,
+              "ci_high": 0.5962
             },
             "recall": {
-              "mean": 0.7924,
-              "ci_low": 0.7222,
-              "ci_high": 0.8564
+              "mean": 0.7953,
+              "ci_low": 0.7345,
+              "ci_high": 0.8587
             },
             "specificity": {
-              "mean": 0.5626,
-              "ci_low": 0.4991,
-              "ci_high": 0.6231
+              "mean": 0.5573,
+              "ci_low": 0.4948,
+              "ci_high": 0.6193
             },
             "f1": {
-              "mean": 0.6294,
-              "ci_low": 0.5655,
-              "ci_high": 0.6875
+              "mean": 0.6289,
+              "ci_low": 0.563,
+              "ci_high": 0.6883
             },
             "brier": {
-              "mean": 0.1982,
-              "ci_low": 0.1773,
-              "ci_high": 0.2191
+              "mean": 0.2,
+              "ci_low": 0.1788,
+              "ci_high": 0.22
             },
             "brier_raw": {
-              "mean": 0.1998,
-              "ci_low": 0.1827,
-              "ci_high": 0.2161
+              "mean": 0.201,
+              "ci_low": 0.1835,
+              "ci_high": 0.2174
             }
           }
         }
@@ -1060,99 +1712,99 @@
       "xgboost": {
         "lcx": {
           "auc_difference": {
-            "mean": -0.0338,
-            "ci_low": -0.0688,
-            "ci_high": 0.0017
+            "mean": 0.0115,
+            "ci_low": -0.0071,
+            "ci_high": 0.0294
           },
           "chain_metrics": {
             "roc_auc": {
-              "mean": 0.6834,
-              "ci_low": 0.6333,
-              "ci_high": 0.7282
+              "mean": 0.7397,
+              "ci_low": 0.6876,
+              "ci_high": 0.788
             },
             "accuracy": {
-              "mean": 0.6502,
-              "ci_low": 0.6072,
-              "ci_high": 0.6942
+              "mean": 0.6689,
+              "ci_low": 0.6238,
+              "ci_high": 0.7118
             },
             "precision": {
-              "mean": 0.539,
-              "ci_low": 0.4688,
-              "ci_high": 0.6091
+              "mean": 0.5538,
+              "ci_low": 0.481,
+              "ci_high": 0.6223
             },
             "recall": {
-              "mean": 0.7871,
-              "ci_low": 0.7245,
-              "ci_high": 0.8469
+              "mean": 0.8039,
+              "ci_low": 0.7426,
+              "ci_high": 0.8583
             },
             "specificity": {
-              "mean": 0.5616,
-              "ci_low": 0.5036,
-              "ci_high": 0.6188
+              "mean": 0.5815,
+              "ci_low": 0.5207,
+              "ci_high": 0.6392
             },
             "f1": {
-              "mean": 0.6387,
-              "ci_low": 0.5775,
-              "ci_high": 0.6944
+              "mean": 0.6557,
+              "ci_low": 0.5929,
+              "ci_high": 0.7083
             },
             "brier": {
-              "mean": 0.2361,
-              "ci_low": 0.2174,
-              "ci_high": 0.2575
+              "mean": 0.201,
+              "ci_low": 0.1841,
+              "ci_high": 0.2206
             },
             "brier_raw": {
-              "mean": 0.2095,
-              "ci_low": 0.1861,
-              "ci_high": 0.2345
+              "mean": 0.2101,
+              "ci_low": 0.1856,
+              "ci_high": 0.2354
             }
           }
         },
         "rca": {
           "auc_difference": {
-            "mean": 0.0263,
-            "ci_low": 0.0023,
-            "ci_high": 0.0497
+            "mean": 0.0075,
+            "ci_low": -0.0111,
+            "ci_high": 0.0259
           },
           "chain_metrics": {
             "roc_auc": {
-              "mean": 0.723,
-              "ci_low": 0.6703,
-              "ci_high": 0.7741
+              "mean": 0.719,
+              "ci_low": 0.6639,
+              "ci_high": 0.7688
             },
             "accuracy": {
-              "mean": 0.6458,
-              "ci_low": 0.5995,
-              "ci_high": 0.6909
+              "mean": 0.6315,
+              "ci_low": 0.5831,
+              "ci_high": 0.6788
             },
             "precision": {
-              "mean": 0.5195,
-              "ci_low": 0.4464,
-              "ci_high": 0.5976
+              "mean": 0.5068,
+              "ci_low": 0.4349,
+              "ci_high": 0.5782
             },
             "recall": {
-              "mean": 0.7807,
-              "ci_low": 0.7168,
-              "ci_high": 0.8439
+              "mean": 0.7924,
+              "ci_low": 0.7297,
+              "ci_high": 0.8519
             },
             "specificity": {
-              "mean": 0.5644,
-              "ci_low": 0.4991,
-              "ci_high": 0.6244
+              "mean": 0.5344,
+              "ci_low": 0.4704,
+              "ci_high": 0.5913
             },
             "f1": {
-              "mean": 0.6237,
-              "ci_low": 0.5611,
-              "ci_high": 0.6838
+              "mean": 0.618,
+              "ci_low": 0.5529,
+              "ci_high": 0.6751
             },
             "brier": {
-              "mean": 0.204,
-              "ci_low": 0.184,
-              "ci_high": 0.2238
+              "mean": 0.2042,
+              "ci_low": 0.1859,
+              "ci_high": 0.2239
             },
             "brier_raw": {
-              "mean": 0.211,
-              "ci_low": 0.1881,
-              "ci_high": 0.2337
+              "mean": 0.2149,
+              "ci_low": 0.191,
+              "ci_high": 0.241
             }
           }
         }
@@ -1160,99 +1812,99 @@
       "catboost": {
         "lcx": {
           "auc_difference": {
-            "mean": -0.0175,
-            "ci_low": -0.0485,
-            "ci_high": 0.0146
+            "mean": 0.0109,
+            "ci_low": -0.0073,
+            "ci_high": 0.0299
           },
           "chain_metrics": {
             "roc_auc": {
-              "mean": 0.6955,
-              "ci_low": 0.6533,
-              "ci_high": 0.7374
+              "mean": 0.7371,
+              "ci_low": 0.6858,
+              "ci_high": 0.7818
             },
             "accuracy": {
-              "mean": 0.6216,
-              "ci_low": 0.5776,
-              "ci_high": 0.6656
+              "mean": 0.6601,
+              "ci_low": 0.615,
+              "ci_high": 0.7041
             },
             "precision": {
-              "mean": 0.516,
-              "ci_low": 0.4437,
-              "ci_high": 0.585
+              "mean": 0.5454,
+              "ci_low": 0.4698,
+              "ci_high": 0.6165
             },
             "recall": {
-              "mean": 0.8263,
-              "ci_low": 0.7732,
-              "ci_high": 0.8777
+              "mean": 0.8095,
+              "ci_low": 0.75,
+              "ci_high": 0.8652
             },
             "specificity": {
-              "mean": 0.4891,
-              "ci_low": 0.4362,
-              "ci_high": 0.5432
+              "mean": 0.5634,
+              "ci_low": 0.5026,
+              "ci_high": 0.6241
             },
             "f1": {
-              "mean": 0.6331,
-              "ci_low": 0.5704,
-              "ci_high": 0.691
+              "mean": 0.6515,
+              "ci_low": 0.5873,
+              "ci_high": 0.7088
             },
             "brier": {
-              "mean": 0.2323,
-              "ci_low": 0.2132,
-              "ci_high": 0.2529
+              "mean": 0.201,
+              "ci_low": 0.1843,
+              "ci_high": 0.2199
             },
             "brier_raw": {
-              "mean": 0.2104,
-              "ci_low": 0.1864,
-              "ci_high": 0.2376
+              "mean": 0.2113,
+              "ci_low": 0.1866,
+              "ci_high": 0.2388
             }
           }
         },
         "rca": {
           "auc_difference": {
-            "mean": 0.0152,
-            "ci_low": -0.0219,
-            "ci_high": 0.0523
+            "mean": 0.0169,
+            "ci_low": -0.0052,
+            "ci_high": 0.038
           },
           "chain_metrics": {
             "roc_auc": {
-              "mean": 0.6707,
-              "ci_low": 0.6166,
-              "ci_high": 0.7191
+              "mean": 0.6999,
+              "ci_low": 0.6453,
+              "ci_high": 0.7497
             },
             "accuracy": {
-              "mean": 0.582,
-              "ci_low": 0.5336,
-              "ci_high": 0.626
+              "mean": 0.6194,
+              "ci_low": 0.5699,
+              "ci_high": 0.6645
             },
             "precision": {
-              "mean": 0.4707,
-              "ci_low": 0.4028,
-              "ci_high": 0.5391
+              "mean": 0.4973,
+              "ci_low": 0.4241,
+              "ci_high": 0.5701
             },
             "recall": {
-              "mean": 0.8158,
-              "ci_low": 0.7596,
-              "ci_high": 0.8685
+              "mean": 0.7953,
+              "ci_low": 0.7339,
+              "ci_high": 0.8561
             },
             "specificity": {
-              "mean": 0.4409,
-              "ci_low": 0.379,
-              "ci_high": 0.4991
+              "mean": 0.5132,
+              "ci_low": 0.448,
+              "ci_high": 0.575
             },
             "f1": {
-              "mean": 0.5954,
-              "ci_low": 0.533,
-              "ci_high": 0.653
+              "mean": 0.6111,
+              "ci_low": 0.5474,
+              "ci_high": 0.6705
             },
             "brier": {
-              "mean": 0.2306,
-              "ci_low": 0.2075,
-              "ci_high": 0.2563
+              "mean": 0.2105,
+              "ci_low": 0.1915,
+              "ci_high": 0.231
             },
             "brier_raw": {
-              "mean": 0.2256,
-              "ci_low": 0.1985,
-              "ci_high": 0.253
+              "mean": 0.2279,
+              "ci_low": 0.2004,
+              "ci_high": 0.2563
             }
           }
         }
@@ -1317,116 +1969,116 @@
       "wbc": 0.0
     },
     "lad": {
-      "typical_chest_pain": 0.74,
-      "atypical": 0.3897,
-      "region_rwma": 0.3733,
-      "ef_tte": 0.3435,
-      "age": 0.3431,
-      "esr": 0.1513,
-      "lymph": 0.0985,
-      "t_inversion": 0.0969,
-      "neut": 0.095,
-      "htn": 0.0883,
-      "pr": 0.0714,
-      "bp": 0.0617,
-      "tg": 0.0598,
-      "nonanginal": 0.0549,
-      "cr": 0.0472,
-      "wbc": 0.0442,
-      "na": 0.0415,
-      "k": 0.0401,
-      "fbs": 0.0395,
-      "weight": 0.037,
-      "bmi": 0.0356,
-      "st_depression": 0.034,
-      "hdl": 0.0324,
-      "ldl": 0.0288,
-      "plt": 0.0225,
-      "hb": 0.018,
-      "height": 0.0176,
-      "current_smoker": 0.0176,
-      "dlp": 0.0156,
-      "vhd": 0.0154,
-      "dm": 0.0153,
-      "function_class": 0.0152,
-      "bun": 0.0136,
-      "q_wave": 0.013,
-      "dyspnea": 0.0121,
-      "obesity": 0.0081,
-      "sex": 0.0055,
-      "fh": 0.0031,
-      "diastolic_murmur": 0.0026,
-      "st_elevation": 0.0023,
-      "edema": 0.0022,
+      "typical_chest_pain": 0.714,
+      "region_rwma": 0.4453,
+      "ef_tte": 0.3473,
+      "age": 0.3208,
+      "atypical": 0.2977,
+      "esr": 0.1251,
+      "neut": 0.1239,
+      "lymph": 0.1215,
+      "pr": 0.0834,
+      "t_inversion": 0.0831,
+      "htn": 0.0821,
+      "tg": 0.0735,
+      "bp": 0.0728,
+      "st_depression": 0.0543,
+      "weight": 0.0541,
+      "nonanginal": 0.054,
+      "bmi": 0.052,
+      "wbc": 0.0487,
+      "fbs": 0.0487,
+      "na": 0.0468,
+      "cr": 0.045,
+      "ldl": 0.0407,
+      "hdl": 0.0335,
+      "plt": 0.0323,
+      "k": 0.0312,
+      "dm": 0.0273,
+      "height": 0.027,
+      "sex": 0.0266,
+      "dyspnea": 0.0263,
+      "hb": 0.0238,
+      "bun": 0.0238,
+      "vhd": 0.0226,
+      "st_elevation": 0.0114,
+      "function_class": 0.0112,
+      "current_smoker": 0.0102,
+      "q_wave": 0.01,
+      "diastolic_murmur": 0.0087,
+      "dlp": 0.0061,
+      "fh": 0.0058,
+      "obesity": 0.0024,
       "systolic_murmur": 0.0015,
-      "lvh": 0.0008,
-      "ex_smoker": 0.0007,
-      "airway_disease": 0.0,
-      "crf": 0.0,
-      "lung_rales": 0.0,
+      "bbb": 0.0011,
+      "lung_rales": 0.0007,
+      "airway_disease": 0.0007,
+      "edema": 0.0006,
+      "poor_r_progression": 0.0005,
       "weak_peripheral_pulse": 0.0,
-      "chf": 0.0,
       "thyroid_disease": 0.0,
+      "chf": 0.0,
       "cva": 0.0,
-      "bbb": 0.0,
-      "lowth_ang": 0.0,
-      "poor_r_progression": 0.0
+      "crf": 0.0,
+      "ex_smoker": 0.0,
+      "lvh": 0.0,
+      "lowth_ang": 0.0
     },
     "lcx": {
-      "age": 0.4907,
-      "typical_chest_pain": 0.4067,
-      "cr": 0.2013,
-      "plt": 0.1681,
-      "tg": 0.1412,
-      "fbs": 0.1066,
-      "na": 0.0947,
-      "height": 0.0909,
-      "bp": 0.0789,
-      "ldl": 0.075,
-      "bun": 0.0587,
-      "bmi": 0.0553,
-      "weight": 0.0458,
-      "ef_tte": 0.0457,
-      "hb": 0.0435,
-      "hdl": 0.0426,
-      "esr": 0.042,
-      "lymph": 0.0384,
-      "k": 0.0372,
-      "region_rwma": 0.037,
-      "wbc": 0.0339,
-      "atypical": 0.0335,
-      "sex": 0.0294,
-      "htn": 0.0265,
-      "dm": 0.0259,
-      "neut": 0.0206,
-      "current_smoker": 0.0153,
-      "t_inversion": 0.0117,
-      "fh": 0.0104,
+      "age": 0.4503,
+      "typical_chest_pain": 0.3958,
+      "cr": 0.1759,
+      "plt": 0.162,
+      "tg": 0.1299,
+      "fbs": 0.1182,
+      "na": 0.0855,
+      "height": 0.0837,
+      "ldl": 0.0822,
+      "bun": 0.0688,
+      "bp": 0.0668,
+      "esr": 0.0471,
+      "hdl": 0.0454,
+      "ef_tte": 0.0443,
+      "weight": 0.0438,
+      "hb": 0.0429,
+      "bmi": 0.0404,
+      "htn": 0.0367,
+      "dm": 0.0355,
+      "k": 0.0349,
+      "wbc": 0.031,
+      "region_rwma": 0.0306,
+      "lymph": 0.0288,
+      "sex": 0.0282,
+      "atypical": 0.0274,
+      "neut": 0.0244,
+      "t_inversion": 0.0195,
+      "vhd": 0.0109,
+      "current_smoker": 0.0105,
+      "pr": 0.0102,
       "function_class": 0.0099,
-      "vhd": 0.0078,
-      "obesity": 0.0068,
-      "pr": 0.006,
-      "dlp": 0.0059,
-      "st_depression": 0.0049,
-      "dyspnea": 0.0047,
-      "systolic_murmur": 0.0024,
-      "ex_smoker": 0.0014,
-      "lvh": 0.0009,
-      "nonanginal": 0.0007,
-      "poor_r_progression": 0.0007,
-      "q_wave": 0.0007,
-      "st_elevation": 0.0006,
-      "crf": 0.0,
-      "cva": 0.0,
-      "airway_disease": 0.0,
-      "lung_rales": 0.0,
-      "weak_peripheral_pulse": 0.0,
+      "dlp": 0.0098,
+      "fh": 0.0081,
+      "obesity": 0.004,
+      "dyspnea": 0.0026,
+      "airway_disease": 0.0025,
+      "st_depression": 0.0023,
+      "systolic_murmur": 0.0011,
+      "lvh": 0.0006,
+      "st_elevation": 0.0004,
       "edema": 0.0,
       "thyroid_disease": 0.0,
       "chf": 0.0,
+      "ex_smoker": 0.0,
+      "crf": 0.0,
+      "cva": 0.0,
+      "lung_rales": 0.0,
+      "weak_peripheral_pulse": 0.0,
       "bbb": 0.0,
+      "poor_r_progression": 0.0,
+      "lowth_ang": 0.0,
       "diastolic_murmur": 0.0,
-      "lowth_ang": 0.0
+      "q_wave": 0.0,
+      "nonanginal": 0.0
     },
     "rca": {
       "dm": 0.391,
@@ -1486,12 +2138,12 @@
     }
   },
   "versions": {
-    "python": "3.14.7",
+    "python": "3.14.8",
     "scikit-learn": "1.9.1",
     "xgboost": "3.4.1",
     "catboost": "1.2.10",
     "numpy": "2.5.3",
     "pandas": "3.0.6"
   },
-  "runtime_seconds": 451
+  "runtime_seconds": 308
 }
