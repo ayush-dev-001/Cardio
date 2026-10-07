@@ -21,6 +21,8 @@ export interface HeartViewerProps {
   transparent?: boolean;
   /** Scroll-wheel zoom; off where the canvas sits inside a scrolling page. */
   zoom?: boolean;
+  /** Shade the heart muscle each artery supplies with that artery's risk colour. */
+  showTerritories?: boolean;
 }
 
 /**
@@ -36,6 +38,7 @@ export function HeartViewer({
   resetToken = 0,
   transparent = false,
   zoom = true,
+  showTerritories = false,
 }: HeartViewerProps) {
   const [renderer, setRenderer] = useState<Renderer>(CONFIGURED_RENDERER);
   const anatomy = SCENE_ANATOMY[renderer];
@@ -85,6 +88,7 @@ export function HeartViewer({
                 hoveredId={hoveredId}
                 onSelect={select}
                 onHover={setHoveredId}
+                showTerritories={showTerritories}
               />
               <ModelTorso />
             </Suspense>

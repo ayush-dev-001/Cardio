@@ -26,6 +26,13 @@
       "venae_cavae": { "color": "#7383b8", "roughness": 0.5, "clearcoat": 0.25, "sheen": 0.2 },
       "left_main": { "color": "#d8cfe6", "roughness": 0.35, "clearcoat": 0.3, "sheen": 0 }
     },
+    "territory": {
+      "_comment": "Supply-territory shading of the heart muscle: each vertex is tinted by the risk colour of the nearest artery paths (Gaussian fall-off, sigma in dm). Shows which muscle an artery typically supplies, NOT lesion location.",
+      "part": "heart",
+      "sigma": 0.45,
+      "strength": 0.72,
+      "sharpness": 4
+    },
     "nodeRadius": 0.045,
     "labelAlong": { "LAD": 0.55, "LCX": 0.85, "RCA": 0.35 },
     "camera": { "position": [0.3, 0.3, 4.1], "target": [0.05, -0.1, 0] },

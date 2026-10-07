@@ -1,10 +1,32 @@
 import { useGLTF } from "@react-three/drei";
-import type { ThreeEvent } from "@react-three/fiber";
+import { useThree, type ThreeEvent } from "@react-three/fiber";
 import { Component, useEffect, useMemo, type ReactNode } from "react";
-import { BufferGeometry, Mesh, MeshPhysicalMaterial, type Object3D } from "three";
+import { BufferGeometry, Color, Matrix4, Mesh, MeshPhysicalMaterial, Vector3, type Object3D } from "three";
+import { riskColor } from "../anatomy/riskColor";
 import { MODEL, type SceneVessel } from "../anatomy/sceneAnatomy";
+import { paintTerritories, territoryWeights } from "./territory";
 import { makeShellMaterial } from "./Torso";
 import { useRiskMaterial } from "./useRiskMaterial";
+
+interface PartStyle {
+  color: string;
+  roughness: number;
+  clearcoat: number;
+  sheen: number;
+}
+const TERRITORY = (MODEL as { territory?: { part: string; sigma: number; strength: number; sharpness?: number } }).territory;
+
+function partMaterial(p: PartStyle, vertexColors = false) {
+  return new MeshPhysicalMaterial({
+    color: vertexColors ? "#ffffff" : p.color, // with vertex colours the base colour lives in the attribute
+    vertexColors,
+    roughness: p.roughness,
+    clearcoat: p.clearcoat,
+    clearcoatRoughness: 0.35,
+    sheen: p.sheen,
+    sheenColor: "#f4c7bb",
+  });
+}
 
 /**
  * Realistic anatomy from glTF (built by assets/3d/pipeline + frontend/scripts/build-anatomy.mjs):
@@ -103,6 +125,7 @@ export function ModelHeart({
   hoveredId,
   onSelect,
   onHover,
+  showTerritories = false,
 }: {
   vessels: SceneVessel[];
   probabilities: Record<string, number>;
@@ -110,26 +133,42 @@ export function ModelHeart({
   hoveredId: string | null;
   onSelect: (id: string) => void;
   onHover: (id: string | null) => void;
+  /** Tint the heart muscle each artery supplies with that artery's risk colour. */
+  showTerritories?: boolean;
 }) {
   const nodes = useNodes(MODEL.heart);
+  const parts = MODEL.parts as Record<string, PartStyle>;
   const materials = useMemo(
-    () =>
-      Object.fromEntries(
-        Object.entries(MODEL.parts).map(([name, p]) => [
-          name,
-          new MeshPhysicalMaterial({
-            color: p.color,
-            roughness: p.roughness,
-            clearcoat: p.clearcoat,
-            clearcoatRoughness: 0.35,
-            sheen: p.sheen,
-            sheenColor: "#f4c7bb",
-          }),
-        ]),
-      ),
-    [],
+    () => Object.fromEntries(Object.entries(parts).map(([name, p]) => [name, partMaterial(p)])),
+    [parts],
   );
   useEffect(() => () => Object.values(materials).forEach((m) => m.dispose()), [materials]);
+
+  // supply-territory shading (computed once per geometry; colours repainted when risks change)
+  const terrMesh = TERRITORY ? nodes[TERRITORY.part] : undefined;
+  const terrMaterial = useMemo(
+    () => (TERRITORY && parts[TERRITORY.part] ? partMaterial(parts[TERRITORY.part], true) : null),
+    [parts],
+  );
+  useEffect(() => () => terrMaterial?.dispose(), [terrMaterial]);
+  const weights = useMemo(() => {
+    if (!TERRITORY || !terrMesh) return null;
+    const m = new Matrix4().compose(terrMesh.position, terrMesh.quaternion, terrMesh.scale);
+    return territoryWeights(terrMesh.geometry, m, vessels.map((v) => v.path.map((p) => new Vector3(...p))), TERRITORY.sigma);
+  }, [terrMesh, vessels]);
+  const riskKey = vessels.map((v) => probabilities[v.info.id] ?? "x").join("|");
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    if (!TERRITORY || !terrMesh || !weights || !showTerritories) return;
+    const colors = vessels.map((v) => {
+      const p = probabilities[v.info.id];
+      return Number.isFinite(p) ? new Color(riskColor(p)) : null;
+    });
+    paintTerritories(terrMesh.geometry, weights, new Color(parts[TERRITORY.part].color), colors, TERRITORY.strength, TERRITORY.sharpness);
+    invalidate();
+    // riskKey captures the probabilities that matter
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [riskKey, weights, showTerritories, terrMesh, invalidate]);
 
   const vesselMeshes = MODEL.vesselMeshes as Record<string, string[]>;
   const missing = Object.values(vesselMeshes).flat().filter((n) => !nodes[n]);
@@ -142,7 +181,7 @@ export function ModelHeart({
           <MeshFrom
             key={name}
             src={nodes[name]}
-            material={materials[name]}
+            material={showTerritories && terrMaterial && name === TERRITORY?.part ? terrMaterial : materials[name]}
             onPointerOver={block}
             onPointerMove={block}
             onClick={block}

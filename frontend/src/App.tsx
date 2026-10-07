@@ -5,6 +5,7 @@ import {
   ExternalLink,
   HeartPulse,
   Home,
+  Layers,
   Menu,
   RefreshCw,
   Tag,
@@ -21,6 +22,7 @@ import { PatientForm } from "./components/PatientForm";
 import { PhysiologyPanel } from "./components/PhysiologyPanel";
 import { Button, Card, EmptyState, Select, Sheet, Skeleton, Switch, Tip, TooltipProvider } from "./components/primitives";
 import { CadStatusCard, VesselBars } from "./components/Results";
+import { SummaryCard } from "./components/Summary";
 import { RiskLegend } from "./components/RiskLegend";
 import { ShapWaterfall } from "./components/ShapWaterfall";
 import { Tabs } from "./components/ui";
@@ -87,6 +89,7 @@ export default function App() {
   const [mobileView, setMobileView] = useState<MobileView>("heart");
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLabels, setShowLabels] = useState(true);
+  const [showTerritories, setShowTerritories] = useState(true);
   const [resetToken, setResetToken] = useState(0);
   // render exactly one layout, so only one WebGL canvas ever exists
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -239,7 +242,7 @@ export default function App() {
   const viewer = (
     <Card className="relative h-full overflow-hidden max-lg:min-h-[360px]">
       {hasWebGL ? (
-        <HeartViewer probabilities={probabilities} selectedId={selectedVessel} onSelect={selectVessel} showLabels={showLabels} resetToken={resetToken} transparent />
+        <HeartViewer probabilities={probabilities} selectedId={selectedVessel} onSelect={selectVessel} showLabels={showLabels} showTerritories={showTerritories} resetToken={resetToken} transparent />
       ) : (
         <EmptyState icon={<HeartPulse className="h-7 w-7" />} title="3D view unavailable">
           This browser has WebGL turned off or unsupported. All predictions and explanations are still available in Results.
@@ -252,6 +255,17 @@ export default function App() {
             {offline && <MockPanel values={mockValues} onChange={setMockValues} />}
           </div>
           <div className="pointer-events-auto flex gap-1.5">
+            <Tip content={showTerritories ? "Hide supply territories" : "Show supply territories"}>
+              <Button
+                size="icon"
+                variant="secondary"
+                aria-label={showTerritories ? "Hide supply territories" : "Show supply territories"}
+                aria-pressed={showTerritories}
+                onClick={() => setShowTerritories((s) => !s)}
+              >
+                <Layers className="h-4 w-4" aria-hidden />
+              </Button>
+            </Tip>
             <Tip content={showLabels ? "Hide vessel labels" : "Show vessel labels"}>
               <Button size="icon" variant="secondary" aria-label={showLabels ? "Hide vessel labels" : "Show vessel labels"} aria-pressed={showLabels} onClick={() => setShowLabels((s) => !s)}>
                 <Tag className="h-4 w-4" aria-hidden />
@@ -286,7 +300,7 @@ export default function App() {
         </AnimatePresence>
         <div className={cn("flex items-end justify-between gap-3", vesselInfo && "max-sm:hidden")}>
           <div className="pointer-events-auto">
-            <RiskLegend />
+            <RiskLegend territories={showTerritories} />
           </div>
           <p className="hidden max-w-[15rem] text-right text-[11px] text-white/40 xl:block">Drag to rotate · scroll to zoom · click an artery to inspect</p>
         </div>
@@ -349,6 +363,7 @@ export default function App() {
           <CadStatusCard cad={prediction.cad} schema={schema} baseline={showBaseline?.cad.probability} />
           <VesselBars prediction={prediction} schema={schema} selectedId={selectedVessel} onSelect={selectVessel} baseline={showBaseline} />
         </div>
+        <SummaryCard prediction={prediction} explanation={explanation} schema={schema} />
         <Card id="explanation-card" className={cn("scroll-mt-3 transition-shadow duration-500", flashExplanation && "ring-2 ring-primary/70 shadow-[0_0_40px_-8px_rgba(123,57,252,0.6)]")}>
           <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-4">
             <Tabs<Tab> value={tab} onChange={setTab} items={TAB_ITEMS} />

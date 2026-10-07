@@ -12,6 +12,8 @@ import type { Vec3 } from "./heartSurface";
 export interface SceneVessel {
   info: VesselInfo;
   nodes: Vec3[];
+  /** Centre line of the artery's main trunk (used for supply-territory shading). */
+  path: Vec3[];
   labelAt: Vector3;
   focus: { point: Vector3; normal: Vector3 };
 }
@@ -43,6 +45,7 @@ function modelAnatomy(): SceneAnatomy {
     return {
       info,
       nodes,
+      path: trunk.slice(Math.floor(trunk.length * 0.1)),
       labelAt: anchor.add(anchor.clone().normalize().multiplyScalar(0.35)),
       focus: { point: c, normal },
     };
@@ -62,6 +65,7 @@ function proceduralAnatomy(): SceneAnatomy {
     vessels: VESSEL_GEOMETRY.map((v) => ({
       info: v.info,
       nodes: v.nodes,
+      path: v.nodes,
       labelAt: new Vector3(...v.labelAt).applyMatrix4(m),
       focus: { point: new Vector3(...v.focus.point).applyMatrix4(m), normal: new Vector3(...v.focus.normal).transformDirection(m) },
     })),
