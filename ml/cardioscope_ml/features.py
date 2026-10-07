@@ -27,12 +27,21 @@ def get_xy(df: pd.DataFrame, target: str) -> tuple[pd.DataFrame, pd.Series]:
     return X, df[target].astype(int)
 
 
-def build_preprocessor(scale: bool, extra_numeric: tuple[str, ...] = ()) -> ColumnTransformer:
+def build_preprocessor(
+    scale: bool, extra_numeric: tuple[str, ...] = (), features: list[str] | None = None
+) -> ColumnTransformer:
     """Impute (+ optionally scale) numeric-like columns; impute + one-hot categoricals.
 
     `extra_numeric` holds additional inputs such as classifier-chain predictions.
+    `features` restricts the inputs to a subset (e.g. a baseline model); other columns are dropped.
     """
     types = feature_types()
+    if features is not None:
+        assert_no_leakage(list(features))
+        unknown = set(features) - set(types)
+        if unknown:
+            raise KeyError(f"Unknown features in model config: {sorted(unknown)}")
+        types = {f: t for f, t in types.items() if f in features}
     numeric = [f for f, t in types.items() if t != "categorical"] + list(extra_numeric)
     categorical = [f for f, t in types.items() if t == "categorical"]
 

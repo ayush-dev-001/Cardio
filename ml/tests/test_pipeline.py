@@ -92,6 +92,35 @@ def test_platt_calibrator_is_monotone_and_improves_overconfident_scores():
     assert np.mean((cal.transform(raw) - y) ** 2) < np.mean((raw - y) ** 2)
 
 
+@pytest.mark.parametrize("spread", [6, 8, 10])
+def test_platt_fit_converges_on_widely_spread_scores(spread):
+    # plain Newton diverged here (a ~ 1e10); the line search must keep the fit finite and sane
+    rng = np.random.default_rng(0)
+    z = rng.normal(0, spread, 200)
+    y = (rng.random(200) < 1 / (1 + np.exp(-z / spread * 2))).astype(int)
+    cal = PlattCalibrator().fit(1 / (1 + np.exp(-z)), y)
+    assert 0 < cal.a < 1 and abs(cal.b) < 1
+
+
+# ------------------------------------------------------- baseline and ensemble comparators
+def test_baseline_uses_only_its_configured_features(df):
+    from cardioscope_ml.models import baseline_families, model_spec
+
+    for b in baseline_families():
+        feats = model_spec(b)["features"]
+        config.assert_no_leakage(feats)
+        X, y = get_xy(df, "cad")
+        pipe = build_pipeline(b, seed=0).fit(X, y)
+        used = set(pipe.named_steps["prep"].get_feature_names_out())
+        assert used and all(any(u == f or u.startswith(f + "_") for f in feats) for u in used)
+
+
+def test_baselines_are_never_candidates():
+    from cardioscope_ml.models import baseline_families
+
+    assert not set(baseline_families()) & set(model_families())
+
+
 # ------------------------------------------------------------------- saved models
 @pytest.mark.parametrize("target", SAVED)
 def test_saved_model_predicts_probabilities(df, target):

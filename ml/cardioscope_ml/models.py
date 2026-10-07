@@ -22,11 +22,18 @@ SEED_PARAM = {"catboost": "random_seed"}  # every other class uses `random_state
 
 
 def model_spec(family: str) -> dict[str, Any]:
-    return load_models()["models"][family]
+    cfg = load_models()
+    return {**(cfg.get("baselines") or {}), **cfg["models"]}[family]
 
 
 def model_families() -> list[str]:
+    """Candidate families: compared in nested CV and eligible for deployment."""
     return list(load_models()["models"])
+
+
+def baseline_families() -> list[str]:
+    """Reference models: evaluated in the same nested CV, never selected or deployed."""
+    return list(load_models().get("baselines") or {})
 
 
 def make_estimator(family: str, seed: int):
@@ -43,7 +50,11 @@ def build_pipeline(family: str, seed: int, extra_numeric: tuple[str, ...] = ()) 
         [
             (
                 "prep",
-                build_preprocessor(scale=spec.get("scale", False), extra_numeric=extra_numeric),
+                build_preprocessor(
+                    scale=spec.get("scale", False),
+                    extra_numeric=extra_numeric,
+                    features=spec.get("features"),
+                ),
             ),
             ("clf", make_estimator(family, seed)),
         ]

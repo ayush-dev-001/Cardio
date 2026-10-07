@@ -35,6 +35,33 @@ vessels:
   # (see docs/phase2_model_results.md for the evidence).
   final_strategy: independent
 
+decision_curve:          # net-benefit analysis of out-of-fold predictions (Vickers & Elkin 2006)
+  low: 0.05               # range of threshold probabilities a clinician might act on
+  high: 0.70
+  step: 0.01
+  report_at: [0.1, 0.2, 0.3, 0.4, 0.5]
+
+# Pre-specified ensemble, evaluated in the same nested CV: the mean of the members' calibrated
+# log-odds, re-calibrated (Platt) and thresholded on the outer-training part of each fold.
+# Members are fixed in advance (all candidate families), not picked from the results.
+ensemble:
+  label: Ensemble (mean log-odds of all four families)
+  members: [logreg, random_forest, xgboost, catboost]
+
+# Reference models: evaluated in the same nested CV but never selected or deployed. They show how
+# much the full clinical/ECG/lab/echo feature set adds over a simple bedside risk assessment.
+baselines:
+  clinical_baseline:
+    label: Clinical baseline (age, sex, chest-pain type, classic risk factors)
+    class: logistic_regression
+    scale: true
+    features: [age, sex, typical_chest_pain, atypical, nonanginal, dm, htn, current_smoker, fh, dlp]
+    params: {solver: saga, max_iter: 5000}
+    search:
+      C: {dist: loguniform, low: 0.001, high: 10}
+      l1_ratio: [0.0, 0.5, 1.0]
+      class_weight: [null, balanced]
+
 models:
   logreg:
     label: Logistic Regression

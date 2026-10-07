@@ -21,6 +21,7 @@ import pandas as pd
 from joblib import Parallel, delayed
 from sklearn.model_selection import RepeatedStratifiedKFold
 
+from cardioscope_ml.calibration import PlattCalibrator, logit, recall_threshold, sigmoid
 from cardioscope_ml.config import target_ids, target_spec, vessel_target_order
 from cardioscope_ml.modeling import fit_model
 
@@ -38,6 +39,9 @@ class CVResult:
     pred: np.ndarray
     thresholds: list[float] = field(default_factory=list)
     best_params: list[dict[str, Any]] = field(default_factory=list)
+    # outer split index -> calibrated out-of-fold predictions on that split's *training* part
+    # (needed to calibrate and threshold an ensemble without touching the test fold)
+    train_oof: dict[int, np.ndarray] = field(default_factory=dict)
 
 
 def outer_splits(df: pd.DataFrame, settings: dict[str, Any], seed: int):
@@ -57,7 +61,7 @@ def _fold_task(family, X, Y, tr, te, settings, seed, chain) -> dict[str, tuple]:
         m = fit_model(family, Xtr, Y[t].iloc[tr], settings, seed, target_spec(t)["min_recall"])
         raw = m.predict_raw(Xte)
         cal = m.calibrator.transform(raw)
-        out[t] = (raw, cal, m.threshold, m.best_params)
+        out[t] = (raw, cal, m.threshold, m.best_params, m.oof_cal)
         fitted[t] = (m, cal)
 
     if chain:
@@ -80,7 +84,7 @@ def _fold_task(family, X, Y, tr, te, settings, seed, chain) -> dict[str, tuple]:
             )
             raw = m.predict_raw(aug_te)
             cal = m.calibrator.transform(raw)
-            out[f"{t}_chain"] = (raw, cal, m.threshold, m.best_params)
+            out[f"{t}_chain"] = (raw, cal, m.threshold, m.best_params, m.oof_cal)
             aug_tr[chain_feature(t)] = m.oof_cal
             aug_te[chain_feature(t)] = cal
             extra = extra + (chain_feature(t),)
@@ -107,7 +111,7 @@ def run_nested_cv(
     results: dict[str, dict[str, CVResult]] = {f: {} for f in families}
     for (family, i), out in zip(tasks, outputs):
         r, te = i // k, splits[i][1]
-        for variant, (raw, cal, thr, params) in out.items():
+        for variant, (raw, cal, thr, params, oof) in out.items():
             res = results[family].get(variant)
             if res is None:
                 res = results[family][variant] = CVResult(
@@ -117,4 +121,39 @@ def run_nested_cv(
             res.pred[r, te] = (cal >= thr).astype(int)
             res.thresholds.append(thr)
             res.best_params.append(params)
+            res.train_oof[i] = oof
     return results
+
+
+def ensemble_cv(
+    results: dict[str, dict[str, CVResult]],
+    members: list[str],
+    Y: pd.DataFrame,
+    settings: dict[str, Any],
+    seed: int,
+) -> dict[str, CVResult]:
+    """Pre-specified ensemble on the same outer splits: mean of the members' calibrated log-odds.
+
+    Per outer split, the ensemble is re-calibrated (Platt) and thresholded using only the members'
+    out-of-fold predictions on the training part, then applied to the untouched test fold.
+    """
+    splits = outer_splits(Y, settings, seed)
+    k, R, n = settings["outer_folds"], settings["outer_repeats"], len(Y)
+    out: dict[str, CVResult] = {}
+    for t in target_ids():
+        y = Y[t].to_numpy()
+        res = CVResult(np.full((R, n), np.nan), np.full((R, n), np.nan), np.full((R, n), -1))
+        for i, (tr, te) in enumerate(splits):
+            r = i // k
+            z_tr = np.mean([logit(results[f][t].train_oof[i]) for f in members], axis=0)
+            z_te = np.mean([logit(results[f][t].p_cal[r, te]) for f in members], axis=0)
+            cal = PlattCalibrator().fit(sigmoid(z_tr), y[tr])
+            oof_cal = cal.transform(sigmoid(z_tr))
+            thr = recall_threshold(oof_cal, y[tr], target_spec(t)["min_recall"])
+            res.p_raw[r, te] = sigmoid(z_te)
+            res.p_cal[r, te] = cal.transform(sigmoid(z_te))
+            res.pred[r, te] = (res.p_cal[r, te] >= thr).astype(int)
+            res.thresholds.append(thr)
+            res.train_oof[i] = oof_cal
+        out[t] = res
+    return out

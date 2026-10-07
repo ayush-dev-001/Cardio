@@ -43,8 +43,8 @@ from cardioscope_ml.data import load_clean
 from cardioscope_ml.explain import NativeShapExplainer
 from cardioscope_ml.features import output_to_feature_map
 from cardioscope_ml.modeling import fit_model
-from cardioscope_ml.models import model_families, model_spec
-from cardioscope_ml.nested_cv import run_nested_cv
+from cardioscope_ml.models import baseline_families, model_families, model_spec
+from cardioscope_ml.nested_cv import ensemble_cv, run_nested_cv
 from cardioscope_ml.predictor import CardioModel
 
 SHORT = {"cad": "CAD", "lad": "LAD", "lcx": "LCX", "rca": "RCA"}
@@ -165,6 +165,73 @@ def main(argv: list[str] | None = None) -> dict:
             for f in families
         }
 
+    # 2b. references on the same outer splits: clinical baseline(s) and the pre-specified ensemble
+    baselines = baseline_families()
+    base_results = (
+        run_nested_cv(X, df[targets], baselines, settings, seed, chain=False, n_jobs=args.n_jobs)
+        if baselines
+        else {}
+    )
+    members = (cfg.get("ensemble") or {}).get("members", [])
+    ens = (
+        ensemble_cv(results, members, df[targets], settings, seed)
+        if members and set(members) <= set(families)
+        else None
+    )
+    comparisons, dca_report, dca_curves, dca_labels = {}, {}, {}, {}
+    dc = cfg["decision_curve"]
+    dca_thr = np.round(np.arange(dc["low"], dc["high"] + 1e-9, dc["step"]), 4)
+    for t in targets:
+        sel = results[selected[t]][t]
+        comp = {}
+        if ens:
+            comp["ensemble"] = {
+                "label": cfg["ensemble"]["label"],
+                "members": members,
+                "metrics": ev.summarize(Y[t], ens[t], settings["bootstrap"], seed),
+                "auc_difference_vs_selected": ev.paired_auc_difference(
+                    Y[t], sel, ens[t], settings["bootstrap"], seed
+                ),
+            }
+        for b in baselines:
+            comp[b] = {
+                "label": model_spec(b)["label"],
+                "features": model_spec(b)["features"],
+                "metrics": ev.summarize(Y[t], base_results[b][t], settings["bootstrap"], seed),
+                "auc_gain_of_selected": ev.paired_auc_difference(
+                    Y[t], base_results[b][t], sel, settings["bootstrap"], seed
+                ),
+            }
+        comparisons[t] = comp
+        dca_models = {"selected": sel}
+        if ens:
+            dca_models["ensemble"] = ens[t]
+        if baselines:
+            dca_models["baseline"] = base_results[baselines[0]][t]
+        curves = ev.decision_curve(Y[t], dca_models, dca_thr)
+        dca_curves[t] = curves
+        dca_labels[t] = {
+            "selected": f"{fam_labels[selected[t]]} (selected)",
+            "ensemble": "Ensemble",
+            "baseline": "Clinical baseline",
+            "treat_all": "Treat all",
+            "treat_none": "Treat none",
+        }
+        useful = dca_thr[curves["selected"] > np.maximum(curves["treat_all"], 0) + 1e-9]
+        dca_report[t] = {
+            "net_benefit": {
+                f"{pt:g}": {
+                    k: round(float(np.interp(pt, dca_thr, v)), 4) for k, v in curves.items()
+                }
+                for pt in dc["report_at"]
+            },
+            "selected_beats_treat_all_and_none": (
+                [round(float(useful.min()), 2), round(float(useful.max()), 2)]
+                if len(useful)
+                else None
+            ),
+        }
+
     # 3. final models ------------------------------------------------------------------------
     strategy = cfg["vessels"]["final_strategy"]
     if strategy != "independent":
@@ -212,8 +279,18 @@ def main(argv: list[str] | None = None) -> dict:
         )
 
     # 4. report ------------------------------------------------------------------------------
+    extra = ([("ensemble", "Ensemble")] if ens else []) + [
+        (b, "Clinical baseline") for b in baselines
+    ]
     ev.plot_model_comparison(
-        summary, families, fam_labels, SHORT, fig_dir / "phase2_model_comparison.png"
+        {t: {**summary[t], **{k: comparisons[t][k]["metrics"] for k, _ in extra}} for t in targets},
+        families + [k for k, _ in extra],
+        {**fam_labels, **dict(extra)},
+        SHORT,
+        fig_dir / "phase2_model_comparison.png",
+    )
+    ev.plot_decision_curves(
+        dca_curves, dca_thr, dca_labels, SHORT, fig_dir / "phase2_decision_curves.png"
     )
     ev.plot_roc_curves(
         Y,
@@ -251,7 +328,13 @@ def main(argv: list[str] | None = None) -> dict:
         "selection_metric": "roc_auc (mean of pooled out-of-fold AUC over CV repeats)",
         "threshold_rule": "highest threshold with out-of-fold recall >= min_recall (per target)",
         "targets": {
-            t: {"selected_model": selected[t], "final": final_info[t], "cv": summary[t]}
+            t: {
+                "selected_model": selected[t],
+                "final": final_info[t],
+                "cv": summary[t],
+                "comparisons": comparisons[t],
+                "decision_curve": dca_report[t],
+            }
             for t in targets
         },
         "vessel_strategy": {

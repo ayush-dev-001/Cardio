@@ -20,6 +20,8 @@ COLORS = {
     "random_forest": "#55A868",
     "xgboost": "#C44E52",
     "catboost": "#8172B2",
+    "ensemble": "#333333",
+    "clinical_baseline": "#BBBBBB",
 }
 
 
@@ -114,6 +116,59 @@ def paired_auc_difference(y: np.ndarray, a: CVResult, b: CVResult, n_boot: int, 
         "ci_low": round(float(np.percentile(boots, 2.5)), 4),
         "ci_high": round(float(np.percentile(boots, 97.5)), 4),
     }
+
+
+def net_benefit(y: np.ndarray, p: np.ndarray, thresholds: np.ndarray) -> np.ndarray:
+    """Decision-curve net benefit: TP/n - FP/n * pt/(1-pt) for each threshold probability pt."""
+    n = len(y)
+    out = []
+    for pt in thresholds:
+        flag = p >= pt
+        tp, fp = np.sum(flag & (y == 1)), np.sum(flag & (y == 0))
+        out.append(tp / n - fp / n * pt / (1 - pt))
+    return np.array(out)
+
+
+def decision_curve(y: np.ndarray, models: dict[str, CVResult], thresholds: np.ndarray) -> dict:
+    """Net benefit of each model (mean over CV repeats) plus the treat-all / treat-none references."""
+    prev = float(np.mean(y))
+    curves = {
+        name: np.mean(
+            [net_benefit(y, res.p_cal[r], thresholds) for r in range(res.p_cal.shape[0])], axis=0
+        )
+        for name, res in models.items()
+    }
+    curves["treat_all"] = prev - (1 - prev) * thresholds / (1 - thresholds)
+    curves["treat_none"] = np.zeros_like(thresholds)
+    return curves
+
+
+def plot_decision_curves(
+    curves: dict, thresholds: np.ndarray, labels: dict, target_labels: dict, path: Path
+) -> None:
+    targets = list(curves)
+    style = {
+        "selected": ("#C44E52", "-", 2.4),
+        "ensemble": ("#222222", "--", 1.4),
+        "baseline": ("#4C72B0", "-.", 1.4),
+        "treat_all": ("#999999", ":", 1.2),
+        "treat_none": ("#bbbbbb", "-", 0.8),
+    }
+    fig, axes = plt.subplots(1, len(targets), figsize=(4.2 * len(targets), 4.2))
+    for ax, t in zip(np.atleast_1d(axes), targets):
+        for key, nb in curves[t].items():
+            c, ls, lw = style[key]
+            ax.plot(thresholds, nb, color=c, ls=ls, lw=lw, label=labels[t].get(key, key))
+        top = max(np.max(v) for v in curves[t].values())
+        ax.set_ylim(-0.05, top * 1.15 + 0.01)
+        ax.set_title(_labels(target_labels, t))
+        ax.set_xlabel("Threshold probability")
+        ax.legend(fontsize=7, loc="upper right")
+    np.atleast_1d(axes)[0].set_ylabel("Net benefit")
+    fig.suptitle("Decision curves, out-of-fold (higher = more useful than treating all / none)")
+    fig.tight_layout()
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
 
 
 # ----------------------------------------------------------------------------- figures
