@@ -37,19 +37,35 @@ class PlattCalibrator:
     def fit(self, p_raw: np.ndarray, y: np.ndarray, iters: int = 100) -> "PlattCalibrator":
         # Newton-Raphson on the 2-parameter logistic log-likelihood with Platt's target
         # smoothing (avoids overconfident fits on small samples). No sklearn dependency.
+        # Backtracking line search (Lin, Lin & Weng 2007) keeps every step a descent step;
+        # plain Newton can diverge when the scores are widely spread.
         z = logit(p_raw)
         y = np.asarray(y, dtype=float)
         n_pos, n_neg = y.sum(), len(y) - y.sum()
         t = np.where(y == 1, (n_pos + 1) / (n_pos + 2), 1 / (n_neg + 2))
+
+        def loss(a: float, b: float) -> float:  # negative log-likelihood vs smoothed targets
+            f = a * z + b
+            return float(np.sum(np.logaddexp(0, f) - t * f))
+
         a, b = 1.0, 0.0
+        cur = loss(a, b)
         for _ in range(iters):
             q = sigmoid(a * z + b)
             w = q * (1 - q) + 1e-12
             g = np.array([np.sum((q - t) * z), np.sum(q - t)])
             H = np.array([[np.sum(w * z * z), np.sum(w * z)], [np.sum(w * z), np.sum(w)]])
             step = np.linalg.solve(H + 1e-9 * np.eye(2), g)
-            a, b = a - step[0], b - step[1]
-            if np.abs(step).max() < 1e-10:
+            lr = 1.0
+            while lr > 1e-10:
+                new = loss(a - lr * step[0], b - lr * step[1])
+                if new <= cur + 1e-4 * lr * float(g @ -step):  # Armijo sufficient decrease
+                    break
+                lr /= 2
+            if lr <= 1e-10:
+                break
+            a, b, cur = a - lr * step[0], b - lr * step[1], new
+            if np.abs(lr * step).max() < 1e-10:
                 break
         self.a, self.b = float(a), float(b)
         return self
