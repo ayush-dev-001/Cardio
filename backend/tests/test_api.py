@@ -1,5 +1,6 @@
 """Tests for every API endpoint: happy paths, input validation, leakage protection and
 consistency between /predict, /explain and the saved models."""
+
 import math
 
 import pytest
@@ -98,7 +99,9 @@ def test_predict_returns_probabilities_for_cad_and_each_vessel(client, patient):
 
 
 def test_predict_computes_derived_bmi(client, patient):
-    body = client.post("/predict", json={"patient": {**patient, "weight": 81, "height": 180}}).json()
+    body = client.post(
+        "/predict", json={"patient": {**patient, "weight": 81, "height": 180}}
+    ).json()
     assert body["derived_inputs"]["bmi"] == pytest.approx(25.0, abs=1e-6)
     assert body["derived_inputs"]["obesity"] == 1
 
@@ -110,18 +113,25 @@ def test_predict_is_deterministic(client, patient):
 
 
 def test_predict_responds_to_input_changes(client, patient):
-    low = client.post("/predict", json={"patient": {**patient, "typical_chest_pain": 0, "age": 35}}).json()
-    high = client.post("/predict", json={"patient": {**patient, "typical_chest_pain": 1, "age": 75}}).json()
+    low = client.post(
+        "/predict", json={"patient": {**patient, "typical_chest_pain": 0, "age": 35}}
+    ).json()
+    high = client.post(
+        "/predict", json={"patient": {**patient, "typical_chest_pain": 1, "age": 75}}
+    ).json()
     assert high["cad"]["probability"] > low["cad"]["probability"]
 
 
-@pytest.mark.parametrize("field,value", [
-    ("age", 150),                 # outside plausible range
-    ("ef_tte", -5),
-    ("sex", 2),                   # not an allowed code
-    ("bbb", "XBBB"),              # unknown category
-    ("dm", "maybe"),
-])
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("age", 150),  # outside plausible range
+        ("ef_tte", -5),
+        ("sex", 2),  # not an allowed code
+        ("bbb", "XBBB"),  # unknown category
+        ("dm", "maybe"),
+    ],
+)
 def test_predict_rejects_invalid_values(client, patient, field, value):
     r = client.post("/predict", json={"patient": {**patient, field: value}})
     assert r.status_code == 422
@@ -132,7 +142,9 @@ def test_predict_rejects_missing_field(client, patient):
     assert client.post("/predict", json={"patient": patient}).status_code == 422
 
 
-@pytest.mark.parametrize("leak", ["LAD", "lad", "LCX", "RCA", "Cath", "cad", "bmi", "unknown_feature"])
+@pytest.mark.parametrize(
+    "leak", ["LAD", "lad", "LCX", "RCA", "Cath", "cad", "bmi", "unknown_feature"]
+)
 def test_predict_rejects_targets_derived_and_unknown_fields(client, patient, leak):
     r = client.post("/predict", json={"patient": {**patient, leak: 1}})
     assert r.status_code == 422
@@ -142,13 +154,17 @@ def test_predict_rejects_targets_derived_and_unknown_fields(client, patient, lea
 # ------------------------------------------------------------------------------ /explain
 def test_explain_all_targets_adds_up_to_predicted_probability(client, patient):
     pred = client.post("/predict", json={"patient": patient}).json()
-    probs = {pred["cad"]["target_id"]: pred["cad"]["probability"]} | {v["target_id"]: v["probability"] for v in pred["vessels"]}
+    probs = {pred["cad"]["target_id"]: pred["cad"]["probability"]} | {
+        v["target_id"]: v["probability"] for v in pred["vessels"]
+    }
     r = client.post("/explain", json={"patient": patient})
     assert r.status_code == 200
     exps = r.json()["explanations"]
     assert [e["target_id"] for e in exps] == target_ids()
     for e in exps:
-        total = e["base_value"] + sum(c["shap"] for c in e["contributions"]) + e["other_contribution"]
+        total = (
+            e["base_value"] + sum(c["shap"] for c in e["contributions"]) + e["other_contribution"]
+        )
         assert total == pytest.approx(e["log_odds"], abs=1e-6)
         assert e["log_odds"] == pytest.approx(logit(probs[e["target_id"]]), abs=1e-3)
         assert e["probability"] == pytest.approx(probs[e["target_id"]], abs=1e-4)
@@ -163,11 +179,16 @@ def test_explain_top_k_and_target_filter(client, patient):
 
 
 def test_explain_reports_value_and_normal_range_status(client, patient):
-    r = client.post("/explain", json={"patient": {**patient, "fbs": 250, "hdl": 30}, "targets": ["cad"]})
+    r = client.post(
+        "/explain", json={"patient": {**patient, "fbs": 250, "hdl": 30}, "targets": ["cad"]}
+    )
     contrib = {c["feature"]: c for c in r.json()["explanations"][0]["contributions"]}
     assert contrib["fbs"]["status"] == "high" and contrib["fbs"]["value"] == 250
     assert contrib["hdl"]["status"] == "low"
-    assert contrib["sex"]["status"] is None and contrib["sex"]["display_value"] in {"Male", "Female"}
+    assert contrib["sex"]["status"] is None and contrib["sex"]["display_value"] in {
+        "Male",
+        "Female",
+    }
 
 
 def test_explain_rejects_unknown_target(client, patient):
@@ -203,7 +224,10 @@ def test_samples_filter_by_kind(client):
 
 # ----------------------------------------------------------------------------------- CORS
 def test_cors_allows_local_frontend(client):
-    r = client.options("/predict", headers={"Origin": "http://localhost:5173", "Access-Control-Request-Method": "POST"})
+    r = client.options(
+        "/predict",
+        headers={"Origin": "http://localhost:5173", "Access-Control-Request-Method": "POST"},
+    )
     assert r.headers.get("access-control-allow-origin") == "http://localhost:5173"
 
 

@@ -10,6 +10,7 @@ Classifier chain (vessels): link k receives the *predicted* probabilities of the
 vessels as extra inputs. On training data these are out-of-fold predictions, never the true
 labels, so no target label is ever a model input.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -31,6 +32,7 @@ def chain_feature(target: str) -> str:
 @dataclass
 class CVResult:
     """Out-of-fold outputs for one (family, variant), stacked over repeats: shape (R, n)."""
+
     p_raw: np.ndarray
     p_cal: np.ndarray
     pred: np.ndarray
@@ -41,8 +43,9 @@ class CVResult:
 def outer_splits(df: pd.DataFrame, settings: dict[str, Any], seed: int):
     vessels = vessel_target_order()
     strata = sum(df[t].to_numpy() * 2**i for i, t in enumerate(vessels))
-    cv = RepeatedStratifiedKFold(n_splits=settings["outer_folds"],
-                                 n_repeats=settings["outer_repeats"], random_state=seed)
+    cv = RepeatedStratifiedKFold(
+        n_splits=settings["outer_folds"], n_repeats=settings["outer_repeats"], random_state=seed
+    )
     return list(cv.split(np.zeros(len(df)), strata))
 
 
@@ -60,14 +63,21 @@ def _fold_task(family, X, Y, tr, te, settings, seed, chain) -> dict[str, tuple]:
     if chain:
         order = vessel_target_order()
         aug_tr, aug_te = Xtr.copy(), Xte.copy()
-        first = order[0]                                  # link 1 == independent model
+        first = order[0]  # link 1 == independent model
         aug_tr[chain_feature(first)] = fitted[first][0].oof_cal
         aug_te[chain_feature(first)] = fitted[first][1]
         out[f"{first}_chain"] = out[first]
         extra: tuple[str, ...] = (chain_feature(first),)
         for t in order[1:]:
-            m = fit_model(family, aug_tr, Y[t].iloc[tr], settings, seed,
-                          target_spec(t)["min_recall"], extra_numeric=extra)
+            m = fit_model(
+                family,
+                aug_tr,
+                Y[t].iloc[tr],
+                settings,
+                seed,
+                target_spec(t)["min_recall"],
+                extra_numeric=extra,
+            )
             raw = m.predict_raw(aug_te)
             cal = m.calibrator.transform(raw)
             out[f"{t}_chain"] = (raw, cal, m.threshold, m.best_params)
@@ -77,8 +87,15 @@ def _fold_task(family, X, Y, tr, te, settings, seed, chain) -> dict[str, tuple]:
     return out
 
 
-def run_nested_cv(X: pd.DataFrame, Y: pd.DataFrame, families: list[str], settings: dict[str, Any],
-                  seed: int, chain: bool = True, n_jobs: int = -1) -> dict[str, dict[str, CVResult]]:
+def run_nested_cv(
+    X: pd.DataFrame,
+    Y: pd.DataFrame,
+    families: list[str],
+    settings: dict[str, Any],
+    seed: int,
+    chain: bool = True,
+    n_jobs: int = -1,
+) -> dict[str, dict[str, CVResult]]:
     """Returns results[family][variant] where variant is a target id or '<vessel>_chain'."""
     splits = outer_splits(Y, settings, seed)
     k, R, n = settings["outer_folds"], settings["outer_repeats"], len(X)
@@ -94,7 +111,8 @@ def run_nested_cv(X: pd.DataFrame, Y: pd.DataFrame, families: list[str], setting
             res = results[family].get(variant)
             if res is None:
                 res = results[family][variant] = CVResult(
-                    np.full((R, n), np.nan), np.full((R, n), np.nan), np.full((R, n), -1))
+                    np.full((R, n), np.nan), np.full((R, n), np.nan), np.full((R, n), -1)
+                )
             res.p_raw[r, te], res.p_cal[r, te] = raw, cal
             res.pred[r, te] = (cal >= thr).astype(int)
             res.thresholds.append(thr)

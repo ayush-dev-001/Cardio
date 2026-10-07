@@ -1,5 +1,6 @@
 """Phase 2 checks: leakage, fold-safe preprocessing, calibration/threshold logic,
 and the saved models (prediction + exact SHAP additivity)."""
+
 import json
 
 import numpy as np
@@ -59,7 +60,9 @@ def test_outer_splits_cover_every_patient_once_per_repeat(df):
     splits = outer_splits(df, s, seed=0)
     assert len(splits) == s["outer_folds"] * s["outer_repeats"]
     for r in range(s["outer_repeats"]):
-        tests = np.concatenate([te for _, te in splits[r * s["outer_folds"]:(r + 1) * s["outer_folds"]]])
+        tests = np.concatenate(
+            [te for _, te in splits[r * s["outer_folds"] : (r + 1) * s["outer_folds"]]]
+        )
         assert sorted(tests) == list(range(len(df)))
     for tr, te in splits:
         assert not set(tr) & set(te)
@@ -82,7 +85,7 @@ def test_platt_calibrator_is_monotone_and_improves_overconfident_scores():
     rng = np.random.default_rng(1)
     y = rng.integers(0, 2, 2000)
     true_p = np.where(y == 1, 0.65, 0.35)
-    raw = 1 / (1 + np.exp(-4 * logit(true_p + rng.normal(0, 0.05, 2000))))   # overconfident
+    raw = 1 / (1 + np.exp(-4 * logit(true_p + rng.normal(0, 0.05, 2000))))  # overconfident
     cal = PlattCalibrator().fit(raw, y)
     grid = np.linspace(0.01, 0.99, 50)
     assert np.all(np.diff(cal.transform(grid)) > 0)
@@ -105,7 +108,9 @@ def test_saved_shap_is_exactly_additive(df, target):
     X = df.sample(25, random_state=0)
     e = m.explain(X)
     assert list(e.values.columns) == m.feature_ids
-    np.testing.assert_allclose(e.base_value + e.values.sum(axis=1), logit(m.predict_proba(X)), atol=1e-3)
+    np.testing.assert_allclose(
+        e.base_value + e.values.sum(axis=1), logit(m.predict_proba(X)), atol=1e-3
+    )
 
 
 def test_metrics_json_complete():

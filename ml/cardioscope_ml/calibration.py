@@ -1,4 +1,5 @@
 """Probability calibration (Platt scaling) and recall-oriented decision thresholds."""
+
 from __future__ import annotations
 
 import math

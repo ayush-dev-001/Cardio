@@ -1,4 +1,5 @@
 """Phase 1 checks: config <-> dataset consistency and the target-leakage guard."""
+
 import json
 
 import pytest
@@ -20,7 +21,9 @@ def clean_df():
 
 
 def test_every_raw_column_is_described_exactly_once(raw):
-    described = [f["column"] for f in config.feature_specs()] + [t["column"] for t in config.target_specs()]
+    described = [f["column"] for f in config.feature_specs()] + [
+        t["column"] for t in config.target_specs()
+    ]
     assert len(described) == len(set(described))
     assert set(described) == set(raw.columns)
 
@@ -34,7 +37,9 @@ def test_feature_ids_unique_and_groups_valid():
 
 def test_no_target_in_model_features():
     feats = config.model_feature_ids()
-    assert not {f.lower() for f in feats} & {t.lower() for t in TARGET_RAW | {"cad", "lad", "lcx", "rca"}}
+    assert not {f.lower() for f in feats} & {
+        t.lower() for t in TARGET_RAW | {"cad", "lad", "lcx", "rca"}
+    }
     raw_cols = {f["column"] for f in config.feature_specs() if f["id"] in feats}
     assert not raw_cols & TARGET_RAW
 
@@ -64,7 +69,9 @@ def test_values_within_valid_range(clean_df):
 
 def test_vessel_targets_match_shared_vessel_config():
     vessels = {v["id"]: v["target_id"] for v in config.load_vessels()["vessels"]}
-    vessel_targets = {t["vessel_id"]: t["id"] for t in config.target_specs() if t["kind"] == "vessel"}
+    vessel_targets = {
+        t["vessel_id"]: t["id"] for t in config.target_specs() if t["kind"] == "vessel"
+    }
     assert vessels == vessel_targets
 
 

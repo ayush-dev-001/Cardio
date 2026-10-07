@@ -1,4 +1,5 @@
 """The saved per-target model bundle used by training, tests and the backend."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

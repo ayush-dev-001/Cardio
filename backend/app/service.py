@@ -1,5 +1,6 @@
 """Model service: loads the trained CardioModels once and turns validated inputs into
 predictions, SHAP explanations, the UI schema and sample patients."""
+
 from __future__ import annotations
 
 import json
@@ -10,8 +11,15 @@ from typing import Any
 import pandas as pd
 
 from cardioscope_ml.calibration import sigmoid
-from cardioscope_ml.config import (assert_no_leakage, dataset_paths, feature_specs, load_features, load_vessels,
-                                   target_spec, target_ids)
+from cardioscope_ml.config import (
+    assert_no_leakage,
+    dataset_paths,
+    feature_specs,
+    load_features,
+    load_vessels,
+    target_spec,
+    target_ids,
+)
 from cardioscope_ml.derived import apply_derivations, derived_features
 from cardioscope_ml.predictor import CardioModel, load_model
 
@@ -60,7 +68,9 @@ class ModelService:
         self.vessels = load_vessels()["vessels"]
         self.vessel_of_target = {v["target_id"]: v["id"] for v in self.vessels}
         metrics_path = models_dir / "metrics.json"
-        self.metrics = json.loads(metrics_path.read_text(encoding="utf-8")) if metrics_path.exists() else {}
+        self.metrics = (
+            json.loads(metrics_path.read_text(encoding="utf-8")) if metrics_path.exists() else {}
+        )
         self.data = pd.read_csv(dataset_paths().processed)
         self.defaults = self._defaults()
         self.samples = self._pick_samples()
@@ -109,13 +119,17 @@ class ModelService:
         overall = [t for t in target_ids() if t not in self.vessel_of_target]
         return {
             "cad": self._target_prediction(overall[0], probs[overall[0]]),
-            "vessels": [self._target_prediction(v["target_id"], probs[v["target_id"]]) for v in self.vessels],
+            "vessels": [
+                self._target_prediction(v["target_id"], probs[v["target_id"]]) for v in self.vessels
+            ],
             "derived_inputs": self.derived_values(patient),
             "disclaimer": DISCLAIMER,
         }
 
     # ----------------------------------------------------------------------- explain
-    def explain(self, patient: dict[str, Any], targets: list[str] | None, top_k: int | None) -> dict[str, Any]:
+    def explain(
+        self, patient: dict[str, Any], targets: list[str] | None, top_k: int | None
+    ) -> dict[str, Any]:
         X = self._frame(patient)
         rec = X.iloc[0].to_dict()
         explanations = []
@@ -129,24 +143,34 @@ class ModelService:
             for fid in keep:
                 spec, value = self.specs[fid], rec[fid]
                 value = value.item() if hasattr(value, "item") else value
-                contributions.append({
-                    "feature": fid, "label": spec["label"], "group": spec["group"], "unit": spec.get("unit"),
-                    "value": value, "display_value": _option_label(spec, value), "shap": float(shap[fid]),
-                    "normal_range": spec.get("normal_range"), "status": range_status(spec, value),
-                })
+                contributions.append(
+                    {
+                        "feature": fid,
+                        "label": spec["label"],
+                        "group": spec["group"],
+                        "unit": spec.get("unit"),
+                        "value": value,
+                        "display_value": _option_label(spec, value),
+                        "shap": float(shap[fid]),
+                        "normal_range": spec.get("normal_range"),
+                        "status": range_status(spec, value),
+                    }
+                )
             log_odds = float(e.log_odds[0])
-            explanations.append({
-                "target_id": t,
-                "label": target_spec(t)["label"],
-                "vessel_id": self.vessel_of_target.get(t),
-                "model": m.family,
-                "probability": float(sigmoid(log_odds)),
-                "base_value": e.base_value,
-                "base_probability": float(sigmoid(e.base_value)),
-                "log_odds": log_odds,
-                "contributions": contributions,
-                "other_contribution": float(shap.drop(keep).sum()),
-            })
+            explanations.append(
+                {
+                    "target_id": t,
+                    "label": target_spec(t)["label"],
+                    "vessel_id": self.vessel_of_target.get(t),
+                    "model": m.family,
+                    "probability": float(sigmoid(log_odds)),
+                    "base_value": e.base_value,
+                    "base_probability": float(sigmoid(e.base_value)),
+                    "log_odds": log_odds,
+                    "contributions": contributions,
+                    "other_contribution": float(shap.drop(keep).sum()),
+                }
+            )
         return {"explanations": explanations, "disclaimer": DISCLAIMER}
 
     # ----------------------------------------------------------------------- schema
@@ -155,31 +179,54 @@ class ModelService:
         for spec in feature_specs():
             if not spec.get("use_in_model", True):
                 continue
-            item = {k: spec.get(k) for k in ("id", "label", "group", "type", "unit", "description",
-                                              "normal_range", "valid_range", "note")}
+            item = {
+                k: spec.get(k)
+                for k in (
+                    "id",
+                    "label",
+                    "group",
+                    "type",
+                    "unit",
+                    "description",
+                    "normal_range",
+                    "valid_range",
+                    "note",
+                )
+            }
             item["derived"] = bool(spec.get("derived"))
             item["what_if"] = bool(spec.get("what_if"))
             if spec["type"] == "numeric":
                 col = self.data[spec["id"]]
-                item["observed_range"] = [float(col.min()), float(col.max())]  # training-data min/max
+                item["observed_range"] = [
+                    float(col.min()),
+                    float(col.max()),
+                ]  # training-data min/max
             item["input"] = not item["derived"]
             item["default"] = self.defaults.get(spec["id"])
             if spec["type"] in ("binary", "ordinal"):
                 values = sorted(set(spec["encoding"].values()))
                 item["options"] = [{"value": v, "label": _option_label(spec, v)} for v in values]
             elif spec["type"] == "categorical":
-                item["options"] = [{"value": v, "label": _option_label(spec, v)} for v in spec["categories"]]
+                item["options"] = [
+                    {"value": v, "label": _option_label(spec, v)} for v in spec["categories"]
+                ]
             features.append(item)
 
         targets = []
         for t in target_ids():
             m, tm = self.models[t], self.metrics.get("targets", {}).get(t, {})
-            targets.append({
-                "id": t, "label": target_spec(t)["label"], "kind": target_spec(t)["kind"],
-                "vessel_id": self.vessel_of_target.get(t), "model": m.family, "threshold": m.threshold,
-                "min_recall": target_spec(t).get("min_recall"),
-                "cv_roc_auc": tm.get("cv", {}).get(m.family, {}).get("roc_auc"),
-            })
+            targets.append(
+                {
+                    "id": t,
+                    "label": target_spec(t)["label"],
+                    "kind": target_spec(t)["kind"],
+                    "vessel_id": self.vessel_of_target.get(t),
+                    "model": m.family,
+                    "threshold": m.threshold,
+                    "min_recall": target_spec(t).get("min_recall"),
+                    "cv_roc_auc": tm.get("cv", {}).get(m.family, {}).get("roc_auc"),
+                }
+            )
         return {
             "groups": load_features()["groups"],
             "features": features,
@@ -197,8 +244,12 @@ class ModelService:
         vessel_targets = [v["target_id"] for v in self.vessels]
         n_vessels = df[vessel_targets].sum(axis=1)
         X = df[self.feature_ids]
-        probs = pd.DataFrame({t: self.models[t].predict_proba(X) for t in target_ids()}, index=df.index)
-        agreement = sum((probs[t] * df[t] + (1 - probs[t]) * (1 - df[t])) for t in target_ids()) / len(target_ids())
+        probs = pd.DataFrame(
+            {t: self.models[t].predict_proba(X) for t in target_ids()}, index=df.index
+        )
+        agreement = sum(
+            (probs[t] * df[t] + (1 - probs[t]) * (1 - df[t])) for t in target_ids()
+        ) / len(target_ids())
 
         kinds = [
             ("normal", "Normal coronaries", (df["cad"] == 0) & (n_vessels == 0)),
@@ -211,28 +262,40 @@ class ModelService:
             idx = agreement[mask].idxmax()
             row = df.loc[idx]
             diseased = [v["id"] for v in self.vessels if row[v["target_id"]] == 1]
-            desc = "No significant stenosis on angiography." if not diseased else \
-                f"Angiographic stenosis in {', '.join(diseased)}."
+            desc = (
+                "No significant stenosis on angiography."
+                if not diseased
+                else f"Angiographic stenosis in {', '.join(diseased)}."
+            )
             patient = {k: (row[k].item() if hasattr(row[k], "item") else row[k]) for k in inputs}
-            out.append({
-                "kind": kind,
-                "title": title + (f" ({diseased[0]})" if len(diseased) == 1 else ""),
-                "description": f"{int(row['age'])}-year-old {'man' if row['sex'] == 1 else 'woman'}. {desc}",
-                "patient_id": int(row["patient_id"]),
-                "patient": patient,
-                "true_labels": {t: int(row[t]) for t in target_ids()},
-                "source": (f"Z-Alizadeh Sani dataset, row {int(row['patient_id'])}. This patient was part of the "
-                           "training data, so predictions for it are in-sample (optimistic)."),
-            })
+            out.append(
+                {
+                    "kind": kind,
+                    "title": title + (f" ({diseased[0]})" if len(diseased) == 1 else ""),
+                    "description": f"{int(row['age'])}-year-old {'man' if row['sex'] == 1 else 'woman'}. {desc}",
+                    "patient_id": int(row["patient_id"]),
+                    "patient": patient,
+                    "true_labels": {t: int(row[t]) for t in target_ids()},
+                    "source": (
+                        f"Z-Alizadeh Sani dataset, row {int(row['patient_id'])}. This patient was part of the "
+                        "training data, so predictions for it are in-sample (optimistic)."
+                    ),
+                }
+            )
         return out
 
     # ----------------------------------------------------------------------- health
     def health(self) -> dict[str, Any]:
         import fastapi, sklearn, xgboost  # noqa: E401
+
         return {
             "status": "ok" if len(self.models) == len(target_ids()) else "degraded",
             "models_loaded": sorted(self.models),
             "n_input_features": len(input_feature_specs()),
-            "versions": {"python": platform.python_version(), "fastapi": fastapi.__version__,
-                         "scikit-learn": sklearn.__version__, "xgboost": xgboost.__version__},
+            "versions": {
+                "python": platform.python_version(),
+                "fastapi": fastapi.__version__,
+                "scikit-learn": sklearn.__version__,
+                "xgboost": xgboost.__version__,
+            },
         }

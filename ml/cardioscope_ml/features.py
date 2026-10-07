@@ -3,6 +3,7 @@
 The preprocessor is always the first step of a model Pipeline, so imputation,
 scaling and one-hot encoding are re-fitted on the training part of every CV fold.
 """
+
 from __future__ import annotations
 
 import pandas as pd

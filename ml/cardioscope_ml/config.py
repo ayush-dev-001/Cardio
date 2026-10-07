@@ -1,4 +1,5 @@
 """Load the YAML/JSON configs that define features, targets and vessels."""
+
 from __future__ import annotations
 
 import json

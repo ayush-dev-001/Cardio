@@ -4,6 +4,7 @@
 inputs instead of accepting them, so a user can never submit e.g. a BMI that contradicts
 the entered weight and height. Order matters: later derivations may use earlier ones.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable

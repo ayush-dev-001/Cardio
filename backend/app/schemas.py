@@ -1,5 +1,6 @@
 """Request/response models. The patient input model is generated from features.yaml, so adding
 a feature to the config adds it to the API (with its type, allowed values and plausible range)."""
+
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -46,8 +47,15 @@ TargetId = Literal[tuple(target_ids())]  # type: ignore[valid-type]
 class ExplainRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     patient: PatientInput  # type: ignore[valid-type]
-    targets: list[TargetId] | None = Field(default=None, description="Targets to explain (default: all).")
-    top_k: int | None = Field(default=None, ge=1, le=100, description="Keep the k largest contributions; the rest are summed.")
+    targets: list[TargetId] | None = Field(
+        default=None, description="Targets to explain (default: all)."
+    )
+    top_k: int | None = Field(
+        default=None,
+        ge=1,
+        le=100,
+        description="Keep the k largest contributions; the rest are summed.",
+    )
 
 
 # ----------------------------------------------------------------------------- responses
@@ -79,9 +87,13 @@ class Contribution(BaseModel):
     unit: str | None
     value: float | str | None = Field(description="The patient's value for this feature.")
     display_value: str
-    shap: float = Field(description="Contribution in calibrated log-odds (>0 pushes towards disease).")
+    shap: float = Field(
+        description="Contribution in calibrated log-odds (>0 pushes towards disease)."
+    )
     normal_range: list[float | None] | None
-    status: Literal["low", "normal", "high"] | None = Field(description="Value vs normal range (numeric features).")
+    status: Literal["low", "normal", "high"] | None = Field(
+        description="Value vs normal range (numeric features)."
+    )
 
 
 class TargetExplanation(BaseModel):
@@ -92,14 +104,20 @@ class TargetExplanation(BaseModel):
     probability: float
     base_value: float = Field(description="Log-odds of an average patient (SHAP expected value).")
     base_probability: float
-    log_odds: float = Field(description="base_value + sum of all contributions = logit(probability).")
+    log_odds: float = Field(
+        description="base_value + sum of all contributions = logit(probability)."
+    )
     contributions: list[Contribution]
-    other_contribution: float = Field(description="Sum of contributions not listed (when top_k is used).")
+    other_contribution: float = Field(
+        description="Sum of contributions not listed (when top_k is used)."
+    )
 
 
 class ExplainResponse(BaseModel):
     explanations: list[TargetExplanation]
-    units: str = "SHAP values are in calibrated log-odds; they add up exactly to each target's probability."
+    units: str = (
+        "SHAP values are in calibrated log-odds; they add up exactly to each target's probability."
+    )
     disclaimer: str
 
 

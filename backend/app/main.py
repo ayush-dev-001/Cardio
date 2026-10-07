@@ -4,6 +4,7 @@ Run locally (from the repository root):
     uvicorn app.main:app --app-dir backend --reload
 Interactive docs: http://localhost:8000/docs
 """
+
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
@@ -12,7 +13,14 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.schemas import ExplainRequest, ExplainResponse, HealthResponse, PredictRequest, PredictResponse, SamplePatient
+from app.schemas import (
+    ExplainRequest,
+    ExplainResponse,
+    HealthResponse,
+    PredictRequest,
+    PredictResponse,
+    SamplePatient,
+)
 from app.service import ModelService
 from app.settings import DISCLAIMER, Settings
 
@@ -59,21 +67,35 @@ def schema(request: Request) -> dict[str, Any]:
     return service(request).schema()
 
 
-@app.post("/predict", response_model=PredictResponse, tags=["model"],
-          summary="Overall CAD status and per-vessel stenosis probabilities")
+@app.post(
+    "/predict",
+    response_model=PredictResponse,
+    tags=["model"],
+    summary="Overall CAD status and per-vessel stenosis probabilities",
+)
 def predict(body: PredictRequest, request: Request) -> dict[str, Any]:
     return service(request).predict(body.patient.model_dump())
 
 
-@app.post("/explain", response_model=ExplainResponse, tags=["model"],
-          summary="SHAP feature contributions per target")
+@app.post(
+    "/explain",
+    response_model=ExplainResponse,
+    tags=["model"],
+    summary="SHAP feature contributions per target",
+)
 def explain(body: ExplainRequest, request: Request) -> dict[str, Any]:
     return service(request).explain(body.patient.model_dump(), body.targets, body.top_k)
 
 
-@app.get("/patients/sample", response_model=list[SamplePatient], tags=["data"],
-         summary="Real example patients: normal, single-vessel and multi-vessel disease")
-def sample_patients(request: Request, kind: str | None = Query(default=None, description="Filter by kind")) -> list[dict]:
+@app.get(
+    "/patients/sample",
+    response_model=list[SamplePatient],
+    tags=["data"],
+    summary="Real example patients: normal, single-vessel and multi-vessel disease",
+)
+def sample_patients(
+    request: Request, kind: str | None = Query(default=None, description="Filter by kind")
+) -> list[dict]:
     samples = service(request).samples
     if kind is not None:
         samples = [s for s in samples if s["kind"] == kind]

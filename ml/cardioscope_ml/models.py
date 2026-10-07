@@ -1,4 +1,5 @@
 """Build model pipelines and search spaces from ml/configs/models.yaml."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -38,10 +39,15 @@ def make_estimator(family: str, seed: int):
 
 def build_pipeline(family: str, seed: int, extra_numeric: tuple[str, ...] = ()) -> Pipeline:
     spec = model_spec(family)
-    return Pipeline([
-        ("prep", build_preprocessor(scale=spec.get("scale", False), extra_numeric=extra_numeric)),
-        ("clf", make_estimator(family, seed)),
-    ])
+    return Pipeline(
+        [
+            (
+                "prep",
+                build_preprocessor(scale=spec.get("scale", False), extra_numeric=extra_numeric),
+            ),
+            ("clf", make_estimator(family, seed)),
+        ]
+    )
 
 
 def _distribution(v: Any):
