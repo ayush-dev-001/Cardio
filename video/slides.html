@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CardioScope demo slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0a16; --surface: #17121f; --surface-2: #1f1829; --line: rgba(255,255,255,.09);
+    --text: #f4f1fa; --muted: rgba(244,241,250,.62); --brand: #8b5cf6; --brand-2: #c4b5fd;
+    --green: #22c55e; --amber: #f59e0b; --red: #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); color: var(--text);
+    font-family: Inter, system-ui, sans-serif; }
+  body::before { content: ""; position: fixed; inset: 0;
+    background: radial-gradient(1100px 600px at 18% -10%, rgba(139,92,246,.30), transparent 60%),
+                radial-gradient(900px 600px at 110% 120%, rgba(99,102,241,.22), transparent 60%); }
+  .slide { position: absolute; inset: 0; padding: 110px 150px; display: none; flex-direction: column; }
+  .slide.on { display: flex; }
+  .kicker { font-size: 22px; letter-spacing: .28em; text-transform: uppercase; color: var(--brand-2); font-weight: 600; }
+  h1 { font-family: "Instrument Serif", serif; font-weight: 400; font-size: 132px; line-height: 1; letter-spacing: -.01em; }
+  h2 { font-family: "Instrument Serif", serif; font-weight: 400; font-size: 76px; line-height: 1.05; margin: 18px 0 46px; }
+  em { font-style: italic; color: var(--brand-2); }
+  p.lead { font-size: 34px; line-height: 1.45; color: var(--muted); max-width: 1300px; }
+  .r { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
+  .r.show { opacity: 1; transform: none; }
+  .grid { display: grid; gap: 28px; }
+  .card { background: rgba(31,24,41,.82); border: 1px solid var(--line); border-radius: 22px; padding: 34px 38px; }
+  .card h3 { font-size: 30px; font-weight: 600; margin-bottom: 12px; }
+  .card p, .card li { font-size: 25px; line-height: 1.45; color: var(--muted); }
+  .card ul { padding-left: 26px; }
+  .card li + li { margin-top: 8px; }
+  .tag { display: inline-block; font-size: 20px; font-weight: 600; padding: 6px 14px; border-radius: 999px;
+    background: rgba(139,92,246,.18); color: var(--brand-2); margin-bottom: 18px; }
+  .pill { display: inline-flex; align-items: center; gap: 10px; font-size: 22px; border: 1px solid var(--line);
+    border-radius: 999px; padding: 10px 20px; background: rgba(255,255,255,.04); color: var(--muted); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  table { border-collapse: collapse; width: 100%; font-size: 27px; }
+  th { text-align: left; font-size: 19px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+    font-weight: 600; padding: 0 18px 16px; border-bottom: 1px solid var(--line); }
+  td { padding: 20px 18px; border-bottom: 1px solid var(--line); }
+  td.num { font-variant-numeric: tabular-nums; }
+  .big { font-weight: 700; color: var(--text); }
+  .ci { color: var(--muted); font-size: 21px; margin-left: 8px; }
+  .fig { background: #fff; border-radius: 18px; padding: 14px; }
+  .fig img { display: block; width: 100%; }
+  .figcap { font-size: 22px; color: var(--muted); margin-top: 12px; }
+  .mono { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: .9em; color: var(--brand-2); }
+  .foot { position: absolute; left: 150px; right: 150px; bottom: 54px; display: flex; justify-content: space-between;
+    font-size: 19px; color: rgba(244,241,250,.42); }
+  /* architecture */
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; align-items: stretch; }
+  .flow .card { position: relative; margin-right: 54px; }
+  .flow .card:last-child { margin-right: 0; }
+  .flow .card:not(:last-child)::after { content: "→"; position: absolute; right: -46px; top: 42%; font-size: 40px; color: var(--brand); }
+  .shared { margin-top: 34px; border-style: dashed; border-color: rgba(196,181,253,.35); }
+  .logo { display: inline-flex; align-items: center; gap: 18px; font-size: 40px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- 1. Title -->
+<section class="slide" id="title" style="justify-content:center">
+  <div class="r logo"><svg width="56" height="56" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7.5-4.6-9.6-9.4C.9 8 3 4 6.9 4c2.1 0 3.6 1.2 5.1 3 1.5-1.8 3-3 5.1-3C21 4 23.1 8 21.6 11.6 19.5 16.4 12 21 12 21z" fill="#fff"/><path d="M4 12h4l2-3 3 6 2-3h5" stroke="#8b5cf6" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>CardioScope</div>
+  <h1 class="r" style="margin-top:46px">See coronary risk in 3D<br><em>and</em> understand why</h1>
+  <p class="r lead" style="margin-top:40px">Multimodal AI Hackathon 2026 · Track A: Cardiovascular Risk Visualization &amp; Prediction</p>
+  <div class="r" style="display:flex;gap:16px;margin-top:46px">
+    <span class="pill">Calibrated ML · nested cross-validation</span><span class="pill">Interactive 3D heart</span><span class="pill">SHAP explanations</span>
+  </div>
+  <div class="foot r"><span>For decision support and education only. Not a substitute for formal diagnostic imaging.</span></div>
+</section>
+
+<!-- 2. Problem -->
+<section class="slide" id="problem">
+  <div class="kicker r">The problem</div>
+  <h2 class="r">A risk percentage does not show <em>where</em> the problem is</h2>
+  <div class="grid" style="grid-template-columns:1.1fr 1fr;gap:40px">
+    <div class="card r">
+      <span class="tag">Coronary artery disease</span>
+      <p>Narrowing (stenosis) of the arteries that feed the heart muscle. Three main vessels:</p>
+      <ul style="margin-top:16px">
+        <li><b style="color:var(--text)">LAD</b> &nbsp;front wall of the left ventricle and septum</li>
+        <li><b style="color:var(--text)">LCX</b> &nbsp;side and back walls</li>
+        <li><b style="color:var(--text)">RCA</b> &nbsp;right ventricle and bottom wall</li>
+      </ul>
+    </div>
+    <div class="card r">
+      <span class="tag">Our goal</span>
+      <ul>
+        <li>Predict overall CAD and stenosis in LAD, LCX and RCA from routine clinical data</li>
+        <li>Map each vessel's probability onto an interactive 3D heart</li>
+        <li>Explain every prediction, measurement by measurement</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card r" style="margin-top:30px;display:flex;gap:28px;align-items:center">
+    <span class="tag" style="margin:0">Data</span>
+    <p>Extension of the Z-Alizadeh Sani dataset (UCI) · 303 patients · 54 clinical features: demographics, history, examination, ECG, labs, echo</p>
+  </div>
+</section>
+
+<!-- 3. Architecture -->
+<section class="slide" id="arch">
+  <div class="kicker r">Technical implementation</div>
+  <h2 class="r">One config-driven pipeline, <em>from data to 3D</em></h2>
+  <div class="flow">
+    <div class="card r"><span class="tag">Data</span><h3>Clean &amp; describe</h3>
+      <p>Raw file is read-only. <span class="mono">features.yaml</span> defines every feature: type, unit, normal range, display group.</p></div>
+    <div class="card r"><span class="tag">ML · Python</span><h3>Train &amp; validate</h3>
+      <p>scikit-learn, XGBoost, CatBoost. Nested CV, calibration, thresholds, exact SHAP. One command.</p></div>
+    <div class="card r"><span class="tag">API · FastAPI</span><h3>Serve</h3>
+      <p><span class="mono">/schema /predict /explain /patients/sample</span>. Pydantic input model generated from the config.</p></div>
+    <div class="card r"><span class="tag">UI · React</span><h3>Show &amp; explain</h3>
+      <p>React Three Fiber 3D heart, form built from <span class="mono">/schema</span>, Recharts SHAP waterfall.</p></div>
+  </div>
+  <div class="card shared r" style="display:flex;gap:40px;align-items:center">
+    <span class="tag" style="margin:0;white-space:nowrap">shared/vessels.json</span>
+    <p>One vessel ID registry used by the model targets, the API and the 3D anatomy, so LAD, LCX and RCA in 3D always match the model outputs. Tests fail if they ever drift apart.</p>
+  </div>
+  <div class="r" style="display:flex;gap:16px;margin-top:30px">
+    <span class="pill"><span class="dot" style="background:var(--green)"></span>Frontend on Vercel</span>
+    <span class="pill"><span class="dot" style="background:var(--green)"></span>API on Render</span>
+    <span class="pill">Add a feature, model or vessel by editing config, not code</span>
+  </div>
+</section>
+
+<!-- 4. Method -->
+<section class="slide" id="method">
+  <div class="kicker r">Predictive modelling</div>
+  <h2 class="r">Validated <em>honestly</em> on 303 patients</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr;gap:30px">
+    <div class="card r"><span class="tag">No target leakage</span>
+      <p>LAD, LCX, RCA and Cath are never model inputs. An assertion in the pipeline and pytest checks on the training matrix and saved models enforce it.</p></div>
+    <div class="card r"><span class="tag">Nested cross-validation</span>
+      <p>Repeated stratified 5-fold × 3. Tuning in an inner 3-fold loop. All imputation, encoding and scaling refit inside every fold.</p></div>
+    <div class="card r"><span class="tag">Four model families per target</span>
+      <p>Logistic regression, random forest, XGBoost, CatBoost. Best CV ROC-AUC wins. Vessels: independent models beat a classifier chain.</p></div>
+    <div class="card r"><span class="tag">Calibrated, recall-first</span>
+      <p>Platt scaling lowered the Brier score for all four targets. Thresholds aim for ≥ 90% sensitivity (CAD) and ≥ 80% (vessels). 1,000-sample bootstrap 95% CIs.</p></div>
+  </div>
+</section>
+
+<!-- 5. Results -->
+<section class="slide" id="results">
+  <div class="kicker r">Results · nested CV, mean [95% CI]</div>
+  <h2 class="r">Strong for CAD and LAD, <em>moderate</em> for LCX and RCA</h2>
+  <div class="card r" style="padding:30px 40px">
+    <table>
+      <tr><th>Target</th><th>Selected model</th><th>ROC-AUC</th><th>Recall</th><th>Specificity</th><th>F1</th><th>Brier</th></tr>
+      <tr><td class="big">Overall CAD</td><td>Logistic regression</td><td class="num"><span class="big">0.929</span><span class="ci">0.90–0.96</span></td><td class="num">0.889</td><td class="num">0.816</td><td class="num">0.906</td><td class="num">0.095</td></tr>
+      <tr><td class="big">LAD</td><td>Random forest</td><td class="num"><span class="big">0.842</span><span class="ci">0.80–0.88</span></td><td class="num">0.798</td><td class="num">0.728</td><td class="num">0.801</td><td class="num">0.157</td></tr>
+      <tr><td class="big">LCX</td><td>Random forest</td><td class="num"><span class="big">0.729</span><span class="ci">0.67–0.78</span></td><td class="num">0.773</td><td class="num">0.560</td><td class="num">0.630</td><td class="num">0.204</td></tr>
+      <tr><td class="big">RCA</td><td>Logistic regression</td><td class="num"><span class="big">0.731</span><span class="ci">0.68–0.78</span></td><td class="num">0.769</td><td class="num">0.563</td><td class="num">0.617</td><td class="num">0.200</td></tr>
+    </table>
+  </div>
+  <div class="fig r" style="margin-top:30px"><img src="../reports/figures/phase2_roc_curves.png" alt=""></div>
+</section>
+
+<!-- 6. Curves -->
+<section class="slide" id="curves">
+  <div class="kicker r">Risk estimation quality</div>
+  <h2 class="r">Probabilities you can <em>trust</em>, and use</h2>
+  <div class="fig r"><img src="../reports/figures/phase2_calibration.png" alt=""></div>
+  <div class="figcap r">Calibration: after Platt scaling, predicted risk tracks the observed rate.</div>
+  <div class="fig r" style="margin-top:22px"><img src="../reports/figures/phase2_decision_curves.png" alt=""></div>
+  <div class="figcap r">Decision curves: every model beats "treat all" and "treat none" across plausible referral thresholds.</div>
+</section>
+
+<!-- 7. Baseline -->
+<section class="slide" id="baseline">
+  <div class="kicker r">Does the full data help?</div>
+  <h2 class="r">Compared with a 10-item <em>bedside</em> baseline</h2>
+  <div class="grid" style="grid-template-columns:1.25fr 1fr;gap:40px;align-items:start">
+    <div class="fig r"><img src="../reports/figures/phase2_model_comparison.png" alt=""></div>
+    <div class="grid" style="gap:24px">
+      <div class="card r"><span class="tag">LAD: clear gain</span><p>+0.064 AUC [+0.031, +0.102]. Wall-motion abnormality and ejection fraction reflect LAD's large territory.</p></div>
+      <div class="card r"><span class="tag">CAD: small gain</span><p>+0.020 AUC, borderline. Chest-pain type and risk factors carry most of the signal.</p></div>
+      <div class="card r"><span class="tag">LCX, RCA: no gain</span><p>Routine data holds little vessel-specific signal for them. We report this openly.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. 3D pipeline -->
+<section class="slide" id="anatomy">
+  <div class="kicker r">3D pipeline</div>
+  <h2 class="r">Real anatomy that runs on <em>any laptop</em></h2>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:30px">
+    <div class="card r"><span class="tag">Open-licence meshes</span>
+      <p>Sculpted heart (CC BY-NC-SA 4.0) with the coronary tree split into separate LAD, LCX and RCA meshes. Torso cropped from a CC BY 4.0 body base.</p></div>
+    <div class="card r"><span class="tag">Compressed</span>
+      <p>Decimated from 2.7 million to about 125 thousand triangles and Meshopt-compressed: the heart is 438 KB.</p></div>
+    <div class="card r"><span class="tag">No GPU needed</span>
+      <p>Renders on demand, adaptive pixel ratio, no shadows or post-processing. A procedural heart is the automatic fallback.</p></div>
+  </div>
+  <div class="card r" style="margin-top:30px"><span class="tag">Honest risk mapping</span>
+    <p>Each artery takes one colour from its predicted probability (green → amber → red). The model predicts per-vessel status, so nothing in the view implies where a lesion sits inside a vessel. Region RWMA is used as a clinical feature, never as a coordinate.</p></div>
+</section>
+
+<!-- 9. Engineering -->
+<section class="slide" id="engineering">
+  <div class="kicker r">Reproducibility &amp; quality</div>
+  <h2 class="r">Built to be <em>rerun</em> and extended</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr;gap:30px">
+    <div class="card r"><span class="tag">One command</span>
+      <p><span class="mono">python -m cardioscope_ml.train</span> rebuilds every model, metric and figure. Fixed seed 42: two runs give identical results.</p></div>
+    <div class="card r"><span class="tag">Tested</span>
+      <p>pytest for data, leakage and SHAP additivity; API tests for every endpoint; Vitest for the 3D anatomy, colour scale and vessel correspondence.</p></div>
+    <div class="card r"><span class="tag">Exact explanations</span>
+      <p>TreeSHAP for the tree models and exact linear SHAP for logistic regression, in calibrated log-odds. Base value plus contributions equals the prediction.</p></div>
+    <div class="card r"><span class="tag">Config-driven</span>
+      <p><span class="mono">features.yaml</span>, <span class="mono">targets.yaml</span>, <span class="mono">models.yaml</span>, <span class="mono">vessels.json</span>, <span class="mono">anatomy.json</span>: the form, API, models and 3D scene are generated from them.</p></div>
+  </div>
+</section>
+
+<!-- 10. Closing -->
+<section class="slide" id="closing" style="justify-content:center">
+  <div class="kicker r">Limitations, stated plainly</div>
+  <div class="grid r" style="grid-template-columns:repeat(3,1fr);gap:26px;margin:28px 0 70px">
+    <div class="card"><p>303 patients from a single centre, no external validation. Wide intervals for LCX and RCA.</p></div>
+    <div class="card"><p>Per-vessel stenosis status, not lesion location or severity within a vessel.</p></div>
+    <div class="card"><p>Decision support and education only. Not a substitute for coronary angiography.</p></div>
+  </div>
+  <h1 class="r" style="font-size:110px">CardioScope</h1>
+  <div class="r" style="display:flex;flex-direction:column;gap:14px;margin-top:34px;font-size:32px">
+    <span>App &nbsp;<span class="mono">frontend-psi-one-41.vercel.app</span></span>
+    <span>Code &nbsp;<span class="mono">github.com/ayush-dev-001/Cardio</span></span>
+  </div>
+</section>
+
+<script>
+  const id = new URLSearchParams(location.search).get("s") || "title";
+  const slide = document.getElementById(id);
+  slide.classList.add("on");
+  const items = [...slide.querySelectorAll(".r")];
+  // reveal the first n animated items (called by the recorder in time with the narration)
+  window.step = (n) => items.forEach((el, i) => el.classList.toggle("show", i < n));
+  window.nItems = items.length;
+</script>
+</body>
+</html>
