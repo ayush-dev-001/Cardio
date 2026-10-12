@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>CardioScope architecture</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .col { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.5; }
+      .box { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.2; }
+      .hd { font-size: 17px; font-weight: 700; fill: #0f172a; }
+      .sub { font-size: 12.5px; fill: #64748b; }
+      .t { font-size: 13.5px; fill: #1e293b; }
+      .b { font-size: 13.5px; font-weight: 600; fill: #0f172a; }
+      .mono { font-family: Consolas, Menlo, monospace; font-size: 12.5px; fill: #6d28d9; }
+      .ln { stroke: #475569; stroke-width: 1.8; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #7c3aed; stroke-width: 1.6; fill: none; stroke-dasharray: 5 4; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1200" height="600" fill="#ffffff"/>
+
+  <!-- column 1: data + config -->
+  <rect class="col" x="16" y="16" width="270" height="440" rx="14"/>
+  <text class="hd" x="34" y="46">1 · Data and config</text>
+  <text class="sub" x="34" y="66">read-only raw data, YAML dictionaries</text>
+  <rect class="box" x="34" y="84" width="234" height="74" rx="8"/>
+  <text class="b" x="46" y="106">data/raw/*.xlsx</text>
+  <text class="t" x="46" y="126">303 patients, 55 features,</text>
+  <text class="t" x="46" y="144">4 labels (never modified)</text>
+  <rect class="box" x="34" y="176" width="234" height="74" rx="8"/>
+  <text class="mono" x="46" y="198">cardioscope_ml.data</text>
+  <text class="t" x="46" y="218">fixed recoding, no fitted steps</text>
+  <text class="t" x="46" y="236">→ data/processed/*.csv</text>
+  <rect class="box" x="34" y="268" width="234" height="170" rx="8"/>
+  <text class="b" x="46" y="290">ml/configs/</text>
+  <text class="mono" x="46" y="312">features.yaml</text>
+  <text class="t" x="46" y="330">type, unit, normal range, group</text>
+  <text class="mono" x="46" y="354">targets.yaml</text>
+  <text class="t" x="46" y="372">CAD, LAD, LCX, RCA, recall goals</text>
+  <text class="mono" x="46" y="396">models.yaml</text>
+  <text class="t" x="46" y="414">families, search spaces, CV,</text>
+  <text class="t" x="46" y="430">baseline, ensemble</text>
+
+  <!-- column 2: training -->
+  <rect class="col" x="316" y="16" width="280" height="440" rx="14"/>
+  <text class="hd" x="334" y="46">2 · Training (Python)</text>
+  <text class="mono" x="334" y="66">python -m cardioscope_ml.train</text>
+  <rect class="box" x="334" y="84" width="244" height="200" rx="8"/>
+  <text class="b" x="346" y="106">Nested cross-validation</text>
+  <text class="t" x="346" y="128">• outer: stratified 5-fold × 3</text>
+  <text class="t" x="346" y="148">• inner: random search, 3-fold</text>
+  <text class="t" x="346" y="168">• preprocessing refit in every fold</text>
+  <text class="t" x="346" y="188">• LR, random forest, XGBoost,</text>
+  <text class="t" x="358" y="206">CatBoost per target</text>
+  <text class="t" x="346" y="226">• Platt calibration, recall-first</text>
+  <text class="t" x="358" y="244">thresholds, bootstrap 95% CIs</text>
+  <text class="t" x="346" y="266">• leakage assert + pytest</text>
+  <rect class="box" x="334" y="302" width="244" height="136" rx="8"/>
+  <text class="b" x="346" y="324">Outputs</text>
+  <text class="mono" x="346" y="346">models/&lt;target&gt;.joblib</text>
+  <text class="t" x="346" y="364">pipeline + calibrator + threshold</text>
+  <text class="t" x="346" y="382">+ exact SHAP explainer</text>
+  <text class="mono" x="346" y="406">models/metrics.json</text>
+  <text class="mono" x="346" y="428">reports/figures/*.png</text>
+
+  <!-- column 3: API -->
+  <rect class="col" x="626" y="16" width="270" height="440" rx="14"/>
+  <text class="hd" x="644" y="46">3 · API (FastAPI)</text>
+  <text class="sub" x="644" y="66">Docker on Render · loads models once</text>
+  <rect class="box" x="644" y="84" width="234" height="190" rx="8"/>
+  <text class="mono" x="656" y="108">GET  /schema</text>
+  <text class="mono" x="656" y="134">POST /predict</text>
+  <text class="mono" x="656" y="160">POST /explain</text>
+  <text class="mono" x="656" y="186">GET  /patients/sample</text>
+  <text class="mono" x="656" y="212">GET  /health</text>
+  <text class="t" x="656" y="240">~15–30 ms per request</text>
+  <text class="t" x="656" y="260">(laptop, warm server)</text>
+  <rect class="box" x="644" y="292" width="234" height="146" rx="8"/>
+  <text class="b" x="656" y="314">Pydantic input model</text>
+  <text class="t" x="656" y="336">generated from features.yaml:</text>
+  <text class="t" x="656" y="356">ranges, allowed codes,</text>
+  <text class="t" x="656" y="376">unknown or target fields</text>
+  <text class="t" x="656" y="396">rejected; BMI/obesity</text>
+  <text class="t" x="656" y="416">derived on the server</text>
+
+  <!-- column 4: frontend -->
+  <rect class="col" x="926" y="16" width="258" height="440" rx="14"/>
+  <text class="hd" x="944" y="46">4 · Dashboard (React)</text>
+  <text class="sub" x="944" y="66">Vite + TypeScript on Vercel</text>
+  <rect class="box" x="944" y="84" width="222" height="70" rx="8"/>
+  <text class="b" x="956" y="106">Patient form</text>
+  <text class="t" x="956" y="126">built from /schema; samples,</text>
+  <text class="t" x="956" y="144">what-if, live updates &lt; 1 s</text>
+  <rect class="box" x="944" y="168" width="222" height="88" rx="8"/>
+  <text class="b" x="956" y="190">3D heart (React Three Fiber)</text>
+  <text class="t" x="956" y="210">LAD/LCX/RCA meshes + nodes</text>
+  <text class="t" x="956" y="228">coloured by probability;</text>
+  <text class="t" x="956" y="246">supply-territory shading</text>
+  <rect class="box" x="944" y="270" width="222" height="168" rx="8"/>
+  <text class="b" x="956" y="292">Explanations</text>
+  <text class="t" x="956" y="314">CAD gauge, vessel bars</text>
+  <text class="t" x="956" y="334">SHAP waterfall per target</text>
+  <text class="t" x="956" y="354">physiology vs normal ranges</text>
+  <text class="t" x="956" y="374">vessel detail panel</text>
+  <text class="t" x="956" y="394">plain-language summary</text>
+  <text class="t" x="956" y="418" fill="#b45309" font-weight="600">permanent disclaimer</text>
+
+  <!-- main flow arrows -->
+  <path class="ln" d="M268 214 H300 V190 H330"/>
+  <path class="ln" d="M268 350 H300 V200 H330"/>
+  <path class="ln" d="M578 370 H610 V200 H640"/>
+  <path class="ln" d="M878 150 H940"/>
+  <path class="ln" d="M940 196 H884" />
+  <text class="sub" x="884" y="140">JSON</text>
+
+  <!-- shared vessel registry -->
+  <rect x="316" y="484" width="868" height="96" rx="14" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.5"/>
+  <text class="mono" x="336" y="514" font-size="15" font-weight="700">shared/vessels.json</text>
+  <text class="t" x="336" y="538">One vessel-ID registry (LAD, LCX, RCA → target, name, supplied territory) used by the model targets,</text>
+  <text class="t" x="336" y="558">the API responses and the 3D anatomy, so the 3D arteries always match the model outputs. Tests fail if they drift apart.</text>
+  <path class="dash" d="M456 484 V460"/>
+  <path class="dash" d="M760 484 V460"/>
+  <path class="dash" d="M1054 484 V460"/>
+  <text class="sub" x="34" y="520">Add a feature, model or vessel</text>
+  <text class="sub" x="34" y="538">by editing config, not code.</text>
+</svg>

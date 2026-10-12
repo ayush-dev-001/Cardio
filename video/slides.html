@@ -136,7 +136,7 @@
     <div class="card r"><span class="tag">Nested cross-validation</span>
       <p>Repeated stratified 5-fold × 3. Tuning in an inner 3-fold loop. All imputation, encoding and scaling refit inside every fold.</p></div>
     <div class="card r"><span class="tag">Four model families per target</span>
-      <p>Logistic regression, random forest, XGBoost, CatBoost. Best CV ROC-AUC wins. Vessels: independent models beat a classifier chain.</p></div>
+      <p>Logistic regression, random forest, XGBoost, CatBoost. Best CV ROC-AUC wins. Vessels: a classifier chain gave no significant gain, so they use independent models.</p></div>
     <div class="card r"><span class="tag">Calibrated, recall-first</span>
       <p>Platt scaling lowered the Brier score for all four targets. Thresholds aim for ≥ 90% sensitivity (CAD) and ≥ 80% (vessels). 1,000-sample bootstrap 95% CIs.</p></div>
   </div>
