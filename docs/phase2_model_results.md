@@ -134,6 +134,22 @@ be made. For CAD and LAD the gain over "treat all" is large; for LCX and RCA it 
 their moderate AUC. The clinical baseline's curve is close to the selected model's except for LAD,
 where the full model is clearly better at thresholds above 30 % (consistent with section 5).
 
+## 7b. Subgroup check (selected models, out-of-fold ROC-AUC [95% CI])
+Defined in `models.yaml` (`subgroups`), reported only, never used for selection.
+
+| Target | Women (127) | Men (176) | Age < 60 (162) | Age ≥ 60 (141) | Diabetic (90) | Non-diabetic (213) |
+|---|---|---|---|---|---|---|
+| CAD | 0.96 [0.93–0.99] | 0.90 [0.85–0.95] | 0.93 [0.89–0.96] | 0.87 [0.80–0.94] | 0.96 [0.92–0.99] | 0.91 [0.87–0.95] |
+| LAD | 0.84 [0.76–0.90] | 0.84 [0.78–0.90] | 0.89 [0.84–0.94] | 0.72 [0.64–0.80] | 0.71 [0.59–0.81] | 0.87 [0.83–0.91] |
+| LCX | 0.72 [0.63–0.81] | 0.74 [0.66–0.80] | 0.74 [0.66–0.81] | 0.63 [0.54–0.71] | 0.66 [0.55–0.77] | 0.73 [0.66–0.80] |
+| RCA | 0.77 [0.69–0.85] | 0.70 [0.62–0.77] | 0.77 [0.69–0.84] | 0.64 [0.56–0.72] | 0.66 [0.55–0.76] | 0.71 [0.64–0.78] |
+
+**Women and men are served about equally** (CAD is even better for women). **Discrimination is
+lower for patients aged 60+ and for diabetics**, most clearly for LAD (0.72 and 0.71 vs 0.89 and
+0.87). Part of this is expected: age and diabetes are themselves strong predictors, so within these
+groups less signal is left to separate patients. It still means the predictions deserve extra
+caution for older and diabetic patients. Subgroup CIs are wide (n = 90–213).
+
 ## 8. Vessels: independent models vs classifier chain
 Chain order: LAD → LCX → RCA. Each link gets the earlier vessels' *predicted* probabilities
 (out-of-fold on training data, never the true labels). We report the paired difference in AUC
@@ -168,6 +184,7 @@ training time and in pytest. Beeswarm plots: `phase2_shap_<target>.png`.
 - 303 patients from a single centre, with no external validation set. The CIs are wide, especially
   for LCX and RCA.
 - For LCX and RCA the full feature set does not beat a 10-item bedside baseline (section 5).
+- Discrimination is lower in patients aged 60+ and in diabetics, especially for LAD (section 7b).
 - The models predict *per-vessel stenosis status*, not lesion location or severity within a
   vessel. Region RWMA is a clinical feature, not an anatomical coordinate.
 - The CAD and vessel models are trained separately, so a patient can receive a low CAD probability

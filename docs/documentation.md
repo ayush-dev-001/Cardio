@@ -135,7 +135,7 @@ produce identical metrics and identical predictions.
 - **Recall-first thresholds** reach close to their goals on unseen folds. For LCX and RCA this costs
   specificity (≈ 0.56), so the dashboard always shows the probability, not only a yes/no label.
 
-**Does the model add value? Three checks, all on the same outer splits:**
+**Does the model add value, and for whom? Four checks, all on the same outer splits:**
 1. **Clinical baseline:** logistic regression on 10 bedside items (age, sex, chest-pain type,
    diabetes, hypertension, smoking, family history, dyslipidaemia). Paired AUC gain of the selected
    model over it:
@@ -150,6 +150,11 @@ produce identical metrics and identical predictions.
 3. **Decision-curve analysis:** every selected model has higher net benefit than "treat all" and
    "treat none" across risk thresholds of 5–70 % (LCX 5–61 %), i.e. acting on the model would help
    referral decisions.
+
+4. **Subgroups:** out-of-fold AUC is similar for women and men (CAD 0.96 vs 0.90; LAD 0.84 vs
+   0.84). It is lower for patients aged 60+ and for diabetics, most clearly for LAD (0.72 and 0.71
+   vs 0.89 and 0.87). Age and diabetes are themselves strong predictors, so less signal remains
+   within these groups, but their predictions deserve extra caution.
 
 ![Decision curves (out-of-fold): net benefit vs threshold probability.](../reports/figures/phase2_decision_curves.png)
 
@@ -241,7 +246,8 @@ python -m uvicorn app.main:app --app-dir backend --port 8000           # API
 cd frontend && npm install && npm run dev                              # dashboard on :5173
 ```
 
-**Quality:** 43 ML tests, 33 API tests and 34 frontend tests. They cover:
+**Quality:** 44 ML tests, 33 API tests and 34 frontend tests, run by GitHub Actions on every push
+together with a training smoke test and the production build. They cover:
 - leakage;
 - fold-safe preprocessing;
 - calibration convergence;
@@ -254,6 +260,7 @@ cd frontend && npm install && npm run dev                              # dashboa
 - **Data:** 303 patients from a single centre, with no external validation. The confidence
   intervals for LCX and RCA are wide.
 - **What the model adds:** for LCX and RCA, the full feature set does not beat a bedside baseline.
+- **Subgroups:** discrimination is lower for patients aged 60+ and for diabetics.
 - **CAD vs vessels:** the CAD and vessel models are separate, so their probabilities need not be
   logically consistent. They are shown side by side.
 - **What is predicted:** stenosis status per vessel only, not severity or lesion position. Region
