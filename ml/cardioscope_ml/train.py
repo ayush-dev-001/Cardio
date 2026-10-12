@@ -179,6 +179,7 @@ def main(argv: list[str] | None = None) -> dict:
         else None
     )
     comparisons, dca_report, dca_curves, dca_labels = {}, {}, {}, {}
+    subgroup_report: dict[str, dict] = {}
     dc = cfg["decision_curve"]
     dca_thr = np.round(np.arange(dc["low"], dc["high"] + 1e-9, dc["step"]), 4)
     for t in targets:
@@ -203,6 +204,15 @@ def main(argv: list[str] | None = None) -> dict:
                 ),
             }
         comparisons[t] = comp
+        subgroup_report[t] = {
+            g["id"]: {
+                "label": g["label"],
+                **ev.subgroup_summary(
+                    Y[t], sel, ev.subgroup_mask(df, g), settings["bootstrap"], seed
+                ),
+            }
+            for g in cfg.get("subgroups") or []
+        }
         dca_models = {"selected": sel}
         if ens:
             dca_models["ensemble"] = ens[t]
@@ -334,6 +344,7 @@ def main(argv: list[str] | None = None) -> dict:
                 "cv": summary[t],
                 "comparisons": comparisons[t],
                 "decision_curve": dca_report[t],
+                "subgroups": subgroup_report[t],
             }
             for t in targets
         },

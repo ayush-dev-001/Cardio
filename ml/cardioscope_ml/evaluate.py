@@ -93,6 +93,32 @@ def summarize(y: np.ndarray, res: CVResult, n_boot: int, seed: int) -> dict:
     }
 
 
+def subgroup_mask(df, spec: dict) -> np.ndarray:
+    """Boolean mask for a subgroup spec: {feature, equals | below | at_least}."""
+    x = df[spec["feature"]].to_numpy()
+    if "equals" in spec:
+        return x == spec["equals"]
+    if "below" in spec:
+        return x < spec["below"]
+    if "at_least" in spec:
+        return x >= spec["at_least"]
+    raise ValueError(f"Subgroup {spec.get('id')!r} needs equals, below or at_least")
+
+
+def subgroup_summary(
+    y: np.ndarray, res: CVResult, mask: np.ndarray, n_boot: int, seed: int
+) -> dict:
+    """Out-of-fold metrics restricted to one subgroup (bootstrap CI within the subgroup)."""
+    sub = CVResult(res.p_raw[:, mask], res.p_cal[:, mask], res.pred[:, mask])
+    yy = y[mask]
+    out = {"n": int(mask.sum()), "positives": int(yy.sum())}
+    if yy.min() == yy.max():  # AUC undefined without both classes
+        return out
+    s = summarize(yy, sub, n_boot, seed)
+    out.update({m: s[m] for m in ("roc_auc", "recall", "specificity", "brier")})
+    return out
+
+
 def paired_auc_difference(y: np.ndarray, a: CVResult, b: CVResult, n_boot: int, seed: int) -> dict:
     """AUC(b) - AUC(a) on the same patients, with a paired bootstrap 95% CI."""
 

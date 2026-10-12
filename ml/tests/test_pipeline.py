@@ -153,3 +153,12 @@ def test_metrics_json_complete():
             for metric in ["accuracy", "precision", "recall", "f1", "roc_auc", "brier"]:
                 s = cv[fam][metric]
                 assert s["ci_low"] <= s["mean"] <= s["ci_high"], (t, fam, metric)
+
+
+def test_subgroup_masks_partition_the_cohort(df):
+    from cardioscope_ml.evaluate import subgroup_mask
+
+    groups = {g["id"]: subgroup_mask(df, g) for g in config.load_models()["subgroups"]}
+    for a, b in [("women", "men"), ("age_lt60", "age_ge60"), ("diabetic", "non_diabetic")]:
+        assert not (groups[a] & groups[b]).any()
+        assert (groups[a] | groups[b]).all()

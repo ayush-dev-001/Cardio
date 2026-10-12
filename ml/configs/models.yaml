@@ -41,6 +41,16 @@ decision_curve:          # net-benefit analysis of out-of-fold predictions (Vick
   step: 0.01
   report_at: [0.1, 0.2, 0.3, 0.4, 0.5]
 
+# Subgroup check of the selected models (out-of-fold predictions; reported, never used for selection).
+# A subgroup is the patients whose `feature` equals / is below / is at least the given value.
+subgroups:
+  - {id: women, label: Women, feature: sex, equals: 0}
+  - {id: men, label: Men, feature: sex, equals: 1}
+  - {id: age_lt60, label: Age < 60, feature: age, below: 60}
+  - {id: age_ge60, label: Age ≥ 60, feature: age, at_least: 60}
+  - {id: diabetic, label: Diabetic, feature: dm, equals: 1}
+  - {id: non_diabetic, label: Non-diabetic, feature: dm, equals: 0}
+
 # Pre-specified ensemble, evaluated in the same nested CV: the mean of the members' calibrated
 # log-odds, re-calibrated (Platt) and thresholded on the outer-training part of each fold.
 # Members are fixed in advance (all candidate families), not picked from the results.

@@ -425,6 +425,158 @@
           0.05,
           0.7
         ]
+      },
+      "subgroups": {
+        "women": {
+          "label": "Women",
+          "n": 127,
+          "positives": 86,
+          "roc_auc": {
+            "mean": 0.9634,
+            "ci_low": 0.9302,
+            "ci_high": 0.9883
+          },
+          "recall": {
+            "mean": 0.8953,
+            "ci_low": 0.8333,
+            "ci_high": 0.9529
+          },
+          "specificity": {
+            "mean": 0.9106,
+            "ci_low": 0.8239,
+            "ci_high": 0.9825
+          },
+          "brier": {
+            "mean": 0.0713,
+            "ci_low": 0.0468,
+            "ci_high": 0.1012
+          }
+        },
+        "men": {
+          "label": "Men",
+          "n": 176,
+          "positives": 130,
+          "roc_auc": {
+            "mean": 0.8984,
+            "ci_low": 0.8457,
+            "ci_high": 0.9455
+          },
+          "recall": {
+            "mean": 0.8846,
+            "ci_low": 0.8281,
+            "ci_high": 0.9338
+          },
+          "specificity": {
+            "mean": 0.7319,
+            "ci_low": 0.5952,
+            "ci_high": 0.8519
+          },
+          "brier": {
+            "mean": 0.1112,
+            "ci_low": 0.0789,
+            "ci_high": 0.1448
+          }
+        },
+        "age_lt60": {
+          "label": "Age < 60",
+          "n": 162,
+          "positives": 94,
+          "roc_auc": {
+            "mean": 0.9311,
+            "ci_low": 0.8902,
+            "ci_high": 0.9642
+          },
+          "recall": {
+            "mean": 0.8475,
+            "ci_low": 0.7763,
+            "ci_high": 0.9121
+          },
+          "specificity": {
+            "mean": 0.8775,
+            "ci_low": 0.8081,
+            "ci_high": 0.9365
+          },
+          "brier": {
+            "mean": 0.1017,
+            "ci_low": 0.0735,
+            "ci_high": 0.1327
+          }
+        },
+        "age_ge60": {
+          "label": "Age \u2265 60",
+          "n": 141,
+          "positives": 122,
+          "roc_auc": {
+            "mean": 0.8746,
+            "ci_low": 0.7967,
+            "ci_high": 0.9419
+          },
+          "recall": {
+            "mean": 0.9208,
+            "ci_low": 0.8711,
+            "ci_high": 0.9618
+          },
+          "specificity": {
+            "mean": 0.5965,
+            "ci_low": 0.381,
+            "ci_high": 0.8001
+          },
+          "brier": {
+            "mean": 0.0862,
+            "ci_low": 0.0563,
+            "ci_high": 0.12
+          }
+        },
+        "diabetic": {
+          "label": "Diabetic",
+          "n": 90,
+          "positives": 80,
+          "roc_auc": {
+            "mean": 0.9637,
+            "ci_low": 0.9197,
+            "ci_high": 0.9944
+          },
+          "recall": {
+            "mean": 0.9583,
+            "ci_low": 0.9114,
+            "ci_high": 0.9959
+          },
+          "specificity": {
+            "mean": 0.8,
+            "ci_low": 0.5,
+            "ci_high": 1.0
+          },
+          "brier": {
+            "mean": 0.0494,
+            "ci_low": 0.0217,
+            "ci_high": 0.0833
+          }
+        },
+        "non_diabetic": {
+          "label": "Non-diabetic",
+          "n": 213,
+          "positives": 136,
+          "roc_auc": {
+            "mean": 0.9097,
+            "ci_low": 0.8692,
+            "ci_high": 0.9495
+          },
+          "recall": {
+            "mean": 0.848,
+            "ci_low": 0.7879,
+            "ci_high": 0.8998
+          },
+          "specificity": {
+            "mean": 0.8182,
+            "ci_low": 0.7383,
+            "ci_high": 0.894
+          },
+          "brier": {
+            "mean": 0.1135,
+            "ci_low": 0.0835,
+            "ci_high": 0.1419
+          }
+        }
       }
     },
     "lad": {
@@ -783,6 +935,158 @@
           0.08,
           0.7
         ]
+      },
+      "subgroups": {
+        "women": {
+          "label": "Women",
+          "n": 127,
+          "positives": 67,
+          "roc_auc": {
+            "mean": 0.8362,
+            "ci_low": 0.7641,
+            "ci_high": 0.9023
+          },
+          "recall": {
+            "mean": 0.8259,
+            "ci_low": 0.7344,
+            "ci_high": 0.902
+          },
+          "specificity": {
+            "mean": 0.7222,
+            "ci_low": 0.6102,
+            "ci_high": 0.817
+          },
+          "brier": {
+            "mean": 0.1618,
+            "ci_low": 0.1264,
+            "ci_high": 0.2
+          }
+        },
+        "men": {
+          "label": "Men",
+          "n": 176,
+          "positives": 110,
+          "roc_auc": {
+            "mean": 0.8443,
+            "ci_low": 0.7829,
+            "ci_high": 0.8991
+          },
+          "recall": {
+            "mean": 0.7818,
+            "ci_low": 0.7111,
+            "ci_high": 0.8464
+          },
+          "specificity": {
+            "mean": 0.7323,
+            "ci_low": 0.6313,
+            "ci_high": 0.8333
+          },
+          "brier": {
+            "mean": 0.154,
+            "ci_low": 0.1228,
+            "ci_high": 0.1867
+          }
+        },
+        "age_lt60": {
+          "label": "Age < 60",
+          "n": 162,
+          "positives": 76,
+          "roc_auc": {
+            "mean": 0.8893,
+            "ci_low": 0.8382,
+            "ci_high": 0.9369
+          },
+          "recall": {
+            "mean": 0.8026,
+            "ci_low": 0.725,
+            "ci_high": 0.8745
+          },
+          "specificity": {
+            "mean": 0.8566,
+            "ci_low": 0.7868,
+            "ci_high": 0.9176
+          },
+          "brier": {
+            "mean": 0.1326,
+            "ci_low": 0.1042,
+            "ci_high": 0.1623
+          }
+        },
+        "age_ge60": {
+          "label": "Age \u2265 60",
+          "n": 141,
+          "positives": 101,
+          "roc_auc": {
+            "mean": 0.7233,
+            "ci_low": 0.6402,
+            "ci_high": 0.8043
+          },
+          "recall": {
+            "mean": 0.7954,
+            "ci_low": 0.7182,
+            "ci_high": 0.866
+          },
+          "specificity": {
+            "mean": 0.45,
+            "ci_low": 0.3158,
+            "ci_high": 0.581
+          },
+          "brier": {
+            "mean": 0.1856,
+            "ci_low": 0.1494,
+            "ci_high": 0.2246
+          }
+        },
+        "diabetic": {
+          "label": "Diabetic",
+          "n": 90,
+          "positives": 61,
+          "roc_auc": {
+            "mean": 0.7149,
+            "ci_low": 0.5943,
+            "ci_high": 0.815
+          },
+          "recall": {
+            "mean": 0.8525,
+            "ci_low": 0.7692,
+            "ci_high": 0.9267
+          },
+          "specificity": {
+            "mean": 0.4713,
+            "ci_low": 0.3118,
+            "ci_high": 0.631
+          },
+          "brier": {
+            "mean": 0.187,
+            "ci_low": 0.1413,
+            "ci_high": 0.2355
+          }
+        },
+        "non_diabetic": {
+          "label": "Non-diabetic",
+          "n": 213,
+          "positives": 116,
+          "roc_auc": {
+            "mean": 0.8737,
+            "ci_low": 0.8273,
+            "ci_high": 0.9143
+          },
+          "recall": {
+            "mean": 0.7701,
+            "ci_low": 0.7022,
+            "ci_high": 0.8362
+          },
+          "specificity": {
+            "mean": 0.8041,
+            "ci_low": 0.7279,
+            "ci_high": 0.87
+          },
+          "brier": {
+            "mean": 0.1447,
+            "ci_low": 0.119,
+            "ci_high": 0.17
+          }
+        }
       }
     },
     "lcx": {
@@ -1141,6 +1445,158 @@
           0.05,
           0.61
         ]
+      },
+      "subgroups": {
+        "women": {
+          "label": "Women",
+          "n": 127,
+          "positives": 42,
+          "roc_auc": {
+            "mean": 0.7205,
+            "ci_low": 0.6311,
+            "ci_high": 0.8055
+          },
+          "recall": {
+            "mean": 0.7698,
+            "ci_low": 0.6475,
+            "ci_high": 0.8851
+          },
+          "specificity": {
+            "mean": 0.5137,
+            "ci_low": 0.4135,
+            "ci_high": 0.6151
+          },
+          "brier": {
+            "mean": 0.1967,
+            "ci_low": 0.1691,
+            "ci_high": 0.226
+          }
+        },
+        "men": {
+          "label": "Men",
+          "n": 176,
+          "positives": 77,
+          "roc_auc": {
+            "mean": 0.7356,
+            "ci_low": 0.6629,
+            "ci_high": 0.8047
+          },
+          "recall": {
+            "mean": 0.7749,
+            "ci_low": 0.6907,
+            "ci_high": 0.8578
+          },
+          "specificity": {
+            "mean": 0.5993,
+            "ci_low": 0.5163,
+            "ci_high": 0.6818
+          },
+          "brier": {
+            "mean": 0.21,
+            "ci_low": 0.1829,
+            "ci_high": 0.236
+          }
+        },
+        "age_lt60": {
+          "label": "Age < 60",
+          "n": 162,
+          "positives": 45,
+          "roc_auc": {
+            "mean": 0.7379,
+            "ci_low": 0.6607,
+            "ci_high": 0.8061
+          },
+          "recall": {
+            "mean": 0.5556,
+            "ci_low": 0.4259,
+            "ci_high": 0.6812
+          },
+          "specificity": {
+            "mean": 0.7521,
+            "ci_low": 0.6835,
+            "ci_high": 0.8174
+          },
+          "brier": {
+            "mean": 0.1722,
+            "ci_low": 0.1442,
+            "ci_high": 0.2023
+          }
+        },
+        "age_ge60": {
+          "label": "Age \u2265 60",
+          "n": 141,
+          "positives": 74,
+          "roc_auc": {
+            "mean": 0.6251,
+            "ci_low": 0.536,
+            "ci_high": 0.7131
+          },
+          "recall": {
+            "mean": 0.9054,
+            "ci_low": 0.8333,
+            "ci_high": 0.9611
+          },
+          "specificity": {
+            "mean": 0.2239,
+            "ci_low": 0.1451,
+            "ci_high": 0.3134
+          },
+          "brier": {
+            "mean": 0.2415,
+            "ci_low": 0.2177,
+            "ci_high": 0.2659
+          }
+        },
+        "diabetic": {
+          "label": "Diabetic",
+          "n": 90,
+          "positives": 46,
+          "roc_auc": {
+            "mean": 0.6635,
+            "ci_low": 0.5542,
+            "ci_high": 0.7683
+          },
+          "recall": {
+            "mean": 0.8841,
+            "ci_low": 0.7851,
+            "ci_high": 0.9621
+          },
+          "specificity": {
+            "mean": 0.3636,
+            "ci_low": 0.2444,
+            "ci_high": 0.4964
+          },
+          "brier": {
+            "mean": 0.2328,
+            "ci_low": 0.1992,
+            "ci_high": 0.2656
+          }
+        },
+        "non_diabetic": {
+          "label": "Non-diabetic",
+          "n": 213,
+          "positives": 73,
+          "roc_auc": {
+            "mean": 0.7332,
+            "ci_low": 0.6568,
+            "ci_high": 0.7978
+          },
+          "recall": {
+            "mean": 0.7032,
+            "ci_low": 0.607,
+            "ci_high": 0.7968
+          },
+          "specificity": {
+            "mean": 0.6214,
+            "ci_low": 0.5484,
+            "ci_high": 0.6925
+          },
+          "brier": {
+            "mean": 0.1924,
+            "ci_low": 0.1692,
+            "ci_high": 0.2164
+          }
+        }
       }
     },
     "rca": {
@@ -1498,6 +1954,158 @@
           0.05,
           0.7
         ]
+      },
+      "subgroups": {
+        "women": {
+          "label": "Women",
+          "n": 127,
+          "positives": 39,
+          "roc_auc": {
+            "mean": 0.7682,
+            "ci_low": 0.6876,
+            "ci_high": 0.8462
+          },
+          "recall": {
+            "mean": 0.7692,
+            "ci_low": 0.6558,
+            "ci_high": 0.8788
+          },
+          "specificity": {
+            "mean": 0.6326,
+            "ci_low": 0.5416,
+            "ci_high": 0.7171
+          },
+          "brier": {
+            "mean": 0.174,
+            "ci_low": 0.1434,
+            "ci_high": 0.2051
+          }
+        },
+        "men": {
+          "label": "Men",
+          "n": 176,
+          "positives": 75,
+          "roc_auc": {
+            "mean": 0.6983,
+            "ci_low": 0.616,
+            "ci_high": 0.7707
+          },
+          "recall": {
+            "mean": 0.7689,
+            "ci_low": 0.6854,
+            "ci_high": 0.8545
+          },
+          "specificity": {
+            "mean": 0.5017,
+            "ci_low": 0.4092,
+            "ci_high": 0.5871
+          },
+          "brier": {
+            "mean": 0.2188,
+            "ci_low": 0.1912,
+            "ci_high": 0.2471
+          }
+        },
+        "age_lt60": {
+          "label": "Age < 60",
+          "n": 162,
+          "positives": 44,
+          "roc_auc": {
+            "mean": 0.7684,
+            "ci_low": 0.6877,
+            "ci_high": 0.8362
+          },
+          "recall": {
+            "mean": 0.7045,
+            "ci_low": 0.5891,
+            "ci_high": 0.8095
+          },
+          "specificity": {
+            "mean": 0.6836,
+            "ci_low": 0.6039,
+            "ci_high": 0.7536
+          },
+          "brier": {
+            "mean": 0.1648,
+            "ci_low": 0.1385,
+            "ci_high": 0.1928
+          }
+        },
+        "age_ge60": {
+          "label": "Age \u2265 60",
+          "n": 141,
+          "positives": 70,
+          "roc_auc": {
+            "mean": 0.6402,
+            "ci_low": 0.5641,
+            "ci_high": 0.7221
+          },
+          "recall": {
+            "mean": 0.8095,
+            "ci_low": 0.7269,
+            "ci_high": 0.8906
+          },
+          "specificity": {
+            "mean": 0.3615,
+            "ci_low": 0.2705,
+            "ci_high": 0.4638
+          },
+          "brier": {
+            "mean": 0.2404,
+            "ci_low": 0.2135,
+            "ci_high": 0.2642
+          }
+        },
+        "diabetic": {
+          "label": "Diabetic",
+          "n": 90,
+          "positives": 52,
+          "roc_auc": {
+            "mean": 0.6552,
+            "ci_low": 0.5477,
+            "ci_high": 0.7595
+          },
+          "recall": {
+            "mean": 0.9103,
+            "ci_low": 0.8374,
+            "ci_high": 0.9667
+          },
+          "specificity": {
+            "mean": 0.2632,
+            "ci_low": 0.147,
+            "ci_high": 0.3954
+          },
+          "brier": {
+            "mean": 0.2338,
+            "ci_low": 0.2014,
+            "ci_high": 0.2681
+          }
+        },
+        "non_diabetic": {
+          "label": "Non-diabetic",
+          "n": 213,
+          "positives": 62,
+          "roc_auc": {
+            "mean": 0.7059,
+            "ci_low": 0.6393,
+            "ci_high": 0.7755
+          },
+          "recall": {
+            "mean": 0.6505,
+            "ci_low": 0.5497,
+            "ci_high": 0.7486
+          },
+          "specificity": {
+            "mean": 0.638,
+            "ci_low": 0.5708,
+            "ci_high": 0.7047
+          },
+          "brier": {
+            "mean": 0.1857,
+            "ci_low": 0.1634,
+            "ci_high": 0.2098
+          }
+        }
       }
     }
   },
@@ -2145,5 +2753,5 @@
     "numpy": "2.5.3",
     "pandas": "3.0.6"
   },
-  "runtime_seconds": 308
+  "runtime_seconds": 382
 }
