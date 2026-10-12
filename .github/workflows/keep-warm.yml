@@ -1,0 +1,17 @@
+name: Keep API warm
+
+# Render's free plan sleeps after 15 min without traffic (first request then takes ~30-60 s).
+# Pinging /health every 10 min keeps the demo API responsive during judging.
+# Disable this workflow in the Actions tab when it is no longer needed.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /health
+        run: curl -fsS --retry 3 --retry-delay 20 --max-time 90 https://cardioscope-api.onrender.com/health
