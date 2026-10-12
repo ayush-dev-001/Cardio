@@ -124,3 +124,6 @@ Extension of Z-Alizadeh Sani dataset, UCI Machine Learning Repository (303 patie
   by Mesh-Base, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 Details and rebuild steps: `assets/3d/CREDITS.md`.
+
+## Licence
+Code: [MIT](LICENSE). The 3D models and the dataset keep their own licences (listed in `LICENSE`).
