@@ -2,13 +2,16 @@
 
     python docs/build_pdf.py
 
-Needs `pip install markdown playwright` and `playwright install chromium` (build-time only).
+Needs `pip install markdown playwright` and `playwright install chromium` (build-time only), plus
+Ghostscript (`gs`) to shrink the images.
 """
 
 from __future__ import annotations
 
 import asyncio
 import re
+import shutil
+import subprocess
 from pathlib import Path
 
 import markdown
@@ -81,6 +84,32 @@ def to_html(md_text: str) -> str:
     return f'<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head><body>{body}</body></html>'
 
 
+def compress(pdf: Path) -> None:
+    """Downsample images to 150 dpi with Ghostscript (if installed). Chromium's PDF embeds the
+    full-resolution PNGs (~1.3 MB), which GitHub's PDF viewer refuses to display."""
+    gs = shutil.which("gs")
+    if not gs:
+        print("Ghostscript not found: PDF left uncompressed")
+        return
+    tmp = pdf.with_suffix(".tmp.pdf")
+    subprocess.run(
+        [
+            gs,
+            "-q",
+            "-dNOPAUSE",
+            "-dBATCH",
+            "-sDEVICE=pdfwrite",
+            "-dCompatibilityLevel=1.5",
+            "-dPDFSETTINGS=/ebook",
+            "-dColorImageResolution=150",
+            f"-sOutputFile={tmp}",
+            str(pdf),
+        ],
+        check=True,
+    )
+    tmp.replace(pdf)
+
+
 async def main() -> None:
     html_path = DOCS / "_documentation_build.html"
     html_path.write_text(to_html(SRC.read_text(encoding="utf-8")), encoding="utf-8")
@@ -102,6 +131,7 @@ async def main() -> None:
             await browser.close()
     finally:
         html_path.unlink(missing_ok=True)
+    compress(OUT)
     pages = len(re.findall(rb"/Type\s*/Page[^s]", OUT.read_bytes()))
     print(f"{OUT.name}: {pages} pages")
     if pages > MAX_PAGES:
