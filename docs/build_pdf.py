@@ -115,6 +115,15 @@ def compress(pdf: Path) -> None:
         tmp.replace(pdf)
 
 
+def count_pages(pdf: Path) -> int:
+    """Page count via poppler's pdfinfo (pages may sit in compressed object streams)."""
+    info = shutil.which("pdfinfo")
+    if info:
+        out = subprocess.run([info, str(pdf)], capture_output=True, text=True, check=True).stdout
+        return int(re.search(r"^Pages:\s+(\d+)", out, re.M).group(1))
+    return len(re.findall(rb"/Type\s*/Page[^s]", pdf.read_bytes()))
+
+
 async def main() -> None:
     html_path = DOCS / "_documentation_build.html"
     html_path.write_text(to_html(SRC.read_text(encoding="utf-8")), encoding="utf-8")
@@ -137,7 +146,7 @@ async def main() -> None:
     finally:
         html_path.unlink(missing_ok=True)
     compress(OUT)
-    pages = len(re.findall(rb"/Type\s*/Page[^s]", OUT.read_bytes()))
+    pages = count_pages(OUT)
     print(f"{OUT.name}: {pages} pages")
     if pages > MAX_PAGES:
         raise SystemExit(f"Too long: {pages} pages > {MAX_PAGES}")
