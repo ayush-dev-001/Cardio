@@ -51,8 +51,18 @@ after that takes ~30–60 s while the dashboard shows "Waking up the model serve
   - The 3D heart has separate LAD/LCX/RCA meshes and supply-territory shading.
   - Explanations: SHAP waterfall, physiology panel, vessel detail panel and a plain-language summary.
 
+## Prerequisites and dependencies
+- **Python 3.10+** (developed and trained on 3.14) with `pip`.
+- **Node.js 20+** with `npm` (developed on Node 24).
+- **Git.** No GPU is needed: training uses the CPU (~5 min on 16 cores), and the 3D view runs in
+  any modern browser.
+- Python dependencies (pinned): [`requirements.txt`](requirements.txt), covering pandas,
+  scikit-learn, XGBoost, CatBoost, FastAPI, pytest and others. The deployed API uses the smaller
+  [`requirements-api.txt`](requirements-api.txt).
+- Frontend dependencies: [`frontend/package.json`](frontend/package.json) (React, Vite,
+  TypeScript, three.js / React Three Fiber, Recharts, Tailwind), locked in `package-lock.json`.
+
 ## Setup
-Requires Python 3.10+ (developed and trained on 3.14) and Node 20+ (developed on Node 24).
 
 **Linux / macOS / WSL** (training and the API run on Linux, as in deployment):
 ```bash
