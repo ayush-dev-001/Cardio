@@ -108,6 +108,11 @@ def compress(pdf: Path) -> None:
         check=True,
     )
     tmp.replace(pdf)
+    # GitHub's PDF viewer still rejected the Chromium/Ghostscript output; a poppler/cairo re-encode works
+    cairo = shutil.which("pdftocairo")
+    if cairo:
+        subprocess.run([cairo, "-pdf", str(pdf), str(tmp)], check=True)
+        tmp.replace(pdf)
 
 
 async def main() -> None:
